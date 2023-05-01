@@ -1,0 +1,60 @@
+name: release
+
+on:
+  push:
+    # Pattern matched against refs/tags
+    tags:        
+      - '**'  # Push events to every tag including hierarchical tags like v1.0/beta
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    env:
+        projName: webui
+        verStr: '0.0.x'
+
+    steps:
+        - name: Checkout main
+          uses: actions/checkout@v3
+
+        - name: Setup node.js
+          uses: actions/setup-node@v3
+          with:
+            node-version: '16'
+
+        - name: Install packages
+          run: npm install
+
+        - name: Build project
+          run: npm run build
+
+        - name: Create assets
+          uses: vimtor/action-zip@v1.1
+          with:
+            files: dist/
+            dest: ${{ env.projName }}.zip
+
+        - name: Calc md5sum
+          run: |
+            echo CHECKSUM="$(md5sum ${projName}.zip | awk '{ print $1 }')" >> "$GITHUB_ENV"
+
+        - name: Publish Release
+          uses: ncipollo/release-action@v1.12.0
+          with:
+            token: ${{ secrets.GITHUB_TOKEN }}
+            name: 'v${{ env.verStr }}'
+            tag: ${{ env.verStr }}
+            body: |
+              #### 变化：
+               * 变化1
+              
+              #### MD5:
+              ${{ env.projName }}.zip (${{ env.CHECKSUM }})
+            draft: true
+            prerelease: false
+            artifacts: "${{ env.projName }}.zip"

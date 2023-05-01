@@ -1,0 +1,16 @@
+body {
+  background-color: #fafafa;
+  padding: 0rem;
+  margin: 0rem;
+  font-size: 1rem;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+  padding: 0rem;
+  margin: 0rem;
+}

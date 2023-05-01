@@ -1,0 +1,423 @@
+<script setup>
+import { useI18n } from '@yangss/vue3-i18n'
+import utils from '../misc/utils.js'
+import { onMounted, ref } from 'vue'
+
+
+const { locale, t } = useI18n()
+
+let curPageNum = ref(1)
+let pages = ref(15)
+let searchType = ref("summary")
+let searchKeyword = ref("")
+
+let data = ref([])
+
+let isJsonEditorVisible = ref(false)
+let servConfig = ref("")
+let curServUid = ""
+
+function editServ(uid) {
+  curServUid = uid
+  let next = function (config) {
+    try {
+      let j = JSON.parse(config)
+      let c = JSON.stringify(j, null, 4)
+      servConfig.value = c
+      isJsonEditorVisible.value = true
+    } catch (err) {
+      Swal.fire(err.toString())
+    }
+  }
+  utils.call(next, "GetServerConfig", [uid])
+}
+
+function closeEditor() {
+  isJsonEditorVisible.value = false
+}
+
+function saveServConfig() {
+  let config = servConfig.value
+  let uid = curServUid
+  let next = function (err) {
+    if (err) {
+      Swal.fire(err)
+      return
+    }
+    isJsonEditorVisible.value = false
+    refresh()
+  }
+  utils.call(next, "SaveServerConfig", [uid, config])
+}
+
+function parseServerInfo(r) {
+  pages = r.pages
+  data.value = r.data
+  selectedUids = {}
+  for (const serv of r.data) {
+    serv["selected"] = false
+  }
+}
+
+function selectAll() {
+  for (const serv of data.value) {
+    serv.selected = true
+  }
+}
+
+function invertSelection() {
+  for (const serv of data.value) {
+    serv.selected = !serv.selected
+  }
+}
+
+function deleteSelected() {
+  let uids = data.value.filter(el => el.selected).map(el => el.uid)
+  if (uids.length < 1) {
+    Swal.fire(t('noServerSelected'))
+    return
+  }
+
+  let title = t('confirmDeleteNServers', { count: uids.length })
+  let next = function (success) {
+    const msg = success ? t('serversDeleted') : t('deleteFailed')
+    Swal.fire(msg)
+    refresh()
+  }
+  Swal.fire({
+    title: title,
+    showDenyButton: true,
+    confirmButtonText: t('yes'),
+    denyButtonText: t('no'),
+  }).then((result) => {
+    if (result.isConfirmed) {
+      utils.call(next, "DeleteServersByUids", [uids])
+    }
+  })
+}
+
+function stopServ(uid) {
+  utils.call(refresh, "StopServ", [uid])
+}
+
+function restartServ(uid) {
+  utils.call(refresh, "RestartServ", [uid])
+}
+
+function search() {
+  let pn = 1
+  curPageNum.value = pn
+  utils.call(parseServerInfo, "GetSerializedServers", [
+    pn,
+    searchType.value,
+    searchKeyword.value,
+  ])
+}
+
+function refresh() {
+  utils.call(parseServerInfo, "GetSerializedServers", [
+    curPageNum.value,
+    searchType.value,
+    searchKeyword.value,
+  ])
+}
+
+onMounted(() => {
+  refresh()
+})
+</script>
+
+<template>
+  <div class="header-wrapper">
+    <div class="header">
+      <div class="align-center status">{{ t('status') }}</div>
+      <div class="align-center server-selector">{{ t('select') }}</div>
+      <div class="align-center index">{{ t('index') }}</div>
+      <div class="align-center title">{{ t('title') }}</div>
+      <div class="align-center">{{ t('summary') }}</div>
+      <div class="align-center controls">{{ t('controls') }}</div>
+    </div>
+  </div>
+  <div class="main-div">
+    <div class="head-blank"></div>
+    <ul>
+      <li v-for="serv in data">
+        <div class="server-list">
+          <div class="align-center status">
+            <div v-if="serv.on" class="round-div" @click="stopServ(serv.uid)">ON</div>
+          </div>
+          <div class="align-center server-selector">
+            <input type="checkbox" v-model="serv.selected" />
+          </div>
+          <div class="align-center index">{{ serv['index'] }}</div>
+          <div class="align-left title">{{ serv['name'] }}</div>
+          <div class="align-left">{{ serv['summary'] }}</div>
+          <div class="align-center controls">
+            <button style="color: darkred;" @click="restartServ(serv.uid)">
+              <i class="fa fa-play"></i>
+            </button>
+            <button style="color: black" @click="editServ(serv.uid)">
+              <i class="fas fa-edit"></i>
+            </button>
+          </div>
+        </div>
+      </li>
+    </ul>
+    <div class="bottom-blank"></div>
+  </div>
+  <div class="searcher">
+    <select v-model="searchType" class="search-selector">
+      <option value="summary" selected>{{ t('summary') }}</option>
+      <option value="title">{{ t('title') }}</option>
+      <option value="index">{{ t('index') }}</option>
+    </select>
+    <input v-model="searchKeyword" @keyup.enter="search" type="text" class="search-box" />
+    <button @click="search" class="search-button">
+      <i class="fas fa-search"></i>
+      {{ t('search') }}
+    </button>
+    <div class="vertical-line"></div>
+    <div class="tools-box">
+      <button @click="selectAll"><i class="fas fa-check-square"></i></button>
+      <button @click="invertSelection"><i class="fas fa-plus-square"></i></button>
+      <button @click="deleteSelected"><i class="fas fa-trash-alt"></i></button>
+    </div>
+  </div>
+  <div class="pager" v-if="pages > 1">
+    <vpagination v-model="curPageNum" :pages="pages" :range-size="2" active-color="#DCEDFF"
+      @update:modelValue="refresh" />
+    <input v-model="curPageNum" class="text-current-page-number" @keyup.enter="refresh" />
+    <button @click="refresh" class="jump-button">{{ t('jump') }}</button>
+  </div>
+  <div v-if="isJsonEditorVisible" class="json-editor-wrapper">
+    <div class="editor-content-wrapper">
+      <textarea v-model="servConfig" class="editor-content"></textarea>
+    </div>
+    <div class="editor-buttons-wrapper">
+      <button @click="saveServConfig">{{ t('save') }}</button>
+      <button @click="closeEditor">{{ t('close') }}</button>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.tools-box button {
+  margin: 0rem 0.2rem;
+}
+
+.tools-box {
+  font-size: 1.5rem;
+  margin: 0rem;
+}
+
+.vertical-line {
+  background-color: #ddd;
+  height: 70%;
+  width: 0.1rem;
+  margin: 0.3rem;
+}
+
+.editor-buttons-wrapper button {
+  margin: 0rem 1rem;
+}
+
+.editor-buttons-wrapper {
+  width: 100%;
+  height: 2.5rem;
+  align-items: end;
+  justify-content: center;
+  display: flex;
+}
+
+.editor-content {
+  width: 100%;
+  background-color: ivory;
+  height: 100%;
+}
+
+.editor-content-wrapper {
+  display: block;
+  flex-grow: 1;
+  width: 100%;
+  height: 92%;
+}
+
+.json-editor-wrapper {
+  background-color: #666;
+  opacity: 0.95;
+  position: fixed;
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  right: 0rem;
+  bottom: 0rem;
+  left: 14rem;
+  padding: 1rem;
+  top: 0rem;
+}
+
+.controls button {
+  font-size: 1.2rem;
+  margin: 0rem 0.3rem;
+}
+
+.search-selector {
+  color: #777;
+  width: 7rem;
+  display: inline-block;
+}
+
+.search-box {
+  width: 18rem;
+  margin: 0rem 1rem;
+  display: inline-block;
+}
+
+.search-button {
+  display: inline-block;
+  padding: 0rem 0.5rem;
+  margin: 0rem;
+}
+
+.jump-button {
+  font-size: 0.8rem;
+}
+
+.text-current-page-number {
+  text-align: center;
+  font-size: 0.8rem;
+  margin: 0.2rem 0.5rem;
+  width: 3rem;
+}
+
+.bottom-blank {
+  display: block;
+  flex-grow: 1;
+  height: 2.5rem;
+}
+
+.searcher {
+  top: 0rem;
+  height: 3rem;
+  left: 14rem;
+  padding: 0rem 1rem;
+  display: flex;
+  flex-grow: 1;
+  justify-content: left;
+  align-items: center;
+  position: fixed;
+  z-index: 200;
+}
+
+.pager {
+  height: 2rem;
+  padding: 0rem 1.2rem;
+  display: flex;
+  flex-grow: 1;
+  justify-content: left;
+  align-items: center;
+  position: fixed;
+  z-index: 200;
+  right: 0rem;
+  background-color: #eee;
+  bottom: 0rem;
+}
+
+.round-div {
+  background-color: orange;
+  display: inline-block;
+  color: white;
+  font-size: 0.8rem;
+  padding: 0.2rem 0.3rem;
+  border-radius: 0.2rem;
+  cursor: pointer;
+}
+
+ul {
+  margin: 0rem;
+  padding: 0rem;
+  list-style-type: none;
+}
+
+li {
+  margin: 0rem;
+  padding: 0rem;
+}
+
+li:nth-child(odd) {
+  background-color: #e6e6e6;
+}
+
+.server-list {
+  flex-grow: 1;
+  font-size: 1rem;
+  display: table;
+  width: 100%;
+  height: 2rem;
+}
+
+.server-selector {
+  width: 3rem;
+}
+
+.status {
+  width: 3rem;
+}
+
+.index {
+  width: 4rem;
+}
+
+.title {
+  width: 30%;
+}
+
+.controls {
+  width: 4.5rem;
+}
+
+.align-left {
+  display: table-cell;
+  padding: 0.2rem 0.5rem;
+  vertical-align: middle;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.align-center {
+  display: table-cell;
+  padding: 0rem 0.2rem;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.head-blank {
+  display: block;
+  width: 100%;
+  height: 1.5rem;
+}
+
+.header-wrapper {
+  display: flex;
+  position: fixed;
+  top: 3rem;
+  left: 14rem;
+  right: 0rem;
+  flex-grow: 1;
+  z-index: 100;
+}
+
+.header {
+  flex-grow: 1;
+  background-color: #eee;
+  font-size: 0.8rem;
+  color: darkgray;
+  display: table;
+  height: 1.5rem;
+}
+
+.main-div {
+  display: flex;
+  flex-flow: column;
+}
+</style>
