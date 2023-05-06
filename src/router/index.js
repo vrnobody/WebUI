@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import CompServers from '../views/Servers.vue'
+// import CompServers from '../views/Servers.vue'
 
 const router = createRouter({
   // history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,7 +8,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: CompServers,
+      component: () => import('../views/Servers.vue'),
     },
     {
       path: '/import',
@@ -40,7 +40,7 @@ const router = createRouter({
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: CompServers,
+      component: () => import('../views/Servers.vue'),
     },
   ]
 })

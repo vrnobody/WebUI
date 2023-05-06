@@ -1,9 +1,10 @@
 <script setup>
 import { useI18n } from '@yangss/vue3-i18n'
 import utils from '../misc/utils.js'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, defineAsyncComponent } from 'vue'
 import JsonEditorVue from 'json-editor-vue3'
-import VPagination from "@hennge/vue3-pagination";
+
+const VPagination = defineAsyncComponent(() => import("@hennge/vue3-pagination"))
 
 const { _, t } = useI18n()
 

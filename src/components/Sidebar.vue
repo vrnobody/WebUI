@@ -5,7 +5,7 @@ import { onMounted } from 'vue'
 import utils from "../misc/utils.js"
 import cfg from "../config.js"
 
-const { locale, t } = useI18n()
+const { _, t } = useI18n()
 
 function IsNewerVersion(minVer, curVer) {
   const mvs = minVer.split(".").map(n => parseInt(n))
@@ -56,10 +56,10 @@ onMounted(() => {
 
 <template>
   <nav>
-    <RouterLink to="/"><i class="fas fa-server"></i> {{ $t('servers') }}</RouterLink>
-    <RouterLink to="/import"><i class="fas fa-plus-square"></i> {{ $t('import') }}</RouterLink>
-    <RouterLink to="/settings"><i class="fas fa-cog"></i> {{ $t('settings') }}</RouterLink>
-    <RouterLink to="/about"><i class="fas fa-info-circle"></i> {{ $t('about') }}</RouterLink>
+    <RouterLink to="/"><i class="fas fa-server"></i> {{ t('servers') }}</RouterLink>
+    <RouterLink to="/import"><i class="fas fa-plus-square"></i> {{ t('import') }}</RouterLink>
+    <RouterLink to="/settings"><i class="fas fa-cog"></i> {{ t('settings') }}</RouterLink>
+    <RouterLink to="/about"><i class="fas fa-info-circle"></i> {{ t('about') }}</RouterLink>
   </nav>
 </template>
 

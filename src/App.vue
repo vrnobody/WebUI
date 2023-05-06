@@ -17,10 +17,6 @@ import CompSidebar from './components/Sidebar.vue'
       <RouterView />
     </div>
   </div>
-  <!--
-    <h4>{{ $t('introduction', { name: "aaaa", age: "123" }) }}</h4>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-  -->
 </template>
 
 <style scoped>

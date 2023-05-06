@@ -3,7 +3,7 @@ import utils from '../misc/utils.js'
 import { ref } from 'vue'
 import { useI18n } from '@yangss/vue3-i18n'
 
-const { locale, t } = useI18n()
+const { _, t } = useI18n()
 
 let content = ref("")
 let mark = ref("")
@@ -26,20 +26,20 @@ function importShareLinks() {
 <template>
   <div class="main-wrapper">
     <div class="title-wrapper">
-      {{ $t('mark') }}
+      {{ t('mark') }}
     </div>
     <div class="mark-wrapper">
       <input v-model="mark" type="text" class="mark" />
     </div>
     <div class="title-wrapper">
-      {{ $t('shareLinks') }}
+      {{ t('shareLinks') }}
     </div>
     <div class="content-wrapper">
       <textarea v-model="content" class="content" placeholder="vmess://... vless://... trojan://...">
       </textarea>
     </div>
     <div class="controls-wrapper">
-      <button @click="importShareLinks">{{ $t('import') }}</button>
+      <button @click="importShareLinks">{{ t('import') }}</button>
     </div>
 
   </div>
