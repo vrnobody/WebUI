@@ -2,9 +2,10 @@
 import { useI18n } from '@yangss/vue3-i18n'
 import utils from '../misc/utils.js'
 import { onMounted, ref } from 'vue'
+import JsonEditorVue from 'json-editor-vue3'
+import VPagination from "@hennge/vue3-pagination";
 
-
-const { locale, t } = useI18n()
+const { _, t } = useI18n()
 
 let curPageNum = ref(1)
 let pages = ref(15)
@@ -14,7 +15,7 @@ let searchKeyword = ref("")
 let data = ref([])
 
 let isJsonEditorVisible = ref(false)
-let servConfig = ref("")
+let servConfig = ref({})
 let curServUid = ""
 
 function editServ(uid) {
@@ -22,8 +23,7 @@ function editServ(uid) {
   let next = function (config) {
     try {
       let j = JSON.parse(config)
-      let c = JSON.stringify(j, null, 4)
-      servConfig.value = c
+      servConfig.value = j
       isJsonEditorVisible.value = true
     } catch (err) {
       Swal.fire(err.toString())
@@ -37,8 +37,6 @@ function closeEditor() {
 }
 
 function saveServConfig() {
-  let config = servConfig.value
-  let uid = curServUid
   let next = function (err) {
     if (err) {
       Swal.fire(err)
@@ -47,7 +45,14 @@ function saveServConfig() {
     isJsonEditorVisible.value = false
     refresh()
   }
-  utils.call(next, "SaveServerConfig", [uid, config])
+
+  try {
+    const config = JSON.stringify(servConfig.value)
+    const uid = curServUid
+    utils.call(next, "SaveServerConfig", [uid, config])
+  } catch (err) {
+    Swal.fire(err.toString())
+  }
 }
 
 function parseServerInfo(r) {
@@ -178,20 +183,21 @@ onMounted(() => {
     </button>
     <div class="vertical-line"></div>
     <div class="tools-box">
-      <button @click="selectAll"><i class="fas fa-check-square"></i></button>
-      <button @click="invertSelection"><i class="fas fa-plus-square"></i></button>
+      <button @click="selectAll"><i class="fas fa-check-circle"></i></button>
+      <button @click="invertSelection"><i class="fas fa-adjust"></i></button>
       <button @click="deleteSelected"><i class="fas fa-trash-alt"></i></button>
     </div>
   </div>
   <div class="pager" v-if="pages > 1">
-    <vpagination v-model="curPageNum" :pages="pages" :range-size="2" active-color="#DCEDFF"
+    <VPagination v-model="curPageNum" :pages="pages" :range-size="2" active-color="#DCEDFF"
       @update:modelValue="refresh" />
     <input v-model="curPageNum" class="text-current-page-number" @keyup.enter="refresh" />
     <button @click="refresh" class="jump-button">{{ t('jump') }}</button>
   </div>
   <div v-if="isJsonEditorVisible" class="json-editor-wrapper">
     <div class="editor-content-wrapper">
-      <textarea v-model="servConfig" class="editor-content"></textarea>
+      <JsonEditorVue v-model="servConfig" class="editor-content" />
+      <!-- <textarea v-model="servConfig" class="editor-content"></textarea> -->
     </div>
     <div class="editor-buttons-wrapper">
       <button @click="saveServConfig">{{ t('save') }}</button>

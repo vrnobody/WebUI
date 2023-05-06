@@ -35,7 +35,7 @@ function importShareLinks() {
       {{ $t('shareLinks') }}
     </div>
     <div class="content-wrapper">
-      <textarea v-model="content" class="content" placeholder="vmess://..., vless://..., trojan://...">
+      <textarea v-model="content" class="content" placeholder="vmess://... vless://... trojan://...">
       </textarea>
     </div>
     <div class="controls-wrapper">

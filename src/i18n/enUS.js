@@ -18,6 +18,7 @@ export default {
     search: 'Search',
     jump: 'Jump',
     server_ver_not_supported: `server.lua v{curVer} is not supported!\nPlease update to v{expectedVer}.`,
+    please_update_app: `Please update V2RayGCon v{curVer} to v{expectedVer}+`,
 
     save: 'Save',
     close: 'Close',

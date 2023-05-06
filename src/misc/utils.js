@@ -1,4 +1,6 @@
-const host = import.meta.env.DEV ? 'http://localhost:4000' : '/'
+import configs from '../config.js'
+
+const host = import.meta.env.DEV ? configs.devHostUrl : configs.releaseHostUrl
 
 function post(callback, content) {
     let httpRequest = new XMLHttpRequest()

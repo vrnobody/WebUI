@@ -9,7 +9,7 @@
     <br />
     <br />
     <h4>Credits:</h4>
-    &lt;waiting for your name&gt;
+    &lt;waiting for you&gt;
   </div>
 </template>
 

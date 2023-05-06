@@ -1,0 +1,12 @@
+div[class~="full-screen"] {
+  visibility: hidden;
+}
+
+div[class~="jsoneditor-menu"] {
+  background-color: #999;
+  border: none;
+}
+
+div[class~="jsoneditor"] {
+  border: none;
+}

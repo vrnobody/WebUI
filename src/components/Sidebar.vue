@@ -7,6 +7,33 @@ import cfg from "../config.js"
 
 const { locale, t } = useI18n()
 
+function IsNewerVersion(minVer, curVer) {
+  const mvs = minVer.split(".").map(n => parseInt(n))
+  const cvs = curVer.split(".").map(n => parseInt(n))
+  for (let index = 0; index < mvs.length; index++) {
+    if (mvs[index] > cvs[index]) {
+      return false
+    }
+  }
+  return true
+}
+
+function checkAppVersion() {
+  const ver = cfg.supportedAppVersion
+  const cb = function (appVer) {
+    const ok = IsNewerVersion(ver, appVer)
+    // console.log(ok, ver, appVer)
+    if (!ok) {
+      const msg = t('please_update_app', {
+        curVer: appVer,
+        expectedVer: ver,
+      })
+      Swal.fire(msg)
+    }
+  }
+  utils.call(cb, "GetAppVersion")
+}
+
 function checkServerVersion() {
   let vers = cfg.supportedServerVersions
   let cb = function (servVer) {
@@ -22,6 +49,7 @@ function checkServerVersion() {
 }
 
 onMounted(() => {
+  checkAppVersion()
   checkServerVersion()
 })
 </script>
@@ -29,9 +57,9 @@ onMounted(() => {
 <template>
   <nav>
     <RouterLink to="/"><i class="fas fa-server"></i> {{ $t('servers') }}</RouterLink>
-    <RouterLink to="/import"><i class="fas fa-plus-circle"></i> {{ $t('import') }}</RouterLink>
-    <RouterLink to="/settings"><i class="fa fa-cog"></i> {{ $t('settings') }}</RouterLink>
-    <RouterLink to="/about"><i class="fa fa-info-circle"></i> {{ $t('about') }}</RouterLink>
+    <RouterLink to="/import"><i class="fas fa-plus-square"></i> {{ $t('import') }}</RouterLink>
+    <RouterLink to="/settings"><i class="fas fa-cog"></i> {{ $t('settings') }}</RouterLink>
+    <RouterLink to="/about"><i class="fas fa-info-circle"></i> {{ $t('about') }}</RouterLink>
   </nav>
 </template>
 

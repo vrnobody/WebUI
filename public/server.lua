@@ -1,15 +1,29 @@
+local args = {...}
+
 -- 如果4000端口已在使用，可修改为其他端口
-local url = "http://localhost:4000/"
+local url = #args > 0 and args[1] or "http://localhost:4000/"
 local public = "./lua/webui"
 
 -- confings
-local version = "0.0.1.0"
+local Logger = require('lua.modules.logger')
+
+local version = "0.0.1.1"
 local pageSize = 50
+local logLevel = Logger.logLevels.Debug
 
 -- code
 local haServ = require('lua.modules.httpServ').new()
 local json = require('lua.libs.json')
 local utils = require('lua.libs.utils')
+
+local sLog = Logger.new(nil, logLevel)
+
+local function unpack(t, i)
+    i = i or 1
+    if t[i] ~= nil then
+        return t[i], unpack(t, i + 1)
+    end
+end
 
 local function Clamp(v, min, max)
     if v < min then
@@ -58,7 +72,7 @@ local function FilterServsByName(servs, keyword)
     local r = {}
     for coreServ in Each(servs) do
         local coreState = coreServ:GetCoreStates()
-        local name = coreState:GetName()        
+        local name = string.lower(coreState:GetName())
         if string.find(name, keyword) then
             table.insert(r, coreServ)
         end
@@ -70,7 +84,7 @@ local function FilterServsBySummary(servs, keyword)
     local r = {}
     for coreServ in Each(servs) do
         local coreState = coreServ:GetCoreStates()
-        local summary = coreState:GetSummary()        
+        local summary = string.lower(coreState:GetSummary())
         if string.find(summary, keyword) then
             table.insert(r, coreServ)
         end
@@ -79,6 +93,7 @@ local function FilterServsBySummary(servs, keyword)
 end
 
 local function FilterServs(servs, searchType, keyword)
+    keyword = string.lower(keyword)
     if searchType == "title" then
         return FilterServsByName(servs, keyword)
     end
@@ -93,12 +108,15 @@ local function CalcTotalPageNumber(total)
     return pages
 end
 
-function GetSerializedServers(ps)
-    utils.ToNumber(str)
-    local pageNum = #ps > 0 and tonumber(ps[1]) or 1
-    local searchType = #ps > 1 and ps[2] or ""
-    local keyword = #ps > 2 and ps[3] or ""
-    -- print("params: ", pageNum, ", ", searchType, ", ", keyword)
+function GetAppVersion()
+    return Sys:GetAppVersion()
+end
+
+function GetSerializedServers(pageNum, searchType, keyword)
+    pageNum = tonumber(pageNum) or 1
+    searchType = searchType or ""
+    keyword = keyword or ""
+    -- sLog:Debug("params:", pageNum, searchType, keyword)
     local servs = Server:GetAllServers()
     local r = {
         ["pages"] = 0,
@@ -145,8 +163,8 @@ function GetSerializedServers(ps)
     return r
 end 
 
-function RestartServ(ps)
-    local uid = #ps > 0 and ps[1] or ""
+function RestartServ(uid)
+    uid = uid or ""
     local coreServ = utils.GetFirstServerWithUid(uid)
     if coreServ ~= nil then
         local coreCtrl = coreServ:GetCoreCtrl()
@@ -157,8 +175,8 @@ function RestartServ(ps)
     return false
 end
 
-function StopServ(ps)
-    local uid = #ps > 0 and ps[1] or ""
+function StopServ(uid)
+    uid = uid or ""
     local coreServ = utils.GetFirstServerWithUid(uid)
     if coreServ ~= nil then
         local coreCtrl = coreServ:GetCoreCtrl()
@@ -176,9 +194,9 @@ function GetSettings()
     return Misc:GetUserSettings()
 end
 
-function SaveServerConfig(ps)
-    local uid = #ps > 0 and ps[1] or ""
-    local config = #ps > 1 and ps[2] or ""
+function SaveServerConfig(uid, config)
+    uid = uid or ""
+    config = config or ""
     
     if string.isempty(config) then
         return "config is empty!"
@@ -194,8 +212,7 @@ function SaveServerConfig(ps)
     return nil
 end
 
-function GetServerConfig(ps)
-    local uid = #ps > 0 and ps[1] or ""
+function GetServerConfig(uid)
     local coreServ = utils.GetFirstServerWithUid(uid)
     if coreServ then
         local coreConfiger = coreServ:GetConfiger()
@@ -205,8 +222,7 @@ function GetServerConfig(ps)
     return nil
 end
 
-function DeleteServersByUids(ps)
-    local uids = #ps > 0 and ps[1] or {}
+function DeleteServersByUids(uids)
     if type(uids) ~= "table" then
         return false
     end
@@ -225,7 +241,7 @@ end
 local function Handler(req)
     local ok, j = pcall(json.decode, req)
     if not ok then
-        print("parse request error: ", req)
+        sLog:Debug("parse request error:", req)
         return Response(false, "parse request error")
     end
     
@@ -233,13 +249,18 @@ local function Handler(req)
     local f = _G[fn]
     local p = j["ps"]
     if type(f) ~= "function" then
-        return Response(false, "function not found")
+        local msg = "function not exists. " .. fn .. "()"
+        sLog:Debug(msg)
+        return Response(false, msg)
     end
     if type(p) ~= "table" then
-        return Response(false, "params is not a table")
+        local msg = "params is not a table"
+        sLog:Debug(msg)
+        return Response(false, msg)
     end
     
-    local ok, r = pcall(f, p)
+    sLog:Debug("Call", fn .. "(" .. table.concat(p, ",") .. ")")
+    local ok, r = pcall(f, unpack(p))
     if ok then
         return Response(true, r)
     end
