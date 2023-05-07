@@ -43,6 +43,23 @@ local function Response(ok, result)
     return json.encode(r)
 end
 
+local function GetterTags(coreState)
+    local t = {}
+    table.insert(t, coreState:GetStatus())
+    table.insert(t, coreState:GetMark())
+    table.insert(t, coreState:GetRemark())
+    table.insert(t, coreState:GetTag1())
+    table.insert(t, coreState:GetTag2())
+    table.insert(t, coreState:GetTag3())
+    local r = {}
+    for _, v in pairs(t) do
+        if not string.isempty(v) then
+            table.insert(r, v)
+        end
+    end
+    return r
+end
+
 local function GetterCoreServInfo(coreServ)
     local t = {}
     if coreServ == nil then
@@ -55,6 +72,8 @@ local function GetterCoreServInfo(coreServ)
     t["summary"] = coreState:GetSummary()
     t["uid"] = coreState:GetUid()
     t["on"] = coreCtrl:IsCoreRunning()
+    t["selected"] = false
+    t["tags"] = GetterTags(coreState)
     return t
 end
 
@@ -92,10 +111,34 @@ local function FilterServsBySummary(servs, keyword)
     return r
 end
 
+local function IsInTags(tags, keyword)
+    for _, tag in pairs(tags) do
+        local t = string.lower(tag)
+        if string.find(t, keyword) then
+            return true
+        end
+    end
+    return false
+end
+
+local function FilterServsByTags(servs, keyword)
+    local r = {}
+    for coreServ in Each(servs) do
+        local coreState = coreServ:GetCoreStates()
+        local tags = GetterTags(coreState)
+        if IsInTags(tags, keyword) then
+            table.insert(r, coreServ)
+        end
+    end
+    return r
+end
+
 local function FilterServs(servs, searchType, keyword)
     keyword = string.lower(keyword)
     if searchType == "title" then
         return FilterServsByName(servs, keyword)
+    elseif searchType == "tags" then
+        return FilterServsByTags(servs, keyword)
     end
     return FilterServsBySummary(servs, keyword)
 end

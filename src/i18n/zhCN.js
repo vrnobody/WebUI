@@ -13,6 +13,7 @@ export default {
     index: '序号',
     title: '标题',
     summary: '摘要',
+    tags: '标签',
     controls: '控制',
 
     jump: '跳转',

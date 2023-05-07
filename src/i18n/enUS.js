@@ -13,6 +13,7 @@ export default {
     index: 'Index',
     title: 'Title',
     summary: 'Summary',
+    tags: 'Tags',
     controls: 'Controls',
 
     search: 'Search',

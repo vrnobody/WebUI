@@ -60,9 +60,6 @@ function parseServerInfo(r) {
   pages = r.pages
   data.value = r.data
   selectedUids = {}
-  for (const serv of r.data) {
-    serv["selected"] = false
-  }
 }
 
 function selectAll() {
@@ -141,6 +138,7 @@ onMounted(() => {
       <div class="align-center index">{{ t('index') }}</div>
       <div class="align-center title">{{ t('title') }}</div>
       <div class="align-center">{{ t('summary') }}</div>
+      <div class="align-center tags">{{ t('tags') }}</div>
       <div class="align-center controls">{{ t('controls') }}</div>
     </div>
   </div>
@@ -158,6 +156,11 @@ onMounted(() => {
           <div class="align-center index">{{ serv['index'] }}</div>
           <div class="align-left title">{{ serv['name'] }}</div>
           <div class="align-left">{{ serv['summary'] }}</div>
+          <div class="align-left tags">
+            <div class="tags-content">
+              <div class="round-tag" v-for="tag in serv.tags">{{ tag }}</div>
+            </div>
+          </div>
           <div class="align-center controls">
             <button style="color: darkred;" @click="restartServ(serv.uid)">
               <i class="fa fa-play"></i>
@@ -175,6 +178,7 @@ onMounted(() => {
     <select v-model="searchType" class="search-selector">
       <option value="summary" selected>{{ t('summary') }}</option>
       <option value="title">{{ t('title') }}</option>
+      <option value="tags">{{ t('tags') }}</option>
       <option value="index">{{ t('index') }}</option>
     </select>
     <input v-model="searchKeyword" @keyup.enter="search" type="text" class="search-box" />
@@ -198,7 +202,6 @@ onMounted(() => {
   <div v-if="isJsonEditorVisible" class="json-editor-wrapper">
     <div class="editor-content-wrapper">
       <JsonEditorVue v-model="servConfig" class="editor-content" />
-      <!-- <textarea v-model="servConfig" class="editor-content"></textarea> -->
     </div>
     <div class="editor-buttons-wrapper">
       <button @click="saveServConfig">{{ t('save') }}</button>
@@ -334,9 +337,9 @@ onMounted(() => {
   background-color: orange;
   display: inline-block;
   color: white;
-  font-size: 0.8rem;
-  padding: 0.2rem 0.3rem;
-  border-radius: 0.2rem;
+  font-size: 0.6rem;
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.3rem;
   cursor: pointer;
 }
 
@@ -376,7 +379,32 @@ li:nth-child(odd) {
 }
 
 .title {
-  width: 30%;
+  width: 25%;
+}
+
+.tags {
+  width: 18%;
+}
+
+.tags-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: start;
+}
+
+.round-tag {
+  background-color: powderblue;
+  display: inline-block;
+  color: gray;
+  font-family: monospace;
+  font-size: 0.6rem;
+  padding: 0.05rem 0.3em;
+  border-radius: 0.2rem;
+  max-width: 5rem;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  margin: 0.1rem 0.2rem;
 }
 
 .controls {
