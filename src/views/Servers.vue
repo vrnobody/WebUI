@@ -19,6 +19,13 @@ let isJsonEditorVisible = ref(false)
 let servConfig = ref({})
 let curServUid = ""
 
+function GetSaveButtonText() {
+  if (curServUid && curServUid.length > 0) {
+    return t('save')
+  }
+  return t('add')
+}
+
 function editServ(uid) {
   curServUid = uid
   let next = function (config) {
@@ -31,6 +38,12 @@ function editServ(uid) {
     }
   }
   utils.call(next, "GetServerConfig", [uid])
+}
+
+function openEmptyEditor() {
+  curServUid = ""
+  servConfig.value = {}
+  isJsonEditorVisible.value = true
 }
 
 function closeEditor() {
@@ -192,6 +205,10 @@ onMounted(() => {
     <div class="tools-icons">
       <button @click="selectAll"><i class="fas fa-check-circle"></i></button>
       <button @click="invertSelection"><i class="fas fa-adjust"></i></button>
+    </div>
+    <div class="vertical-line"></div>
+    <div class="tools-icons">
+      <button @click="openEmptyEditor"><i class="fas fa-plus"></i></button>
       <button @click="deleteSelected"><i class="fas fa-trash-alt"></i></button>
     </div>
   </div>
@@ -206,7 +223,7 @@ onMounted(() => {
       <JsonEditorVue v-model="servConfig" class="editor-content" />
     </div>
     <div class="editor-buttons-wrapper">
-      <button @click="saveServConfig">{{ t('save') }}</button>
+      <button @click="saveServConfig">{{ GetSaveButtonText() }}</button>
       <button @click="closeEditor">{{ t('close') }}</button>
     </div>
   </div>

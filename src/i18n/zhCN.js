@@ -23,6 +23,7 @@ export default {
     server_ver_not_supported: `server.lua v{curVer}不受支持！\n请更新到v{expectedVer}。`,
     please_update_app: `请更新V2RayGCon v{curVer}至v{expectedVer}+`,
 
+    add: '添加',
     save: "保存",
     close: "关闭",
 

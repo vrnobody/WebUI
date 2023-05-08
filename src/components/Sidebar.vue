@@ -58,7 +58,7 @@ onMounted(() => {
   <div class="app-name">V2RayGCon</div>
   <nav>
     <RouterLink to="/"><i class="fas fa-server"></i> {{ t('servers') }}</RouterLink>
-    <RouterLink to="/import"><i class="fas fa-plus-square"></i> {{ t('import') }}</RouterLink>
+    <RouterLink to="/import"><i class="fas fa-file-import"></i> {{ t('import') }}</RouterLink>
     <RouterLink to="/settings"><i class="fas fa-cog"></i> {{ t('settings') }}</RouterLink>
     <RouterLink to="/about"><i class="fas fa-info-circle"></i> {{ t('about') }}</RouterLink>
   </nav>

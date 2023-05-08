@@ -1,3 +1,4 @@
+-- args用法: loadfile("./path/to/server.lua")(url, logLevel)
 local args = {...}
 
 -- 如果4000端口已在使用，可修改为其他端口
@@ -33,7 +34,11 @@ local function Concat(t, sep)
     sep = sep or " "
     local r = {}
     for _, v in pairs(t) do
-        table.insert(r, tostring(v))
+        local p = tostring(v)
+        if p and string.len(p) > 15 then
+            p = string.sub(p, 1, 15) .. "..."
+        end
+        table.insert(r, p)
     end
     return table.concat(r, sep)
 end
@@ -246,6 +251,15 @@ function SaveServerConfig(uid, config)
     
     if string.isempty(config) then
         return "config is empty!"
+    end
+    
+    if string.isempty(uid) then
+        local ok = Server:Add(config)
+        if not ok then
+            return "add server failed!"
+        else
+            return nil
+        end
     end
     
     local coreServ = utils.GetFirstServerWithUid(uid)
