@@ -55,6 +55,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <div class="app-name">V2RayGCon</div>
   <nav>
     <RouterLink to="/"><i class="fas fa-server"></i> {{ t('servers') }}</RouterLink>
     <RouterLink to="/import"><i class="fas fa-plus-square"></i> {{ t('import') }}</RouterLink>
@@ -64,6 +65,18 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.app-name {
+  height: 3rem;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* float: left; */
+  /* background-color: #333; */
+  color: whitesmoke;
+  font-size: 1.5em;
+}
+
 nav a.router-link-exact-active {
   background-color: #444;
 }

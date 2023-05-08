@@ -136,8 +136,8 @@ onMounted(() => {
       <div class="align-center status">{{ t('status') }}</div>
       <div class="align-center server-selector">{{ t('select') }}</div>
       <div class="align-center index">{{ t('index') }}</div>
-      <div class="align-center title">{{ t('title') }}</div>
-      <div class="align-center">{{ t('summary') }}</div>
+      <div class="align-center">{{ t('title') }}</div>
+      <div class="align-center summary">{{ t('summary') }}</div>
       <div class="align-center tags">{{ t('tags') }}</div>
       <div class="align-center controls">{{ t('controls') }}</div>
     </div>
@@ -154,8 +154,8 @@ onMounted(() => {
             <input type="checkbox" v-model="serv.selected" />
           </div>
           <div class="align-center index">{{ serv['index'] }}</div>
-          <div class="align-left title">{{ serv['name'] }}</div>
-          <div class="align-left">{{ serv['summary'] }}</div>
+          <div class="align-left">{{ serv['name'] }}</div>
+          <div class="align-left summary">{{ serv['summary'] }}</div>
           <div class="align-left tags">
             <div class="tags-content">
               <div class="round-tag" v-for="tag in serv.tags">{{ tag }}</div>
@@ -174,20 +174,22 @@ onMounted(() => {
     </ul>
     <div class="bottom-blank"></div>
   </div>
-  <div class="searcher">
-    <select v-model="searchType" class="search-selector">
-      <option value="summary" selected>{{ t('summary') }}</option>
-      <option value="title">{{ t('title') }}</option>
-      <option value="tags">{{ t('tags') }}</option>
-      <option value="index">{{ t('index') }}</option>
-    </select>
-    <input v-model="searchKeyword" @keyup.enter="search" type="text" class="search-box" />
-    <button @click="search" class="search-button">
-      <i class="fas fa-search"></i>
-      {{ t('search') }}
-    </button>
+  <div class="tools-strip">
+    <div class="searcher">
+      <select v-model="searchType" class="search-selector">
+        <option value="summary" selected>{{ t('summary') }}</option>
+        <option value="title">{{ t('title') }}</option>
+        <option value="tags">{{ t('tags') }}</option>
+        <option value="index">{{ t('index') }}</option>
+      </select>
+      <input v-model="searchKeyword" @keyup.enter="search" type="text" class="search-box" />
+      <button @click="search" class="search-button">
+        <i class="fas fa-search"></i>
+        {{ t('search') }}
+      </button>
+    </div>
     <div class="vertical-line"></div>
-    <div class="tools-box">
+    <div class="tools-icons">
       <button @click="selectAll"><i class="fas fa-check-circle"></i></button>
       <button @click="invertSelection"><i class="fas fa-adjust"></i></button>
       <button @click="deleteSelected"><i class="fas fa-trash-alt"></i></button>
@@ -210,12 +212,53 @@ onMounted(() => {
   </div>
 </template>
 
+
 <style scoped>
-.tools-box button {
+@media (max-width: 600px) {
+  body .summary {
+    display: none;
+  }
+
+  body .searcher {
+    display: none;
+  }
+
+}
+
+
+@media (max-width: 800px) {
+
+  body .tags {
+    display: none;
+  }
+
+  body .header-wrapper {
+    left: 0rem;
+  }
+
+  body .tools-strip {
+    left: 2rem;
+  }
+
+  body .search-selector {
+    width: 5rem;
+  }
+
+  body .search-box {
+    width: 10rem;
+  }
+
+  body .json-editor-wrapper {
+    left: 0rem;
+  }
+}
+
+
+.tools-icons button {
   margin: 0rem 0.2rem;
 }
 
-.tools-box {
+.tools-icons {
   font-size: 1.5rem;
   margin: 0rem;
 }
@@ -256,7 +299,7 @@ onMounted(() => {
   background-color: #666;
   opacity: 0.95;
   position: fixed;
-  z-index: 300;
+  z-index: 500;
   display: flex;
   flex-direction: column;
   right: 0rem;
@@ -273,12 +316,12 @@ onMounted(() => {
 
 .search-selector {
   color: #777;
-  width: 7rem;
+  width: 6rem;
   display: inline-block;
 }
 
 .search-box {
-  width: 18rem;
+  width: 10rem;
   margin: 0rem 1rem;
   display: inline-block;
 }
@@ -307,6 +350,10 @@ onMounted(() => {
 }
 
 .searcher {
+  display: flex;
+}
+
+.tools-strip {
   top: 0rem;
   height: 3rem;
   left: 14rem;
@@ -378,8 +425,8 @@ li:nth-child(odd) {
   width: 4rem;
 }
 
-.title {
-  width: 25%;
+.summary {
+  width: 28%;
 }
 
 .tags {

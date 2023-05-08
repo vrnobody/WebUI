@@ -14,7 +14,6 @@ function switchLang(lang) {
 </script>
 
 <template>
-  <div class="app-name">V2RayGCon</div>
   <div class="tools-box">
     <ul>
       <li>
@@ -46,21 +45,6 @@ li a {
   margin: 0rem;
   padding: 0rem;
   color: gray;
-}
-
-.app-name {
-  flex-basis: 14rem;
-  flex-grow: 0;
-  flex-shrink: 0;
-  height: 100%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  float: left;
-  background-color: #333;
-  color: whitesmoke;
-  font-size: 1.5em;
-  font-family: Segoe UI, monospace;
 }
 
 .tools-box {

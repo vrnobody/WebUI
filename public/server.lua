@@ -9,7 +9,8 @@ local Logger = require('lua.modules.logger')
 
 local version = "0.0.1.1"
 local pageSize = 50
-local logLevel = Logger.logLevels.Debug
+
+local logLevel = #args > 0 and Logger.logLevels.Info or Logger.logLevels.Debug
 
 -- code
 local haServ = require('lua.modules.httpServ').new()
@@ -17,13 +18,6 @@ local json = require('lua.libs.json')
 local utils = require('lua.libs.utils')
 
 local sLog = Logger.new(nil, logLevel)
-
-local function unpack(t, i)
-    i = i or 1
-    if t[i] ~= nil then
-        return t[i], unpack(t, i + 1)
-    end
-end
 
 local function Clamp(v, min, max)
     if v < min then
@@ -33,6 +27,15 @@ local function Clamp(v, min, max)
         return max
     end
     return v
+end
+
+local function Concat(t, sep)
+    sep = sep or " "
+    local r = {}
+    for _, v in pairs(t) do
+        table.insert(r, tostring(v))
+    end
+    return table.concat(r, sep)
 end
 
 local function Response(ok, result)
@@ -302,8 +305,8 @@ local function Handler(req)
         return Response(false, msg)
     end
     
-    sLog:Debug("Call", fn .. "(" .. table.concat(p, ",") .. ")")
-    local ok, r = pcall(f, unpack(p))
+    sLog:Debug("Call", fn .. "(" .. Concat(p, ", ") .. ")")
+    local ok, r = pcall(f, table.unpack(p))
     if ok then
         return Response(true, r)
     end

@@ -46,6 +46,12 @@ function importShareLinks() {
 </template>
 
 <style scoped>
+@media (max-width: 800px) {
+  body .main-wrapper {
+    left: 0rem;
+  }
+}
+
 .mark {
   background-color: #fafafa;
   padding: 0.2rem 0.5rem;
