@@ -223,11 +223,12 @@ onMounted(() => {
         <option value="tags">{{ t('tags') }}</option>
         <option value="index">{{ t('index') }}</option>
       </select>
-      <input v-model="searchKeyword" @keyup.enter="search" type="text" class="search-box" />
-      <button @click="search" class="search-button">
-        <i class="fas fa-search"></i>
-        {{ t('search') }}
-      </button>
+      <div style="position:relative;">
+        <input v-model="searchKeyword" @keyup.enter="search" type="text" class="search-box" :placeholder="t('search')" />
+        <div class="search-icon">
+          <i class="fas fa-search"></i>
+        </div>
+      </div>
     </div>
     <div class="vertical-line"></div>
     <div class="tools-icons">
@@ -257,8 +258,15 @@ onMounted(() => {
   </div>
 </template>
 
-
 <style scoped>
+.search-icon {
+  position: absolute;
+  margin: 0rem;
+  right: 1.5rem;
+  top: 0rem;
+  color: lightgray;
+}
+
 .ghost {
   opacity: 0.8;
   background: #666;
@@ -374,12 +382,6 @@ onMounted(() => {
   width: 10rem;
   margin: 0rem 1rem;
   display: inline-block;
-}
-
-.search-button {
-  display: inline-block;
-  padding: 0rem 0.5rem;
-  margin: 0rem;
 }
 
 .jump-button {

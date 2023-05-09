@@ -49,7 +49,7 @@ import CompSidebar from './components/Sidebar.vue'
   visibility: hidden;
   position: fixed;
   z-index: 400;
-  left: 0.7rem;
+  left: 0.6rem;
   top: 1.25rem;
   display: flex;
   cursor: pointer;
@@ -65,7 +65,7 @@ import CompSidebar from './components/Sidebar.vue'
 .menu-button::before,
 .menu-button::after {
   display: block;
-  background-color: lightgray;
+  background-color: #333;
   position: absolute;
   height: 0.4rem;
   width: 1.8rem;
@@ -84,15 +84,17 @@ import CompSidebar from './components/Sidebar.vue'
 
 #menu-toggle:checked+.menu-button-container .menu-button::before {
   margin-top: 0px;
+  background-color: whitesmoke;
   transform: rotate(405deg);
 }
 
 #menu-toggle:checked+.menu-button-container .menu-button {
-  background: rgba(255, 255, 255, 0);
+  background: none;
 }
 
 #menu-toggle:checked+.menu-button-container .menu-button::after {
   margin-top: 0px;
+  background-color: whitesmoke;
   transform: rotate(-405deg);
 }
 
