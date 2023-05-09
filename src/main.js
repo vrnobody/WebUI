@@ -6,7 +6,6 @@ import router from './router'
 import i18n from './i18n/config.js'
 
 import './assets/main.css'
-import './assets/jsoneditor.css'
 import "@hennge/vue3-pagination/dist/vue3-pagination.css";
 
 const app = createApp(App)

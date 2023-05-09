@@ -2,7 +2,6 @@
 import { useI18n } from '@yangss/vue3-i18n'
 import utils from '../misc/utils.js'
 import { onMounted, ref, defineAsyncComponent } from 'vue'
-import JsonEditorVue from 'json-editor-vue3'
 import { VueDraggableNext } from 'vue-draggable-next'
 
 const VPagination = defineAsyncComponent(() => import("@hennge/vue3-pagination"))
@@ -18,7 +17,7 @@ let searchKeyword = ref("")
 let data = ref([])
 
 let isJsonEditorVisible = ref(false)
-let servConfig = ref({})
+let servConfig = ref("")
 let curServUid = ""
 
 function GenSaveButtonText() {
@@ -64,8 +63,9 @@ function editServConfig(uid) {
   curServUid = uid
   let next = function (config) {
     try {
-      let j = JSON.parse(config)
-      servConfig.value = j
+      const j = JSON.parse(config)
+      const s = JSON.stringify(j, null, 4)
+      servConfig.value = s
       isJsonEditorVisible.value = true
     } catch (err) {
       Swal.fire(err.toString())
@@ -76,7 +76,7 @@ function editServConfig(uid) {
 
 function openEmptyJsonEditor() {
   curServUid = ""
-  servConfig.value = {}
+  servConfig.value = "{}"
   isJsonEditorVisible.value = true
 }
 
@@ -95,7 +95,7 @@ function saveServConfig() {
   }
 
   try {
-    const config = JSON.stringify(servConfig.value)
+    const config = servConfig.value
     const uid = curServUid
     utils.call(next, "SaveServerConfig", [uid, config])
   } catch (err) {
@@ -196,6 +196,42 @@ function servOrderChanged(evt) {
   utils.call(next, "ChangeServIndex", [curServ.uid, idx])
 }
 
+function insertAtCursor(el, text) {
+  text = text || '';
+  if (document.selection) {
+    // IE
+    el.focus();
+    var sel = document.selection.createRange();
+    sel.text = text;
+  } else if (el.selectionStart || el.selectionStart === 0) {
+    // Others
+    var startPos = el.selectionStart;
+    var endPos = el.selectionEnd;
+    el.value = el.value.substring(0, startPos) +
+      text +
+      el.value.substring(endPos, el.value.length);
+    el.selectionStart = startPos + text.length;
+    el.selectionEnd = startPos + text.length;
+  } else {
+    el.value += text;
+  }
+
+  // vue will not auto-update ref()
+  servConfig.value = el.value;
+};
+
+function bindJsonEditorKeydownEvent(e) {
+  const editor = e.target
+  const TABKEY = 9;
+  if (e.keyCode == TABKEY) {
+    insertAtCursor(editor, "    ");
+    if (e.preventDefault) {
+      e.preventDefault();
+    }
+    return false;
+  }
+}
+
 onMounted(() => {
   refresh()
 })
@@ -226,7 +262,9 @@ onMounted(() => {
               <input type="checkbox" v-model="serv.selected" />
             </div>
             <div class="align-center index">{{ serv['index'] }}</div>
-            <div class="align-left">{{ serv['name'] }}</div>
+            <div class="align-left">
+              <p style="white-space: pre-wrap">{{ serv['name'] }}</p>
+            </div>
             <div class="align-left summary">{{ serv['summary'] }}</div>
             <div class="align-left tags">
               <div class="tags-content">
@@ -301,7 +339,7 @@ onMounted(() => {
   </div>
   <div v-if="isJsonEditorVisible" class="editor-wrapper">
     <div class="editor-content-wrapper">
-      <JsonEditorVue v-model="servConfig" class="editor-content" />
+      <textarea v-on:keydown="bindJsonEditorKeydownEvent($event)" class="editor-content" v-model="servConfig" />
     </div>
     <div class="editor-buttons-wrapper">
       <button @click="saveServConfig">{{ GenSaveButtonText() }}</button>
