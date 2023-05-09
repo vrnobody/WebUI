@@ -159,6 +159,47 @@ local function CalcTotalPageNumber(total)
     return pages
 end
 
+function GetServSettings(uid)
+    local coreServ = utils.GetFirstServerWithUid(uid)
+    if not coreServ then
+        return nil
+    end
+    local coreState = coreServ:GetCoreStates()
+    local r = {}
+    r["index"] = coreState:GetIndex()
+    r["name"] =coreState:GetName()
+    r["mark"] = coreState:GetMark()
+    r["remark"] = coreState:GetRemark()
+    r["tag1"] = coreState:GetTag1()
+    r["tag2"] = coreState:GetTag2()
+    r["tag3"] = coreState:GetTag3()
+    return r
+end
+
+function SaveServSettings(uid, s)
+    local coreServ = utils.GetFirstServerWithUid(uid)
+    if not coreServ then
+        return false
+    end
+    local coreState = coreServ:GetCoreStates()
+    
+    coreState:SetName(s["name"])
+    local coreConfiger = coreServ:GetConfiger()
+    coreConfiger:UpdateSummary() -- fix name is empty bug
+    
+    coreState:SetMark(s["mark"])
+    coreState:SetRemark(s["remark"])
+    coreState:SetMark(s["mark"])
+    coreState:SetTag1(s["tag1"])
+    coreState:SetTag2(s["tag2"])
+    coreState:SetTag3(s["tag3"])
+    
+    coreState:SetIndex(tonumber(s["index"]) or 1)
+    Server:ResetIndexes()
+    
+    return true
+end
+
 function ChangeServIndex(uid, idx)
     local coreServ = utils.GetFirstServerWithUid(uid)
     if not coreServ then

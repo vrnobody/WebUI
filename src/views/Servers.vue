@@ -8,6 +8,7 @@ import { VueDraggableNext } from 'vue-draggable-next'
 const VPagination = defineAsyncComponent(() => import("@hennge/vue3-pagination"))
 
 const { _, t } = useI18n()
+const servSettingKeys = ["index", "name", "mark", "remark", "tag1", "tag2", "tag3"]
 
 let curPageNum = ref(1)
 let pages = ref(15)
@@ -20,14 +21,46 @@ let isJsonEditorVisible = ref(false)
 let servConfig = ref({})
 let curServUid = ""
 
-function GetSaveButtonText() {
+function GenSaveButtonText() {
   if (curServUid && curServUid.length > 0) {
     return t('save')
   }
   return t('add')
 }
 
-function editServ(uid) {
+let isServSettingsEditorVisible = ref(false)
+let servSettings = ref({})
+
+function editServSettings(uid) {
+  curServUid = uid
+  const next = function (tags) {
+    if (tags) {
+      servSettings.value = tags
+      isServSettingsEditorVisible.value = true
+      return
+    }
+    Swal.fire(err.toString())
+  }
+  utils.call(next, "GetServSettings", [uid])
+}
+
+function saveServSettings() {
+  const next = function (ok) {
+    if (ok) {
+      closeServSettingsEditor()
+      refresh()
+      return
+    }
+    Swal.fire(t('failed'))
+  }
+  utils.call(next, "SaveServSettings", [curServUid, servSettings.value])
+}
+
+function closeServSettingsEditor() {
+  isServSettingsEditorVisible.value = false
+}
+
+function editServConfig(uid) {
   curServUid = uid
   let next = function (config) {
     try {
@@ -41,13 +74,13 @@ function editServ(uid) {
   utils.call(next, "GetServerConfig", [uid])
 }
 
-function openEmptyEditor() {
+function openEmptyJsonEditor() {
   curServUid = ""
   servConfig.value = {}
   isJsonEditorVisible.value = true
 }
 
-function closeEditor() {
+function closeJsonEditor() {
   isJsonEditorVisible.value = false
 }
 
@@ -153,7 +186,6 @@ function servOrderChanged(evt) {
   } else {
     idx = servs[newIndex + 1].index - 0.05
   }
-  const curIndex = curServ.index
   const next = function (ok) {
     if (!ok) {
       Swal.fire(t('error'))
@@ -198,14 +230,17 @@ onMounted(() => {
             <div class="align-left summary">{{ serv['summary'] }}</div>
             <div class="align-left tags">
               <div class="tags-content">
-                <div class="round-tag" v-for="tag in serv.tags">{{ tag }}</div>
+                <div v-if="serv.tags && serv.tags.length < 1" class="add-tags" @click="editServSettings(serv.uid)">
+                  <i class="fas fa-tags"></i>
+                </div>
+                <div class="round-tag" v-for="tag in serv.tags" @click="editServSettings(serv.uid)">{{ tag }}</div>
               </div>
             </div>
             <div class="align-center controls">
               <button style="color: darkred;" @click="restartServ(serv.uid)">
                 <i class="fa fa-play"></i>
               </button>
-              <button style="color: black" @click="editServ(serv.uid)">
+              <button style="color: black" @click="editServConfig(serv.uid)">
                 <i class="fas fa-edit"></i>
               </button>
             </div>
@@ -237,7 +272,7 @@ onMounted(() => {
     </div>
     <div class="vertical-line"></div>
     <div class="tools-icons">
-      <button @click="openEmptyEditor"><i class="fas fa-plus"></i></button>
+      <button @click="openEmptyJsonEditor"><i class="fas fa-plus"></i></button>
       <button @click="deleteSelected"><i class="fas fa-trash-alt"></i></button>
     </div>
   </div>
@@ -247,18 +282,58 @@ onMounted(() => {
     <input v-model="curPageNum" class="text-current-page-number" @keyup.enter="refresh" />
     <button @click="refresh" class="jump-button">{{ t('jump') }}</button>
   </div>
-  <div v-if="isJsonEditorVisible" class="json-editor-wrapper">
+  <div v-if="isServSettingsEditorVisible" class="editor-wrapper">
+    <div class="editor-content-wrapper" style="background-color: darkgray; padding: 1rem;">
+      <div v-for="key in servSettingKeys">
+        <div class="serv-setting-line">
+          <div class="serv-setting-key">{{ key }}</div>
+          <div class="serv-setting-value">
+            <input type="text" v-model="servSettings[key]" class="serv-setting-text-box" />
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="editor-buttons-wrapper">
+      <button @click="saveServSettings">{{ t('save') }}</button>
+      <button @click="closeServSettingsEditor">{{ t('close') }}</button>
+    </div>
+  </div>
+  <div v-if="isJsonEditorVisible" class="editor-wrapper">
     <div class="editor-content-wrapper">
       <JsonEditorVue v-model="servConfig" class="editor-content" />
     </div>
     <div class="editor-buttons-wrapper">
-      <button @click="saveServConfig">{{ GetSaveButtonText() }}</button>
-      <button @click="closeEditor">{{ t('close') }}</button>
+      <button @click="saveServConfig">{{ GenSaveButtonText() }}</button>
+      <button @click="closeJsonEditor">{{ t('close') }}</button>
     </div>
   </div>
 </template>
 
 <style scoped>
+.serv-setting-line {
+  height: 2.2rem;
+  display: flex;
+  align-items: center;
+}
+
+.serv-setting-key {
+  width: 6rem;
+  padding: 0rem 1rem;
+
+}
+
+.serv-setting-value {
+  display: flex;
+  flex-grow: 1;
+  padding: 0rem 1rem;
+
+}
+
+.serv-setting-text-box {
+  flex-grow: 1;
+}
+
 .search-icon {
   position: absolute;
   margin: 0rem;
@@ -306,7 +381,7 @@ onMounted(() => {
     width: 10rem;
   }
 
-  body .json-editor-wrapper {
+  body .editor-wrapper {
     left: 0rem;
   }
 }
@@ -353,7 +428,7 @@ onMounted(() => {
   height: 92%;
 }
 
-.json-editor-wrapper {
+.editor-wrapper {
   background-color: #666;
   opacity: 0.95;
   position: fixed;
@@ -369,7 +444,7 @@ onMounted(() => {
 
 .controls button {
   font-size: 1.2rem;
-  margin: 0rem 0.3rem;
+  margin: 0rem 0.2rem;
 }
 
 .search-selector {
@@ -379,7 +454,7 @@ onMounted(() => {
 }
 
 .search-box {
-  width: 10rem;
+  width: 12rem;
   margin: 0rem 1rem;
   display: inline-block;
 }
@@ -457,6 +532,13 @@ li:nth-child(odd) {
   background-color: #e6e6e6;
 }
 
+.add-tags {
+  font-size: 1rem;
+  padding: 0rem 0.3rem;
+  cursor: pointer;
+  color: cornflowerblue;
+}
+
 .server-list {
   cursor: grab;
   flex-grow: 1;
@@ -493,6 +575,7 @@ li:nth-child(odd) {
 }
 
 .round-tag {
+  cursor: pointer;
   background-color: powderblue;
   display: inline-block;
   color: gray;
@@ -508,7 +591,7 @@ li:nth-child(odd) {
 }
 
 .controls {
-  width: 4.5rem;
+  width: 4rem;
 }
 
 .align-left {
