@@ -33,4 +33,8 @@ export default {
     serversDeleted: '服务器已删除！',
     deleteFailed: '删除失败!',
     noServerSelected: '没选中任何服务器！',
+
+    success: '成功',
+    failed: '失败',
+    error: '错误',
 }

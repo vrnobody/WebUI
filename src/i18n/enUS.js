@@ -31,4 +31,8 @@ export default {
     serversDeleted: 'Servers deleted.',
     deleteFailed: 'Delete failed!',
     noServerSelected: 'No server selected!',
+
+    success: 'Success',
+    failed: 'Failed',
+    error: 'Error',
 }

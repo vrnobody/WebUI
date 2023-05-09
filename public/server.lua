@@ -159,6 +159,17 @@ local function CalcTotalPageNumber(total)
     return pages
 end
 
+function ChangeServIndex(uid, idx)
+    local coreServ = utils.GetFirstServerWithUid(uid)
+    if not coreServ then
+        return false
+    end
+    local coreState = coreServ:GetCoreStates()
+    coreState:SetIndex(idx)
+    Server:ResetIndexes()
+    return true
+end
+
 function GetAppVersion()
     return Sys:GetAppVersion()
 end

@@ -3,6 +3,7 @@ import { useI18n } from '@yangss/vue3-i18n'
 import utils from '../misc/utils.js'
 import { onMounted, ref, defineAsyncComponent } from 'vue'
 import JsonEditorVue from 'json-editor-vue3'
+import { VueDraggableNext } from 'vue-draggable-next'
 
 const VPagination = defineAsyncComponent(() => import("@hennge/vue3-pagination"))
 
@@ -138,6 +139,31 @@ function refresh() {
   ])
 }
 
+function servOrderChanged(evt) {
+  const servs = data.value
+  const maxIndex = servs.length - 1
+  if (maxIndex < 1) {
+    return
+  }
+  const newIndex = evt.moved.newIndex
+  const curServ = servs[newIndex]
+  let idx = -1
+  if (newIndex >= maxIndex) {
+    idx = servs[newIndex - 1].index + 0.05
+  } else {
+    idx = servs[newIndex + 1].index - 0.05
+  }
+  const curIndex = curServ.index
+  const next = function (ok) {
+    if (!ok) {
+      Swal.fire(t('error'))
+    }
+    refresh()
+  }
+
+  utils.call(next, "ChangeServIndex", [curServ.uid, idx])
+}
+
 onMounted(() => {
   refresh()
 })
@@ -158,32 +184,34 @@ onMounted(() => {
   <div class="main-div">
     <div class="head-blank"></div>
     <ul>
-      <li v-for="serv in data">
-        <div class="server-list">
-          <div class="align-center status">
-            <div v-if="serv.on" class="round-div" @click="stopServ(serv.uid)">ON</div>
-          </div>
-          <div class="align-center server-selector">
-            <input type="checkbox" v-model="serv.selected" />
-          </div>
-          <div class="align-center index">{{ serv['index'] }}</div>
-          <div class="align-left">{{ serv['name'] }}</div>
-          <div class="align-left summary">{{ serv['summary'] }}</div>
-          <div class="align-left tags">
-            <div class="tags-content">
-              <div class="round-tag" v-for="tag in serv.tags">{{ tag }}</div>
+      <VueDraggableNext ghost-class="ghost" :list="data" @change="servOrderChanged">
+        <li v-for="serv in data" :key="serv.uid">
+          <div class="server-list">
+            <div class="align-center status">
+              <div v-if="serv.on" class="round-div" @click="stopServ(serv.uid)">ON</div>
+            </div>
+            <div class="align-center server-selector">
+              <input type="checkbox" v-model="serv.selected" />
+            </div>
+            <div class="align-center index">{{ serv['index'] }}</div>
+            <div class="align-left">{{ serv['name'] }}</div>
+            <div class="align-left summary">{{ serv['summary'] }}</div>
+            <div class="align-left tags">
+              <div class="tags-content">
+                <div class="round-tag" v-for="tag in serv.tags">{{ tag }}</div>
+              </div>
+            </div>
+            <div class="align-center controls">
+              <button style="color: darkred;" @click="restartServ(serv.uid)">
+                <i class="fa fa-play"></i>
+              </button>
+              <button style="color: black" @click="editServ(serv.uid)">
+                <i class="fas fa-edit"></i>
+              </button>
             </div>
           </div>
-          <div class="align-center controls">
-            <button style="color: darkred;" @click="restartServ(serv.uid)">
-              <i class="fa fa-play"></i>
-            </button>
-            <button style="color: black" @click="editServ(serv.uid)">
-              <i class="fas fa-edit"></i>
-            </button>
-          </div>
-        </div>
-      </li>
+        </li>
+      </VueDraggableNext>
     </ul>
     <div class="bottom-blank"></div>
   </div>
@@ -231,6 +259,11 @@ onMounted(() => {
 
 
 <style scoped>
+.ghost {
+  opacity: 0.8;
+  background: #666;
+}
+
 @media (max-width: 600px) {
   body .summary {
     display: none;
@@ -423,6 +456,7 @@ li:nth-child(odd) {
 }
 
 .server-list {
+  cursor: grab;
   flex-grow: 1;
   font-size: 1rem;
   display: table;
