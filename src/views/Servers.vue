@@ -19,6 +19,8 @@ let data = ref([])
 let isJsonEditorVisible = ref(false)
 let servConfig = ref("")
 let curServUid = ""
+let isServSettingsEditorVisible = ref(false)
+let servSettings = ref({})
 
 function GenSaveButtonText() {
   if (curServUid && curServUid.length > 0) {
@@ -27,8 +29,7 @@ function GenSaveButtonText() {
   return t('add')
 }
 
-let isServSettingsEditorVisible = ref(false)
-let servSettings = ref({})
+
 
 function editServSettings(uid) {
   curServUid = uid
@@ -106,7 +107,6 @@ function saveServConfig() {
 function parseServerInfo(r) {
   pages = r.pages
   data.value = r.data
-  selectedUids = {}
 }
 
 function selectAll() {
@@ -330,7 +330,6 @@ onMounted(() => {
           </div>
         </div>
       </div>
-
     </div>
     <div class="editor-buttons-wrapper">
       <button @click="saveServSettings">{{ t('save') }}</button>

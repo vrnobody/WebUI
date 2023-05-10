@@ -37,4 +37,13 @@ export default {
     success: '成功',
     failed: '失败',
     error: '错误',
+
+    // server errors
+    sendReqError: '发送请求错误！',
+    parseReqError: '解释请求错误！',
+    parseRespError: '解释回复错误！',
+    funcNotExists: '函数不存在！',
+    paramIsNotTable: '参数不是一个列表！',
+    callFuncError: '执行函数时发生错误！',
+    callbackFuncError: '回调函数错误！',
 }

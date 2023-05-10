@@ -35,4 +35,14 @@ export default {
     success: 'Success',
     failed: 'Failed',
     error: 'Error',
+
+    // server errors
+    sendReqError: 'Send request error!',
+    parseReqError: 'Parse request error!',
+    parseRespError: 'Parse response error!',
+    funcNotExists: 'Function not exists!',
+    paramIsNotTable: 'Param is not a table!',
+    callFuncError: 'Call function error!',
+    callbackFuncError: 'Callback function error!',
+
 }

@@ -2,7 +2,14 @@
 import { RouterView } from 'vue-router'
 import CompHeader from './components/Header.vue'
 import CompSidebar from './components/Sidebar.vue'
+import { useI18n } from '@yangss/vue3-i18n'
+import { onBeforeMount } from 'vue'
+import utils from './misc/utils'
 
+onBeforeMount(() => {
+  const { _, t } = useI18n()
+  utils.init(t)
+})
 </script>
 
 <template>

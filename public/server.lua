@@ -43,10 +43,11 @@ local function Concat(t, sep)
     return table.concat(r, sep)
 end
 
-local function Response(ok, result)
+local function Response(ok, result, ...)
     local r = {
         ["ok"] = ok,
         ["r"] = result,
+        ["ps"] = { ... },
     }
     return json.encode(r)
 end
@@ -354,29 +355,29 @@ local function Handler(req)
     local ok, j = pcall(json.decode, req)
     if not ok then
         sLog:Debug("parse request error:", req)
-        return Response(false, "parse request error")
+        return Response(false, "parseReqError")
     end
     
     local fn = j["fn"]
     local f = _G[fn]
     local p = j["ps"]
     if type(f) ~= "function" then
-        local msg = "function not exists. " .. fn .. "()"
-        sLog:Debug(msg)
-        return Response(false, msg)
+        local fName = fn .. "()"
+        sLog:Debug("function not exists:", fName)
+        return Response(false, "funcNotExists", fName)
     end
     if type(p) ~= "table" then
-        local msg = "params is not a table"
-        sLog:Debug(msg)
-        return Response(false, msg)
+        sLog:Debug("param is not a table")
+        return Response(false, "paramIsNotTable")
     end
     
-    sLog:Debug("Call", fn .. "(" .. Concat(p, ", ") .. ")")
+    local fFullName = fn .. "(" .. Concat(p, ", ") .. ")"
+    sLog:Debug("Call", fFullName)
     local ok, r = pcall(f, table.unpack(p))
     if ok then
         return Response(true, r)
     end
-    return Response(false, "call " .. fn .. " error: " .. r)
+    return Response(false, "callFuncError", fFullName, r)
 end
 
 local function Main()
