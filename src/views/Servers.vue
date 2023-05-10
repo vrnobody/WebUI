@@ -238,47 +238,55 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="header-wrapper">
-    <div class="header">
-      <div class="align-center status">{{ t('status') }}</div>
-      <div class="align-center server-selector">{{ t('select') }}</div>
-      <div class="align-center index">{{ t('index') }}</div>
-      <div class="align-center">{{ t('title') }}</div>
-      <div class="align-center summary">{{ t('summary') }}</div>
-      <div class="align-center tags">{{ t('tags') }}</div>
-      <div class="align-center controls">{{ t('controls') }}</div>
+  <div class="left-0 md:left-56 flex fixed top-12 right-0 grow z-10">
+    <div class="grow bg-neutral-200 text-xs text-neutral-400 table h-6">
+      <div class="table-cell py-0 px-1 align-middle text-center w-12">{{ t('status') }}</div>
+      <div class="table-cell py-0 px-1 align-middle text-center w-12">{{ t('select') }}</div>
+      <div class="table-cell py-0 px-1 align-middle text-center w-16">{{ t('index') }}</div>
+      <div class="table-cell py-0 px-1 align-middle text-center">{{ t('title') }}</div>
+      <div class="table-cell py-0 px-1 align-middle text-center hidden sm:table-cell w-60 lg:w-64">{{ t('summary') }}
+      </div>
+      <div class="table-cell py-0 px-1 align-middle text-center hidden lg:table-cell w-56">{{ t('tags') }}</div>
+      <div class="table-cell py-0 px-1 align-middle text-center w-16">{{ t('controls') }}</div>
     </div>
   </div>
-  <div class="main-div">
-    <div class="head-blank"></div>
+  <div class="flex flex-col">
+    <div class="block w-full h-6"></div>
     <ul>
       <VueDraggableNext ghost-class="ghost" :list="data" @change="servOrderChanged">
-        <li v-for="serv in data" :key="serv.uid">
-          <div class="server-list">
-            <div class="align-center status">
-              <div v-if="serv.on" class="round-div" @click="stopServ(serv.uid)">ON</div>
+        <li v-for="serv in data" :key="serv.uid" class="odd:bg-stone-300">
+          <div class="cursor-grab grow text-base table w-full h-8">
+            <div class="table-cell py-0 px-1 align-middle text-center w-12">
+              <div v-if="serv.on" class="bg-amber-500 inline-block text-white text-xs py-0.5 px-1 rounded cursor-pointer"
+                @click="stopServ(serv.uid)">ON</div>
             </div>
-            <div class="align-center server-selector">
+            <div class="table-cell py-0 px-1 align-middle text-center w-12">
               <input type="checkbox" v-model="serv.selected" />
             </div>
-            <div class="align-center index">{{ serv['index'] }}</div>
-            <div class="align-left">
-              <p style="white-space: pre-wrap">{{ serv['name'] }}</p>
+            <div class="table-cell py-0 px-1 align-middle text-center w-16">{{ serv['index'] }}</div>
+            <div class="table-cell py-1 px-2 align-middle text-left break-all">
+              <p class="whitespace-pre-wrap">{{ serv['name'] }}</p>
             </div>
-            <div class="align-left summary">{{ serv['summary'] }}</div>
-            <div class="align-left tags">
-              <div class="tags-content">
-                <div v-if="serv.tags && serv.tags.length < 1" class="add-tags" @click="editServSettings(serv.uid)">
+            <div class="table-cell py-1 px-2 align-middle text-left break-all hidden sm:table-cell w-60 lg:w-64">{{
+              serv['summary']
+            }}
+            </div>
+            <div class="table-cell py-1 px-2 align-middle text-left break-all hidden lg:table-cell w-56">
+              <div class="flex flex-wrap justify-start">
+                <div v-if="serv.tags && serv.tags.length < 1" class="text-base py-0 px-1 cursor-pointer text-blue-400"
+                  @click="editServSettings(serv.uid)">
                   <i class="fas fa-tags"></i>
                 </div>
-                <div class="round-tag" v-for="tag in serv.tags" @click="editServSettings(serv.uid)">{{ tag }}</div>
+                <div
+                  class="cursor-pointer bg-sky-200 rounded inline-block text-zinc-500 text-xs py-0.5 px-1 max-w-[4.5rem] text-ellipsis overflow-hidden whitespace-nowrap my-0.5 mx-0.5"
+                  v-for="tag in serv.tags" @click="editServSettings(serv.uid)">{{ tag }}</div>
               </div>
             </div>
-            <div class="align-center controls">
-              <button style="color: darkred;" @click="restartServ(serv.uid)">
+            <div class="table-cell py-0 px-1 align-middle text-center w-16">
+              <button class="text-xl my-0 mx-1 text-red-800" @click="restartServ(serv.uid)">
                 <i class="fa fa-play"></i>
               </button>
-              <button style="color: black" @click="editServConfig(serv.uid)">
+              <button class="text-xl my-0 mx-1 text-black" @click="editServConfig(serv.uid)">
                 <i class="fas fa-edit"></i>
               </button>
             </div>
@@ -286,393 +294,75 @@ onMounted(() => {
         </li>
       </VueDraggableNext>
     </ul>
-    <div class="bottom-blank"></div>
+    <div class="block grow h-10"></div>
   </div>
-  <div class="tools-strip">
-    <div class="searcher">
-      <select v-model="searchType" class="search-selector">
+  <div class="md:left-56 left-8 top-0 h-12 py-0 px-4 flex grow justify-left items-center fixed z-20">
+    <div class="hidden sm:flex">
+      <select v-model="searchType" class="w-20 md:w-24 inline-block text-neutral-500">
         <option value="summary" selected>{{ t('summary') }}</option>
         <option value="title">{{ t('title') }}</option>
         <option value="tags">{{ t('tags') }}</option>
         <option value="index">{{ t('index') }}</option>
       </select>
-      <div style="position:relative;">
-        <input v-model="searchKeyword" @keyup.enter="search" type="text" class="search-box" :placeholder="t('search')" />
-        <div class="search-icon">
+      <div class="relative">
+        <input v-model="searchKeyword" @keyup.enter="search" type="text" class="w-40 md:w-48 my-0 mx-4"
+          :placeholder="t('search')" />
+        <div class="absolute m-0 right-6 top-0 text-neutral-300">
           <i class="fas fa-search"></i>
         </div>
       </div>
     </div>
-    <div class="vertical-line"></div>
-    <div class="tools-icons">
-      <button @click="selectAll"><i class="fas fa-check-circle"></i></button>
-      <button @click="invertSelection"><i class="fas fa-adjust"></i></button>
+    <div class="bg-stone-300 h-3/4 w-0.5 m-1"></div>
+    <div class="m-0 text-2xl">
+      <button @click="selectAll" class="my-0 mx-1"><i class="fas fa-check-circle"></i></button>
+      <button @click="invertSelection" class="my-0 mx-1"><i class="fas fa-adjust"></i></button>
     </div>
-    <div class="vertical-line"></div>
-    <div class="tools-icons">
-      <button @click="openEmptyJsonEditor"><i class="fas fa-plus"></i></button>
-      <button @click="deleteSelected"><i class="fas fa-trash-alt"></i></button>
+    <div class="bg-stone-300 h-3/4 w-0.5 m-1"></div>
+    <div class="m-0 text-2xl">
+      <button @click="openEmptyJsonEditor" class="my-0 mx-1"><i class="fas fa-plus"></i></button>
+      <button @click="deleteSelected" class="my-0 mx-1"><i class="fas fa-trash-alt"></i></button>
     </div>
   </div>
-  <div class="pager" v-if="pages > 1">
+  <div class="pagh-8 py-0 px-5 flex grow justify-left items-center fixed z-10 right-0 bottom-0 bg-neutral-200"
+    v-if="pages > 1">
     <VPagination v-model="curPageNum" :pages="pages" :range-size="2" active-color="#DCEDFF"
       @update:modelValue="refresh" />
-    <input v-model="curPageNum" class="text-current-page-number" @keyup.enter="refresh" />
-    <button @click="refresh" class="jump-button">{{ t('jump') }}</button>
+    <input v-model="curPageNum" class="text-center text-sm my-1 mx-2 w-12" @keyup.enter="refresh" />
+    <button @click="refresh" class="text-sm">{{ t('jump') }}</button>
   </div>
-  <div v-if="isServSettingsEditorVisible" class="editor-wrapper">
-    <div class="editor-content-wrapper" style="background-color: darkgray; padding: 1rem;">
+  <div v-if="isServSettingsEditorVisible"
+    class="left-0 md:left-56 bg-zinc-600 opacity-95 fixed z-50 flex flex-col right-0 bottom-0 p-4 top-0">
+    <div class="block grow w-full h-4/5 p-4 bg-neutral-400">
       <div v-for="key in servSettingKeys">
-        <div class="serv-setting-line">
-          <div class="serv-setting-key">{{ key }}</div>
-          <div class="serv-setting-value">
-            <input type="text" v-model="servSettings[key]" class="serv-setting-text-box" />
+        <div class="flex items-center h-9">
+          <div class="py-0 px-4 w-24">{{ key }}</div>
+          <div class="flex grow py-0 px-4">
+            <input type="text" v-model="servSettings[key]" class="grow" />
           </div>
         </div>
       </div>
     </div>
-    <div class="editor-buttons-wrapper">
-      <button @click="saveServSettings">{{ t('save') }}</button>
-      <button @click="closeServSettingsEditor">{{ t('close') }}</button>
+    <div class="flex w-full h-10 justify-center items-end">
+      <button @click="saveServSettings" class="my-0 mx-4">{{ t('save') }}</button>
+      <button @click="closeServSettingsEditor" class="my-0 mx-4">{{ t('close') }}</button>
     </div>
   </div>
-  <div v-if="isJsonEditorVisible" class="editor-wrapper">
-    <div class="editor-content-wrapper">
-      <textarea v-on:keydown="bindJsonEditorKeydownEvent($event)" class="editor-content" v-model="servConfig" />
+  <div v-if="isJsonEditorVisible"
+    class="left-0 md:left-56 bg-zinc-600 opacity-95 fixed z-50 flex flex-col right-0 bottom-0 p-4 top-0">
+    <div class="block grow w-full h-4/5">
+      <textarea v-on:keydown="bindJsonEditorKeydownEvent($event)" class="w-full h-full bg-amber-50"
+        v-model="servConfig" />
     </div>
-    <div class="editor-buttons-wrapper">
-      <button @click="saveServConfig">{{ GenSaveButtonText() }}</button>
-      <button @click="closeJsonEditor">{{ t('close') }}</button>
+    <div class="flex w-full h-10 justify-center items-end">
+      <button @click="saveServConfig" class="my-0 mx-4">{{ GenSaveButtonText() }}</button>
+      <button @click="closeJsonEditor" class="my-0 mx-4">{{ t('close') }}</button>
     </div>
   </div>
 </template>
 
 <style scoped>
-.serv-setting-line {
-  height: 2.2rem;
-  display: flex;
-  align-items: center;
-}
-
-.serv-setting-key {
-  width: 6rem;
-  padding: 0rem 1rem;
-
-}
-
-.serv-setting-value {
-  display: flex;
-  flex-grow: 1;
-  padding: 0rem 1rem;
-
-}
-
-.serv-setting-text-box {
-  flex-grow: 1;
-}
-
-.search-icon {
-  position: absolute;
-  margin: 0rem;
-  right: 1.5rem;
-  top: 0rem;
-  color: lightgray;
-}
-
 .ghost {
-  opacity: 0.8;
-  background: #666;
-}
-
-@media (max-width: 600px) {
-  body .summary {
-    display: none;
-  }
-
-  body .searcher {
-    display: none;
-  }
-
-}
-
-
-@media (max-width: 800px) {
-
-  body .tags {
-    display: none;
-  }
-
-  body .header-wrapper {
-    left: 0rem;
-  }
-
-  body .tools-strip {
-    left: 2rem;
-  }
-
-  body .search-selector {
-    width: 5rem;
-  }
-
-  body .search-box {
-    width: 10rem;
-  }
-
-  body .editor-wrapper {
-    left: 0rem;
-  }
-}
-
-
-.tools-icons button {
-  margin: 0rem 0.2rem;
-}
-
-.tools-icons {
-  font-size: 1.5rem;
-  margin: 0rem;
-}
-
-.vertical-line {
+  opacity: 60%;
   background-color: #ddd;
-  height: 70%;
-  width: 0.1rem;
-  margin: 0.3rem;
-}
-
-.editor-buttons-wrapper button {
-  margin: 0rem 1rem;
-}
-
-.editor-buttons-wrapper {
-  width: 100%;
-  height: 2.5rem;
-  align-items: end;
-  justify-content: center;
-  display: flex;
-}
-
-.editor-content {
-  width: 100%;
-  background-color: ivory;
-  height: 100%;
-}
-
-.editor-content-wrapper {
-  display: block;
-  flex-grow: 1;
-  width: 100%;
-  height: 92%;
-}
-
-.editor-wrapper {
-  background-color: #666;
-  opacity: 0.95;
-  position: fixed;
-  z-index: 500;
-  display: flex;
-  flex-direction: column;
-  right: 0rem;
-  bottom: 0rem;
-  left: 14rem;
-  padding: 1rem;
-  top: 0rem;
-}
-
-.controls button {
-  font-size: 1.2rem;
-  margin: 0rem 0.2rem;
-}
-
-.search-selector {
-  color: #777;
-  width: 6rem;
-  display: inline-block;
-}
-
-.search-box {
-  width: 12rem;
-  margin: 0rem 1rem;
-  display: inline-block;
-}
-
-.jump-button {
-  font-size: 0.8rem;
-}
-
-.text-current-page-number {
-  text-align: center;
-  font-size: 0.8rem;
-  margin: 0.2rem 0.5rem;
-  width: 3rem;
-}
-
-.bottom-blank {
-  display: block;
-  flex-grow: 1;
-  height: 2.5rem;
-}
-
-.searcher {
-  display: flex;
-}
-
-.tools-strip {
-  top: 0rem;
-  height: 3rem;
-  left: 14rem;
-  padding: 0rem 1rem;
-  display: flex;
-  flex-grow: 1;
-  justify-content: left;
-  align-items: center;
-  position: fixed;
-  z-index: 200;
-}
-
-.pager {
-  height: 2rem;
-  padding: 0rem 1.2rem;
-  display: flex;
-  flex-grow: 1;
-  justify-content: left;
-  align-items: center;
-  position: fixed;
-  z-index: 200;
-  right: 0rem;
-  background-color: #eee;
-  bottom: 0rem;
-}
-
-.round-div {
-  background-color: orange;
-  display: inline-block;
-  color: white;
-  font-size: 0.6rem;
-  padding: 0.1rem 0.3rem;
-  border-radius: 0.3rem;
-  cursor: pointer;
-}
-
-ul {
-  margin: 0rem;
-  padding: 0rem;
-  list-style-type: none;
-}
-
-li {
-  margin: 0rem;
-  padding: 0rem;
-}
-
-li:nth-child(odd) {
-  background-color: #e6e6e6;
-}
-
-.add-tags {
-  font-size: 1rem;
-  padding: 0rem 0.3rem;
-  cursor: pointer;
-  color: cornflowerblue;
-}
-
-.server-list {
-  cursor: grab;
-  flex-grow: 1;
-  font-size: 1rem;
-  display: table;
-  width: 100%;
-  height: 2rem;
-}
-
-.server-selector {
-  width: 3rem;
-}
-
-.status {
-  width: 3rem;
-}
-
-.index {
-  width: 4rem;
-}
-
-.summary {
-  width: 28%;
-}
-
-.tags {
-  width: 18%;
-}
-
-.tags-content {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: start;
-}
-
-.round-tag {
-  cursor: pointer;
-  background-color: powderblue;
-  display: inline-block;
-  color: gray;
-  font-family: monospace;
-  font-size: 0.6rem;
-  padding: 0.05rem 0.3em;
-  border-radius: 0.2rem;
-  max-width: 5rem;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-  margin: 0.1rem 0.2rem;
-}
-
-.controls {
-  width: 4rem;
-}
-
-.align-left {
-  display: table-cell;
-  padding: 0.2rem 0.5rem;
-  vertical-align: middle;
-  text-align: left;
-  overflow-wrap: anywhere;
-}
-
-.align-center {
-  display: table-cell;
-  padding: 0rem 0.2rem;
-  vertical-align: middle;
-  text-align: center;
-}
-
-.head-blank {
-  display: block;
-  width: 100%;
-  height: 1.5rem;
-}
-
-.header-wrapper {
-  display: flex;
-  position: fixed;
-  top: 3rem;
-  left: 14rem;
-  right: 0rem;
-  flex-grow: 1;
-  z-index: 100;
-}
-
-.header {
-  flex-grow: 1;
-  background-color: #eee;
-  font-size: 0.8rem;
-  color: darkgray;
-  display: table;
-  height: 1.5rem;
-}
-
-.main-div {
-  display: flex;
-  flex-flow: column;
 }
 </style>

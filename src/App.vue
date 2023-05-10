@@ -13,64 +13,37 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <header>
+  <header class="fixed flex top-0 left-0 w-full h-12 z-10">
     <CompHeader />
   </header>
 
-  <input id="menu-toggle" type="checkbox" />
-  <label class='menu-button-container' for="menu-toggle">
-    <div class='menu-button'></div>
+  <input id="hamburger-menu-toggle" type="checkbox" class="hidden" />
+  <label for="hamburger-menu-toggle"
+    class="hamburger-menu-button-container md:invisible visible fixed z-50 left-2.5 top-5 flex cursor-pointer justify-start items-start">
+    <div class="hamburger-menu-button"></div>
   </label>
 
-  <aside>
+  <aside class="md:visible invisible fixed bottom-0 top-0 left-0 w-56 p-0 m-0 z-40 bg-zinc-700 ">
     <CompSidebar />
   </aside>
 
-  <div class="main-area-wrapper">
-    <div class="main-area-body">
+  <div class="block pt-12 z-0 min-h-[37rem] ml-0 md:ml-56">
+    <div class="block flex-row">
       <RouterView />
     </div>
   </div>
 </template>
 
 <style scoped>
-@media (max-width: 800px) {
-  body .menu-button-container {
-    visibility: visible;
-  }
-
-  body .main-area-wrapper {
-    margin-left: 0rem;
-  }
-
-  aside {
-    visibility: hidden;
-  }
-
-  #menu-toggle:checked~aside {
+@media (max-width: 768px) {
+  #hamburger-menu-toggle:checked~aside {
     visibility: visible;
   }
 }
 
-.menu-button-container {
-  visibility: hidden;
-  position: fixed;
-  z-index: 400;
-  left: 0.6rem;
-  top: 1.25rem;
-  display: flex;
-  cursor: pointer;
-  justify-content: start;
-  align-items: start;
-}
-
-#menu-toggle {
-  display: none;
-}
-
-.menu-button,
-.menu-button::before,
-.menu-button::after {
+.hamburger-menu-button,
+.hamburger-menu-button::before,
+.hamburger-menu-button::after {
   display: block;
   background-color: #333;
   position: absolute;
@@ -79,65 +52,29 @@ onBeforeMount(() => {
   border-radius: 0.4rem;
 }
 
-.menu-button::before {
+.hamburger-menu-button::before {
   content: '';
   margin-top: -0.5rem;
 }
 
-.menu-button::after {
+.hamburger-menu-button::after {
   content: '';
   margin-top: 0.5rem;
 }
 
-#menu-toggle:checked+.menu-button-container .menu-button::before {
+#hamburger-menu-toggle:checked+.hamburger-menu-button-container .hamburger-menu-button::before {
   margin-top: 0px;
   background-color: whitesmoke;
   transform: rotate(405deg);
 }
 
-#menu-toggle:checked+.menu-button-container .menu-button {
+#hamburger-menu-toggle:checked+.hamburger-menu-button-container .hamburger-menu-button {
   background: none;
 }
 
-#menu-toggle:checked+.menu-button-container .menu-button::after {
+#hamburger-menu-toggle:checked+.hamburger-menu-button-container .hamburger-menu-button::after {
   margin-top: 0px;
   background-color: whitesmoke;
   transform: rotate(-405deg);
-}
-
-.main-area-body {
-  display: block;
-  flex-flow: row;
-}
-
-.main-area-wrapper {
-  display: block;
-  margin-left: 14rem;
-  padding-top: 3rem;
-  z-index: 50;
-  min-height: 37rem;
-}
-
-aside {
-  position: fixed;
-  bottom: 0rem;
-  width: 14rem;
-  top: 0rem;
-  padding: 0rem;
-  margin: 0rem;
-  left: 0rem;
-  z-index: 300;
-  background-color: #333;
-}
-
-header {
-  position: fixed;
-  display: flex;
-  top: 0rem;
-  left: 0rem;
-  background-color: aqua;
-  width: 100%;
-  height: 3rem;
-  z-index: 100;
 }
 </style>

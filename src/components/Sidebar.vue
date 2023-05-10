@@ -55,8 +55,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="app-name">V2RayGCon</div>
-  <nav>
+  <div class="h-12 w-full inline-flex items-center justify-center  text-neutral-100 text-2xl">V2RayGCon</div>
+  <nav class="p-0 w-full text-left inline-block">
     <RouterLink to="/"><i class="fas fa-server"></i> {{ t('servers') }}</RouterLink>
     <RouterLink to="/import"><i class="fas fa-file-import"></i> {{ t('import') }}</RouterLink>
     <RouterLink to="/settings"><i class="fas fa-cog"></i> {{ t('settings') }}</RouterLink>
@@ -65,33 +65,12 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.app-name {
-  height: 3rem;
-  width: 100%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  /* float: left; */
-  /* background-color: #333; */
-  color: whitesmoke;
-  font-size: 1.5em;
-}
-
 nav a.router-link-exact-active {
   background-color: #444;
 }
 
 nav a:hover {
   background-color: #666;
-}
-
-nav {
-  padding: 0rem;
-  width: 100%;
-  text-align: left;
-  width: 100%;
-  font-family: monospace;
-  display: inline-block;
 }
 
 nav a {

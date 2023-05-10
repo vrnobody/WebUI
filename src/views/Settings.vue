@@ -40,40 +40,14 @@ onMounted(() => getSettings())
 </script>
 
 <template>
-  <div class="main-div">
+  <div>
     <ul>
-      <li v-for="(v, k) in data">
-        <div class="key-div">{{ k }}</div>
-        <div class="value-div">{{ v.toString() }}</div>
+      <li v-for="(v, k) in data" class="odd:bg-neutral-200">
+        <div class="inline-flex w-60 shrink-0 mx-2 my-0.5">{{ k }}</div>
+        <div class="inline-flex mx-2 my-0.5">{{ v.toString() }}</div>
       </li>
     </ul>
   </div>
 </template>
 
-<style scoped>
-ul {
-  margin: 0rem;
-  padding: 0rem;
-  list-style-type: none;
-}
-
-li:nth-child(odd) {
-  background-color: #e6e6e6;
-}
-
-.key-div {
-  display: inline-flex;
-  width: 15rem;
-  flex-shrink: 0;
-  margin: 0.1rem 0.5rem;
-}
-
-.value-div {
-  display: inline-flex;
-  margin: 0.1rem 0.5rem;
-}
-
-.main-div {
-  display: flow;
-}
-</style>
+<style scoped></style>

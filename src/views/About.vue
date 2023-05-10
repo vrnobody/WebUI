@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <div class="content">
+  <div class="m-4">
     WebUI v0.0.1 2023-05<br />
     <a href="https://github.com/vrnobody/WebUI">https://github.com/vrnobody/WebUI</a>
     <br />
@@ -13,8 +13,4 @@
   </div>
 </template>
 
-<style scoped>
-.content {
-  margin: 1rem;
-}
-</style>
+<style scoped></style>

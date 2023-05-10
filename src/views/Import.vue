@@ -24,81 +24,25 @@ function importShareLinks() {
 </script>
 
 <template>
-  <div class="main-wrapper">
-    <div class="title-wrapper">
+  <div class="md:left-56 flex fixed flex-col left-0 top-12 right-0 bottom-0 bg-neutral-200 p-3">
+    <div class="flex items-center justify-start text-neutral-400">
       {{ t('mark') }}
     </div>
-    <div class="mark-wrapper">
-      <input v-model="mark" type="text" class="mark" />
+    <div class="w-full h-10">
+      <input v-model="mark" type="text" class="bg-zinc-50 w-full py-1 px-2" />
     </div>
-    <div class="title-wrapper">
+    <div class="flex items-center justify-start text-neutral-400">
       {{ t('shareLinks') }}
     </div>
-    <div class="content-wrapper">
-      <textarea v-model="content" class="content" placeholder="vmess://... vless://... trojan://...">
+    <div class="flex w-full grow">
+      <textarea v-model="content" class="w-full h-full py-1 px-2" placeholder="vmess://... vless://... trojan://...">
       </textarea>
     </div>
-    <div class="controls-wrapper">
+    <div class="flex justify-center items-end h-8 w-full">
       <button @click="importShareLinks">{{ t('import') }}</button>
     </div>
 
   </div>
 </template>
 
-<style scoped>
-@media (max-width: 800px) {
-  body .main-wrapper {
-    left: 0rem;
-  }
-}
-
-.mark {
-  background-color: #fafafa;
-  padding: 0.2rem 0.5rem;
-  width: 100%;
-}
-
-.title-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: start;
-  color: #999;
-}
-
-.mark-wrapper {
-  width: 100%;
-  height: 2.5rem;
-}
-
-.content-wrapper {
-  display: flex;
-  width: 100%;
-  flex-grow: 1;
-}
-
-.content {
-  width: 100%;
-  height: 100%;
-  padding: 0.2rem 0.5rem;
-}
-
-.controls-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: end;
-  height: 2rem;
-  width: 100%;
-}
-
-.main-wrapper {
-  display: flex;
-  position: fixed;
-  top: 3rem;
-  left: 14rem;
-  flex-direction: column;
-  right: 0rem;
-  bottom: 0rem;
-  background-color: #eee;
-  padding: 0.8rem;
-}
-</style>
+<style scoped></style>
