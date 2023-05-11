@@ -40,9 +40,9 @@ onMounted(() => getSettings())
 </script>
 
 <template>
-  <div>
+  <div class="dark:text-neutral-100">
     <ul>
-      <li v-for="(v, k) in data" class="odd:bg-neutral-200">
+      <li v-for="(v, k) in data" class="dark:odd:bg-slate-600 odd:bg-neutral-200">
         <div class="inline-flex w-60 shrink-0 mx-2 my-0.5">{{ k }}</div>
         <div class="inline-flex mx-2 my-0.5">{{ v.toString() }}</div>
       </li>

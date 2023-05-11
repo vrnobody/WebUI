@@ -1,8 +1,26 @@
+import config from '../config.js'
 import configs from '../config.js'
 
-const host = import.meta.env.DEV ? configs.devHostUrl : configs.releaseHostUrl
+const host = config.isDevMode ? configs.devHostUrl : configs.releaseHostUrl
 
 let t = null
+
+function isDarkMode() {
+    const mode = configs.getThemeMode()
+    if (!mode || mode === "system") {
+        return window.matchMedia('(prefers-color-scheme: dark)').matches
+    }
+    return mode === "dark"
+}
+
+function reloadThemeMode() {
+    const dark = isDarkMode()
+    if (dark) {
+        document.documentElement.classList.add('dark')
+    } else {
+        document.documentElement.classList.remove('dark')
+    }
+}
 
 function pop(msg, ps) {
     msg = t && t(msg) || msg
@@ -62,4 +80,5 @@ function init(tt) {
 export default {
     call,
     init,
+    reloadThemeMode,
 }

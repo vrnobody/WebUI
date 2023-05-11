@@ -24,18 +24,19 @@ function importShareLinks() {
 </script>
 
 <template>
-  <div class="md:left-56 flex  bg-zinc-300 fixed flex-col left-0 top-12 right-0 bottom-0 p-3">
-    <div class="flex items-center justify-start text-neutral-400">
+  <div class="dark:bg-slate-700 md:left-56 flex  bg-neutral-200 fixed flex-col left-0 top-12 right-0 bottom-0 p-3">
+    <div class="dark:text-neutral-300 text-neutral-500 flex items-center justify-start">
       {{ t('mark') }}
     </div>
     <div class="w-full h-10">
-      <input v-model="mark" type="text" class="bg-zinc-50 w-full py-1 px-2" />
+      <input v-model="mark" type="text" class="dark:bg-slate-500 bg-neutral-100 w-full py-1 px-2" />
     </div>
-    <div class="flex items-center justify-start text-neutral-400">
+    <div class="dark:text-neutral-300  text-neutral-500 flex items-center justify-start">
       {{ t('shareLinks') }}
     </div>
     <div class="flex w-full grow">
-      <textarea v-model="content" class="w-full h-full py-1 px-2" placeholder="vmess://... vless://... trojan://...">
+      <textarea v-model="content" class="dark:bg-slate-500 bg-neutral-100 w-full h-full py-1 px-2"
+        placeholder="vmess://... vless://... trojan://...">
       </textarea>
     </div>
     <div class="flex justify-center items-end h-8 w-full">

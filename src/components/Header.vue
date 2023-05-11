@@ -13,13 +13,13 @@ function switchLang(lang) {
 </script>
 
 <template>
-  <div class="h-full inline-flex justify-end items-center w-full bg-neutral-100">
-    <ul>
+  <div class="h-full inline-flex justify-end items-center w-full">
+    <ul class="dark:text-neutral-400 text-neutral-600">
       <li class="pr-2.5 m-0 inline-block">
-        <a href="javascript:" @click.prevent="switchLang('en-US')" class="text-sm m-0 p-0 text-zinc-500">English</a>
+        <a href="javascript:" @click.prevent="switchLang('en-US')" class="text-sm m-0 p-0">English</a>
       </li>
       <li class="pr-2.5 m-0 inline-block">
-        <a href="javascript:" @click.prevent="switchLang('zh-CN')" class="text-sm m-0 p-0 text-zinc-500">简体中文</a>
+        <a href="javascript:" @click.prevent="switchLang('zh-CN')" class="text-sm m-0 p-0">简体中文</a>
       </li>
     </ul>
   </div>

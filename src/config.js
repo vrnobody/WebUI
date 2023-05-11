@@ -1,9 +1,21 @@
 const isDevMode = import.meta.env.DEV
 
 const skey = isDevMode ? "V2RayGConWebUiSettingsDev" : "V2RayGConWebUiSettings"
+const tkey = isDevMode ? "V2RayGConWebUiThemeDev" : "V2RayGConWebUiTheme"
 
 let isSaving = false
 let userSettings = {}
+
+function getThemeMode() {
+    return localStorage.getItem(tkey)
+}
+
+function saveThemeMode(mode) {
+    const modes = ["system", "light", "dark"]
+    let index = modes.indexOf(mode)
+    index = index < 0 ? 0 : index
+    localStorage.setItem(tkey, modes[index])
+}
 
 function loadSettings() {
     try {
@@ -38,9 +50,6 @@ function reload() {
 }
 
 function init() {
-    if (isDevMode) {
-        console.log("init config.js")
-    }
     reload()
 }
 
@@ -72,6 +81,7 @@ function get(key) {
 init()
 
 export default {
+    isDevMode,
     devHostUrl: 'http://localhost:4000',
     releaseHostUrl: '/',
     supportedServerVersions: [
@@ -81,4 +91,6 @@ export default {
     get,
     set,
     reload,
+    getThemeMode,
+    saveThemeMode,
 }

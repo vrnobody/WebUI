@@ -239,12 +239,12 @@ onMounted(() => {
 
 <template>
   <div class="left-0 md:left-56 flex fixed top-12 right-0 grow z-10">
-    <div class="grow bg-neutral-200 text-xs text-neutral-400 table h-6">
+    <div class="dark:bg-slate-500 dark:text-neutral-700 grow bg-slate-400 text-xs text-neutral-600 table h-6">
       <div class="table-cell py-0 px-1 align-middle text-center w-12">{{ t('status') }}</div>
       <div class="table-cell py-0 px-1 align-middle text-center w-12">{{ t('select') }}</div>
       <div class="table-cell py-0 px-1 align-middle text-center w-16">{{ t('index') }}</div>
       <div class="table-cell py-0 px-1 align-middle text-center">{{ t('title') }}</div>
-      <div class="hidden sm:table-cell  py-0 px-1 align-middle text-centerw-60 lg:w-[28%]">{{ t('summary') }}
+      <div class="hidden sm:table-cell  py-0 px-1 align-middle text-center w-60 lg:w-[28%]">{{ t('summary') }}
       </div>
       <div class="hidden lg:table-cell py-0 px-1 align-middle text-center w-56">{{ t('tags') }}</div>
       <div class="table-cell py-0 px-1 align-middle text-center w-16">{{ t('controls') }}</div>
@@ -254,14 +254,15 @@ onMounted(() => {
     <div class="block w-full h-6"></div>
     <ul>
       <VueDraggableNext ghost-class="ghost" :list="data" @change="servOrderChanged">
-        <li v-for="serv in data" :key="serv.uid" class="odd:bg-stone-300">
+        <li v-for="serv in data" :key="serv.uid" class="dark:odd:bg-slate-600 odd:bg-neutral-200">
           <div class="cursor-grab grow text-base table w-full h-8">
             <div class="table-cell py-0 px-1 align-middle text-center w-12">
-              <div v-if="serv.on" class="bg-amber-500 inline-block text-white text-xs py-0.5 px-1 rounded cursor-pointer"
+              <div v-if="serv.on"
+                class="dark:bg-amber-600 bg-amber-500 inline-block text-white text-xs py-0.5 px-1 rounded cursor-pointer"
                 @click="stopServ(serv.uid)">ON</div>
             </div>
             <div class="table-cell py-0 px-1 align-middle text-center w-12">
-              <input type="checkbox" v-model="serv.selected" />
+              <input type="checkbox" v-model="serv.selected" class="w-4 h-4" />
             </div>
             <div class="table-cell py-0 px-1 align-middle text-center w-16">{{ serv['index'] }}</div>
             <div class="table-cell py-1 px-2 align-middle text-left break-all">
@@ -278,7 +279,7 @@ onMounted(() => {
                   <i class="fas fa-tags"></i>
                 </div>
                 <div
-                  class="cursor-pointer bg-sky-200 rounded inline-block text-zinc-500 text-xs py-0.5 px-1 max-w-[4.5rem] text-ellipsis overflow-hidden whitespace-nowrap my-0.5 mx-0.5"
+                  class="dark:bg-cyan-500 dark:text-neutral-600 cursor-pointer bg-sky-200 rounded inline-block text-zinc-500 text-xs py-0.5 px-1 max-w-[4.5rem] text-ellipsis overflow-hidden whitespace-nowrap my-0.5 mx-0.5"
                   v-for="tag in serv.tags" @click="editServSettings(serv.uid)">{{ tag }}</div>
               </div>
             </div>
@@ -286,7 +287,7 @@ onMounted(() => {
               <button class="text-xl my-0 mx-1 text-red-800" @click="restartServ(serv.uid)">
                 <i class="fa fa-play"></i>
               </button>
-              <button class="text-xl my-0 mx-1 text-black" @click="editServConfig(serv.uid)">
+              <button class="dark:text-neutral-200 text-xl my-0 mx-1 text-black" @click="editServConfig(serv.uid)">
                 <i class="fas fa-edit"></i>
               </button>
             </div>
@@ -298,46 +299,48 @@ onMounted(() => {
   </div>
   <div class="md:left-56 left-8 top-0 h-12 py-0 px-4 flex grow justify-left items-center fixed z-20">
     <div class="hidden sm:flex">
-      <select v-model="searchType" class="w-20 md:w-24 inline-block text-neutral-500">
+      <select v-model="searchType"
+        class="dark:bg-slate-500 bg-neutral-50 dark:text-neutral-700 w-20 md:w-24 inline-block text-neutral-400">
         <option value="summary" selected>{{ t('summary') }}</option>
         <option value="title">{{ t('title') }}</option>
         <option value="tags">{{ t('tags') }}</option>
         <option value="index">{{ t('index') }}</option>
       </select>
       <div class="relative">
-        <input v-model="searchKeyword" @keyup.enter="search" type="text" class="w-40 md:w-48 my-0 mx-4"
-          :placeholder="t('search')" />
-        <div class="absolute m-0 right-6 top-0 text-neutral-300">
+        <input v-model="searchKeyword" @keyup.enter="search" type="text"
+          class="dark:bg-slate-500 bg-neutral-50 w-40 md:w-48 my-0 mx-4" :placeholder="t('search')" />
+        <div class="dark:text-neutral-700 absolute m-0 right-6 top-0 text-neutral-300">
           <i class="fas fa-search"></i>
         </div>
       </div>
     </div>
-    <div class="bg-stone-300 h-3/4 w-0.5 m-1"></div>
+    <div class="dark:bg-slate-500 bg-slate-200 h-3/4 w-0.5 m-1"></div>
     <div class="m-0 text-2xl">
       <button @click="selectAll" class="my-0 mx-1"><i class="fas fa-check-circle"></i></button>
       <button @click="invertSelection" class="my-0 mx-1"><i class="fas fa-adjust"></i></button>
     </div>
-    <div class="bg-stone-300 h-3/4 w-0.5 m-1"></div>
+    <div class="dark:bg-slate-500 bg-slate-200 h-3/4 w-0.5 m-1"></div>
     <div class="m-0 text-2xl">
       <button @click="openEmptyJsonEditor" class="my-0 mx-1"><i class="fas fa-plus"></i></button>
       <button @click="deleteSelected" class="my-0 mx-1"><i class="fas fa-trash-alt"></i></button>
     </div>
   </div>
-  <div class="pagh-8 py-0 px-5 flex grow justify-left items-center fixed z-10 right-0 bottom-0 bg-neutral-200"
+  <div
+    class="dark:bg-slate-800 pagh-8 py-0 px-5 flex grow justify-left items-center fixed z-10 right-0 bottom-0 bg-neutral-200"
     v-if="pages > 1">
-    <VPagination v-model="curPageNum" :pages="pages" :range-size="2" active-color="#DCEDFF"
+    <VPagination v-model="curPageNum" :pages="pages" :range-size="2" class="dark:bg-slate-800" active-color="#DCEDFF"
       @update:modelValue="refresh" />
-    <input v-model="curPageNum" class="text-center text-sm my-1 mx-2 w-12" @keyup.enter="refresh" />
+    <input v-model="curPageNum" class="dark:bg-slate-600 text-center text-sm my-1 mx-2 w-12" @keyup.enter="refresh" />
     <button @click="refresh" class="text-sm">{{ t('jump') }}</button>
   </div>
   <div v-if="isServSettingsEditorVisible"
-    class="left-0 md:left-56 bg-zinc-300 opacity-95 fixed z-50 flex flex-col right-0 bottom-0 p-4 top-0">
-    <div class="block grow w-full h-4/5 p-4 bg-zinc-100">
+    class="dark:bg-slate-700 bg-slate-300 left-0 md:left-56 opacity-95 fixed z-50 flex flex-col right-0 bottom-0 p-4 top-0">
+    <div class="dark:bg-slate-600 block grow w-full h-4/5 p-4 bg-neutral-200">
       <div v-for="key in servSettingKeys">
         <div class="flex items-center h-9">
           <div class="py-0 px-4 w-24">{{ key }}</div>
           <div class="flex grow py-0 px-4">
-            <input type="text" v-model="servSettings[key]" class="grow" />
+            <input type="text" v-model="servSettings[key]" class="dark:bg-slate-500 bg-neutral-100 grow" />
           </div>
         </div>
       </div>
@@ -348,9 +351,9 @@ onMounted(() => {
     </div>
   </div>
   <div v-if="isJsonEditorVisible"
-    class="left-0 md:left-56 bg-zinc-300 opacity-95 fixed z-50 flex flex-col right-0 bottom-0 p-4 top-0">
+    class="dark:bg-slate-700 bg-slate-300 left-0 md:left-56 opacity-95 fixed z-50 flex flex-col right-0 bottom-0 p-4 top-0">
     <div class="block grow w-full h-4/5">
-      <textarea v-on:keydown="bindJsonEditorKeydownEvent($event)" class="w-full h-full bg-amber-50"
+      <textarea v-on:keydown="bindJsonEditorKeydownEvent($event)" class="dark:bg-slate-500 w-full h-full bg-amber-50"
         v-model="servConfig" />
     </div>
     <div class="flex w-full h-10 justify-center items-end">
@@ -363,6 +366,6 @@ onMounted(() => {
 <style scoped>
 .ghost {
   opacity: 60%;
-  background-color: #ddd;
+  background-color: rgb(100, 116, 139);
 }
 </style>
