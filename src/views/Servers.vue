@@ -244,9 +244,9 @@ onMounted(() => {
       <div class="table-cell py-0 px-1 align-middle text-center w-12">{{ t('select') }}</div>
       <div class="table-cell py-0 px-1 align-middle text-center w-16">{{ t('index') }}</div>
       <div class="table-cell py-0 px-1 align-middle text-center">{{ t('title') }}</div>
-      <div class="table-cell py-0 px-1 align-middle text-center hidden sm:table-cell w-60 lg:w-64">{{ t('summary') }}
+      <div class="hidden sm:table-cell  py-0 px-1 align-middle text-centerw-60 lg:w-[28%]">{{ t('summary') }}
       </div>
-      <div class="table-cell py-0 px-1 align-middle text-center hidden lg:table-cell w-56">{{ t('tags') }}</div>
+      <div class="hidden lg:table-cell py-0 px-1 align-middle text-center w-56">{{ t('tags') }}</div>
       <div class="table-cell py-0 px-1 align-middle text-center w-16">{{ t('controls') }}</div>
     </div>
   </div>
@@ -267,11 +267,11 @@ onMounted(() => {
             <div class="table-cell py-1 px-2 align-middle text-left break-all">
               <p class="whitespace-pre-wrap">{{ serv['name'] }}</p>
             </div>
-            <div class="table-cell py-1 px-2 align-middle text-left break-all hidden sm:table-cell w-60 lg:w-64">{{
+            <div class="hidden sm:table-cell lg:w-[28%] py-1 px-2 align-middle text-left break-all w-60">{{
               serv['summary']
             }}
             </div>
-            <div class="table-cell py-1 px-2 align-middle text-left break-all hidden lg:table-cell w-56">
+            <div class="hidden lg:table-cell py-1 px-2 align-middle text-left break-all w-56">
               <div class="flex flex-wrap justify-start">
                 <div v-if="serv.tags && serv.tags.length < 1" class="text-base py-0 px-1 cursor-pointer text-blue-400"
                   @click="editServSettings(serv.uid)">
@@ -331,8 +331,8 @@ onMounted(() => {
     <button @click="refresh" class="text-sm">{{ t('jump') }}</button>
   </div>
   <div v-if="isServSettingsEditorVisible"
-    class="left-0 md:left-56 bg-zinc-600 opacity-95 fixed z-50 flex flex-col right-0 bottom-0 p-4 top-0">
-    <div class="block grow w-full h-4/5 p-4 bg-neutral-400">
+    class="left-0 md:left-56 bg-zinc-300 opacity-95 fixed z-50 flex flex-col right-0 bottom-0 p-4 top-0">
+    <div class="block grow w-full h-4/5 p-4 bg-zinc-100">
       <div v-for="key in servSettingKeys">
         <div class="flex items-center h-9">
           <div class="py-0 px-4 w-24">{{ key }}</div>
@@ -348,7 +348,7 @@ onMounted(() => {
     </div>
   </div>
   <div v-if="isJsonEditorVisible"
-    class="left-0 md:left-56 bg-zinc-600 opacity-95 fixed z-50 flex flex-col right-0 bottom-0 p-4 top-0">
+    class="left-0 md:left-56 bg-zinc-300 opacity-95 fixed z-50 flex flex-col right-0 bottom-0 p-4 top-0">
     <div class="block grow w-full h-4/5">
       <textarea v-on:keydown="bindJsonEditorKeydownEvent($event)" class="w-full h-full bg-amber-50"
         v-model="servConfig" />

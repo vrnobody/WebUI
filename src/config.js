@@ -1,3 +1,76 @@
+const isDevMode = import.meta.env.DEV
+
+const skey = isDevMode ? "V2RayGConWebUiSettingsDev" : "V2RayGConWebUiSettings"
+
+let isSaving = false
+let userSettings = {}
+
+function loadSettings() {
+    try {
+        const s = localStorage.getItem(skey)
+        const j = JSON.parse(s)
+        return j
+    } catch (err) {
+        console.log("load user settings error!", err.toString())
+    }
+    return null
+}
+
+function saveSettings(settings) {
+    try {
+        const s = JSON.stringify(settings)
+        localStorage.setItem(skey, s)
+        return true
+    } catch (err) {
+        console.log("save user settings error!", err.toString())
+    }
+    return false
+}
+
+function save() {
+    return saveSettings(userSettings)
+}
+
+function reload() {
+    const s = loadSettings()
+    userSettings = s || {}
+    return s != null
+}
+
+function init() {
+    if (isDevMode) {
+        console.log("init config.js")
+    }
+    reload()
+}
+
+function saveLater(delay) {
+    if (isSaving) {
+        return
+    }
+    isSaving = true
+
+    delay = delay < 1 ? 0 : delay
+
+    setTimeout(() => {
+        isSaving = false
+        try {
+            save()
+        } catch { }
+    }, delay)
+}
+
+function set(key, value) {
+    userSettings[key] = value
+    saveLater(1000)
+}
+
+function get(key) {
+    return userSettings[key]
+}
+
+init()
+
 export default {
     devHostUrl: 'http://localhost:4000',
     releaseHostUrl: '/',
@@ -5,4 +78,7 @@ export default {
         "0.0.1.1",
     ],
     supportedAppVersion: '1.6.9.1',
+    get,
+    set,
+    reload,
 }

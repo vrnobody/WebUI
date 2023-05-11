@@ -55,7 +55,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="h-12 w-full inline-flex items-center justify-center  text-neutral-100 text-2xl">V2RayGCon</div>
+  <div class="h-12 w-full inline-flex items-center justify-center text-zinc-500 text-2xl">V2RayGCon</div>
   <nav class="p-0 w-full text-left inline-block">
     <RouterLink to="/"><i class="fas fa-server"></i> {{ t('servers') }}</RouterLink>
     <RouterLink to="/import"><i class="fas fa-file-import"></i> {{ t('import') }}</RouterLink>
@@ -66,18 +66,18 @@ onMounted(() => {
 
 <style scoped>
 nav a.router-link-exact-active {
-  background-color: #444;
+  background-color: #ccc;
 }
 
 nav a:hover {
-  background-color: #666;
+  background-color: #bbb;
 }
 
 nav a {
   text-decoration: none;
   font-size: 1.2rem;
   font-weight: bold;
-  color: whitesmoke;
+  color: #444;
   margin: 0.3rem;
   display: block;
   padding: 0.5rem 2rem;

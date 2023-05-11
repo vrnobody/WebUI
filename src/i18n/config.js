@@ -1,12 +1,15 @@
 import { createI18n } from '@yangss/vue3-i18n'
 import zhCN from "./zhCN.js"
 import enUS from "./enUS.js"
+import cfg from "../config.js"
+
+const lang = cfg.get("lang") || navigator.language
 
 export default createI18n({
-    locale: 'zhCN',
-    fallbackLocale: 'enUS',
+    locale: lang,
+    fallbackLocale: 'en-US',
     messages: {
-        'zhCN': zhCN,
-        'enUS': enUS,
+        'zh-CN': zhCN,
+        'en-US': enUS,
     }
 })

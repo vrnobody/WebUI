@@ -23,7 +23,7 @@ onBeforeMount(() => {
     <div class="hamburger-menu-button"></div>
   </label>
 
-  <aside class="md:visible invisible fixed bottom-0 top-0 left-0 w-56 p-0 m-0 z-40 bg-zinc-700 ">
+  <aside class="md:visible bg-neutral-100 invisible fixed bottom-0 top-0 left-0 w-56 p-0 m-0 z-40">
     <CompSidebar />
   </aside>
 
@@ -45,7 +45,7 @@ onBeforeMount(() => {
 .hamburger-menu-button::before,
 .hamburger-menu-button::after {
   display: block;
-  background-color: #333;
+  background-color: darkgray;
   position: absolute;
   height: 0.4rem;
   width: 1.8rem;
@@ -64,7 +64,7 @@ onBeforeMount(() => {
 
 #hamburger-menu-toggle:checked+.hamburger-menu-button-container .hamburger-menu-button::before {
   margin-top: 0px;
-  background-color: whitesmoke;
+  background-color: darkgray;
   transform: rotate(405deg);
 }
 
@@ -74,7 +74,7 @@ onBeforeMount(() => {
 
 #hamburger-menu-toggle:checked+.hamburger-menu-button-container .hamburger-menu-button::after {
   margin-top: 0px;
-  background-color: whitesmoke;
+  background-color: darkgray;
   transform: rotate(-405deg);
 }
 </style>

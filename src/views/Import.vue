@@ -24,7 +24,7 @@ function importShareLinks() {
 </script>
 
 <template>
-  <div class="md:left-56 flex fixed flex-col left-0 top-12 right-0 bottom-0 bg-neutral-200 p-3">
+  <div class="md:left-56 flex  bg-zinc-300 fixed flex-col left-0 top-12 right-0 bottom-0 p-3">
     <div class="flex items-center justify-start text-neutral-400">
       {{ t('mark') }}
     </div>
