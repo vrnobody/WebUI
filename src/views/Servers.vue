@@ -279,15 +279,15 @@ onMounted(() => {
                   <i class="fas fa-tags"></i>
                 </div>
                 <div
-                  class="dark:bg-cyan-500 dark:text-neutral-600 cursor-pointer bg-sky-200 rounded inline-block text-zinc-500 text-xs py-0.5 px-1 max-w-[4.5rem] text-ellipsis overflow-hidden whitespace-nowrap my-0.5 mx-0.5"
+                  class="bg-cyan-500 text-neutral-100 cursor-pointer rounded inline-block text-xs py-0.5 px-1 max-w-[4.5rem] text-ellipsis overflow-hidden whitespace-nowrap my-0.5 mx-0.5"
                   v-for="tag in serv.tags" @click="editServSettings(serv.uid)">{{ tag }}</div>
               </div>
             </div>
             <div class="table-cell py-0 px-1 align-middle text-center w-16">
-              <button class="text-xl my-0 mx-1 text-red-800" @click="restartServ(serv.uid)">
+              <button class="text-xl my-0 mx-1 text-red-700" @click="restartServ(serv.uid)">
                 <i class="fa fa-play"></i>
               </button>
-              <button class="dark:text-neutral-200 text-xl my-0 mx-1 text-black" @click="editServConfig(serv.uid)">
+              <button class="text-xl my-0 mx-1" @click="editServConfig(serv.uid)">
                 <i class="fas fa-edit"></i>
               </button>
             </div>
@@ -299,8 +299,7 @@ onMounted(() => {
   </div>
   <div class="md:left-56 left-8 top-0 h-12 py-0 px-4 flex grow justify-left items-center fixed z-20">
     <div class="hidden sm:flex">
-      <select v-model="searchType"
-        class="dark:bg-slate-500 bg-neutral-50 dark:text-neutral-700 w-20 md:w-24 inline-block text-neutral-400">
+      <select v-model="searchType" class="dark:bg-slate-500 bg-neutral-50 w-20 md:w-24 inline-block">
         <option value="summary" selected>{{ t('summary') }}</option>
         <option value="title">{{ t('title') }}</option>
         <option value="tags">{{ t('tags') }}</option>

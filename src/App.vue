@@ -27,7 +27,7 @@ onBeforeMount(() => {
   </label>
 
   <aside
-    class="dark:bg-slate-800 dark:text-neutral-200 md:visible bg-slate-300 invisible fixed bottom-0 top-0 left-0 w-56 p-0 m-0 z-40">
+    class="dark:bg-slate-800 dark:text-neutral-300 text-neutral-800 md:visible bg-slate-300 invisible fixed bottom-0 top-0 left-0 w-56 p-0 m-0 z-40">
     <CompSidebar />
   </aside>
 

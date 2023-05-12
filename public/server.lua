@@ -11,7 +11,7 @@ local Logger = require('lua.modules.logger')
 local version = "0.0.1.1"
 local pageSize = 50
 
-local logLevel = #args > 0 and Logger.logLevels.Info or Logger.logLevels.Debug
+local logLevel = #args > 1 and args[2] or Logger.logLevels.Debug
 
 -- code
 local haServ = require('lua.modules.httpServ').new()
