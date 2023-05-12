@@ -5,30 +5,38 @@ import { onMounted, ref } from 'vue'
 let data = ref({})
 
 function parseSettings(settings) {
-  let s = JSON.parse(settings)
-  let filteredKeys = {
-    "QuickSwitchServerLatency": "switch lantency",
-    "v2rayCoreDownloadSource": "update core url",
-    "isEnableUtlsFingerprint": "enable uTLS",
-    "ServerPanelPageSize": "page size",
-    "isEnableStat": "enable stat",
-    "isPortable": "portable",
-    "CfgShowToolPanel": "show left panel",
-    "isCheckUpdateWhenAppStart": "check for app update",
-    "isCheckV2RayCoreUpdateWhenAppStart": "check for core update",
-    "isUpdateUseProxy": "use proxy",
-    "Culture": "culture",
-    "MaxConcurrentV2RayCoreNum": "concurrent",
-  }
-
+  const importModes = ["config", "http", "socks", "custom"]
+  const s = JSON.parse(settings)
   let d = {}
-  for (const key in s) {
-    if (filteredKeys.hasOwnProperty(key)) {
-      let k = filteredKeys[key]
-      d[k] = s[key].toString()
-    }
+  d["Culture"] = s["Culture"]
+  d["Import ss://..."] = s["ImportOptions"]["IsImportSsShareLink"]
+  d["Import trojan://..."] = s["ImportOptions"]["IsImportTrojanShareLink"]
+  const modeIdx = s["ImportOptions"]["Mode"]
+  if (modeIdx === 1 || modeIdx === 2) {
+    const defInbound = importModes[modeIdx] + "://" + s["ImportOptions"]["Ip"] + ":" + s["ImportOptions"]["Port"]
+    d["Default inbound"] = defInbound
   }
-  data.value = d
+  d["Max concurrent"] = s["MaxConcurrentV2RayCoreNum"]
+  d["Switch latency"] = s["QuickSwitchServerLatency"] + "ms"
+  if (s["SpeedtestOptions"]["IsUse"]) {
+    d["Speedtest URL"] = s["SpeedtestOptions"]["Url"]
+  }
+  d["Subscription"] = JSON.parse(s["SubscribeUrls"]).length
+  d["Check V2RayGCon update"] = s["isCheckV2RayCoreUpdateWhenAppStart"]
+  d["Check core update"] = s["isCheckV2RayCoreUpdateWhenAppStart"]
+  d["Download core type"] = s["isDownloadWin32V2RayCore"] ? "win32" : "win64"
+  d["uTLS enabled"] = s["isEnableUtlsFingerprint"]
+  d["Selfsign cert"] = s["isSupportSelfSignedCert"]
+  d["Update using proxy"] = s["isUpdateUseProxy"]
+  d["uTLS fingerprint"] = s["uTlsFingerprint"]
+  d["Download core source"] = s["v2rayCoreDownloadSource"]
+
+  const od = Object.keys(d).sort().reduce((o, k) => {
+    o[k] = d[k]
+    return o
+  }, {})
+
+  data.value = od
 }
 
 function getSettings() {

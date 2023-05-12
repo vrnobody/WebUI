@@ -19,5 +19,5 @@ npm run dev
 ```
 
 ##### 启动服务端：  
-在Luna插件中加载`public/server.lua`并运行。  
+在Luna脚本编辑器中加载`public/server.lua`并运行。  
 注意要禁用浏览器的CORS检测。  

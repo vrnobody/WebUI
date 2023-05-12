@@ -8,17 +8,22 @@ const { _, t } = useI18n()
 let content = ref("")
 let mark = ref("")
 
+function report(count) {
+  const msg = t('nNewServerImported', {
+    count: count
+  })
+  Swal.fire(msg)
+}
+
+function scanQrCode() {
+  const mk = mark.value
+  utils.call(report, "ScanQrCode", [mk])
+}
+
 function importShareLinks() {
-  let links = content.value
-  let mk = mark.value
-  let next = function (count) {
-    let msg = t('nNewServerImported', {
-      count: count
-    })
-    console.log(msg)
-    Swal.fire(msg)
-  }
-  utils.call(next, "ImportShareLinks", [links, mk])
+  const links = content.value
+  const mk = mark.value
+  utils.call(report, "ImportShareLinks", [links, mk])
 }
 
 </script>
@@ -40,7 +45,8 @@ function importShareLinks() {
       </textarea>
     </div>
     <div class="flex justify-center items-end h-8 w-full">
-      <button @click="importShareLinks">{{ t('import') }}</button>
+      <button @click="importShareLinks" class="mx-2">{{ t('import') }}</button>
+      <button @click="scanQrCode" class="mx-2">{{ t('scanQrCode') }}</button>
     </div>
 
   </div>

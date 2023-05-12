@@ -6,6 +6,7 @@ export default {
 
     shareLinks: 'Share links',
     nNewServerImported: `Import {count} new server(s).`,
+    scanQrCode: 'Scan QR code',
     mark: 'Mark',
 
     status: 'Status',
@@ -37,6 +38,9 @@ export default {
     error: 'Error',
 
     // server errors
+    configIsEmpty: 'Config is empty!',
+    addServerFailed: 'Add server failed!',
+    serverNotFound: 'Server not found!',
     sendReqError: 'Send request error!',
     parseReqError: 'Parse request error!',
     parseRespError: 'Parse response error!',

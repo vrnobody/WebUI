@@ -7,6 +7,7 @@ export default {
     shareLinks: '分享链接',
     nNewServerImported: `导入了{count}个服务器。`,
     mark: '标记',
+    scanQrCode: '扫描二维码',
 
     status: '状态',
     select: '选择',
@@ -39,6 +40,10 @@ export default {
     error: '错误',
 
     // server errors
+    configIsEmpty: 'config为空！',
+    addServerFailed: '添加服务器失败！',
+    serverNotFound: '查找服务器失败！',
+
     sendReqError: '发送请求错误！',
     parseReqError: '解释请求错误！',
     parseRespError: '解释回复错误！',

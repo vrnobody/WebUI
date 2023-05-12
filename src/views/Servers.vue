@@ -29,8 +29,6 @@ function GenSaveButtonText() {
   return t('add')
 }
 
-
-
 function editServSettings(uid) {
   curServUid = uid
   const next = function (tags) {
@@ -88,7 +86,7 @@ function closeJsonEditor() {
 function saveServConfig() {
   let next = function (err) {
     if (err) {
-      Swal.fire(err)
+      Swal.fire(t(err))
       return
     }
     isJsonEditorVisible.value = false
@@ -258,7 +256,7 @@ onMounted(() => {
           <div class="cursor-grab grow text-base table w-full h-8">
             <div class="table-cell py-0 px-1 align-middle text-center w-12">
               <div v-if="serv.on"
-                class="dark:bg-amber-600 bg-amber-500 inline-block text-white text-xs py-0.5 px-1 rounded cursor-pointer"
+                class="dark:bg-lime-700 dark:text-neutral-200 bg-lime-500 inline-block text-neutral-100 text-xs py-0.5 px-1 rounded cursor-pointer"
                 @click="stopServ(serv.uid)">ON</div>
             </div>
             <div class="table-cell py-0 px-1 align-middle text-center w-12">
@@ -279,7 +277,7 @@ onMounted(() => {
                   <i class="fas fa-tags"></i>
                 </div>
                 <div
-                  class="bg-cyan-500 text-neutral-100 cursor-pointer rounded inline-block text-xs py-0.5 px-1 max-w-[4.5rem] text-ellipsis overflow-hidden whitespace-nowrap my-0.5 mx-0.5"
+                  class="dark:bg-cyan-700 bg-cyan-600 dark:text-neutral-300 text-neutral-200 cursor-pointer rounded inline-block text-xs py-0.5 px-1 max-w-[4.5rem] text-ellipsis overflow-hidden whitespace-nowrap my-0.5 mx-0.5"
                   v-for="tag in serv.tags" @click="editServSettings(serv.uid)">{{ tag }}</div>
               </div>
             </div>

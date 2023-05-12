@@ -160,6 +160,12 @@ local function CalcTotalPageNumber(total)
     return pages
 end
 
+function ScanQrCode(mark)
+    mark = string.isempty(mark) and "" or mark
+    local link = Misc:ScanQrcode()
+    return Misc:ImportLinks(link, mark)
+end
+
 function GetServSettings(uid)
     local coreServ = utils.GetFirstServerWithUid(uid)
     if not coreServ then
@@ -303,13 +309,13 @@ function SaveServerConfig(uid, config)
     config = config or ""
     
     if string.isempty(config) then
-        return "config is empty!"
+        return "configIsEmpty"
     end
     
     if string.isempty(uid) then
         local ok = Server:Add(config)
         if not ok then
-            return "add server failed!"
+            return "addServerFailed"
         else
             return nil
         end
@@ -317,7 +323,7 @@ function SaveServerConfig(uid, config)
     
     local coreServ = utils.GetFirstServerWithUid(uid)
     if coreServ == nil then
-        return "server not found!"
+        return "serverNotFound"
     end
     
     local coreConfiger = coreServ:GetConfiger()
