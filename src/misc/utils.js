@@ -48,6 +48,10 @@ function post(callback, content) {
                 return
             }
 
+            if (callback === null) {
+                return
+            }
+
             try {
                 callback(r)
             } catch (err) {

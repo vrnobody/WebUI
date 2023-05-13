@@ -8,7 +8,7 @@ local public = "./lua/webui"
 -- confings
 local Logger = require('lua.modules.logger')
 
-local version = "0.0.1.1"
+local version = "0.0.1.2"
 local pageSize = 50
 
 local logLevel = #args > 1 and args[2] or Logger.logLevels.Debug
@@ -158,6 +158,67 @@ local function CalcTotalPageNumber(total)
         pages = 1
     end
     return pages
+end
+
+function ChangeLuaCoreIndex(name, index)
+    return Sys:LusServSetIndex(name, index)
+end    
+
+function StartLuaCore(name)
+    Sys:LuaServStart(name)
+end
+
+function StopLuaCore(name)
+    Sys:LuaServStop(name)
+end
+
+function RemoveLuaCore(name)
+    return Sys:LuaServRemove(name)
+end
+
+function ChangeLuaCoreInfo(name, settings)
+    return Sys:LuaServChangeSettings(name, settings)
+end
+
+function GetAllLuaCoreInfos()
+    return Sys:LuaServGetAllCoreInfos()
+end
+
+function AddLuaScript(name, script)
+    return Sys:LuaServAdd(name, script)
+end
+
+function GetAllLuaScripts()
+    return Sys:LuaServGetAllScripts()
+end
+
+function RemoveLuaVm(luavm)
+    Sys:LuaVmRemove(luavm)
+end
+
+function ClearLuaVmLog(luavm)
+    Sys:LuaVmClearLog(luavm)
+end
+
+function GetLuaVmLog(luavm)
+    return Sys:LuaVmGetLog(luavm)
+end
+
+function RunLuaScript(name, script)
+    local luavm = Sys:LuaVmCreate()
+    if string.isempty(luavm) then
+        return ""
+    end
+    Sys:LuaVmRun(luavm, name, script)
+    return luavm
+end
+
+function StopLuaVm(luavm)
+    Sys:LuaVmStop(luavm)
+end
+
+function AbortLuaVm(luavm)
+    Sys:LuaVmAbort(luavm)
 end
 
 function ScanQrCode(mark)
@@ -388,7 +449,7 @@ end
 
 local function Main()
     local ver = GetServerVersion()
-    print("server.lua v", ver)
+    print("server.lua v" .. ver)
     haServ:Create(url, public, Handler, false)
     print("请打开网址: ", url)
     haServ:Run()

@@ -4,6 +4,16 @@ export default {
     settings: '配置',
     about: '关于',
 
+    // luna
+    name: '名字',
+    replaceCurScript: '替换当前脚本？',
+    scriptNoSavedYet: '当前脚本还没保存！',
+    none: '无',
+    confirmRemoveCore: '确定要删除 [{name}] 吗？',
+    hidden: '隐藏',
+    autorun: '自启动',
+    loadClr: '加载CLR',
+
     shareLinks: '分享链接',
     nNewServerImported: `导入了{count}个服务器。`,
     mark: '标记',

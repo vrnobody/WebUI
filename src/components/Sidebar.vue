@@ -23,7 +23,6 @@ function checkAppVersion() {
   const ver = cfg.supportedAppVersion
   const cb = function (appVer) {
     const ok = IsNewerVersion(ver, appVer)
-    // console.log(ok, ver, appVer)
     if (!ok) {
       const msg = t('please_update_app', {
         curVer: appVer,
@@ -70,6 +69,8 @@ onMounted(() => {
     <RouterLink to="/import" exact-active-class="dark:bg-slate-600 bg-slate-400"
       class="dark:hover:bg-slate-500 hover:bg-slate-500"><i class="fas fa-file-import"></i> {{
         t('import') }}</RouterLink>
+    <RouterLink to="/luna" exact-active-class="dark:bg-slate-600 bg-slate-400"
+      class="dark:hover:bg-slate-500 hover:bg-slate-500"><i class="fas fa-code"></i> Luna</RouterLink>
     <RouterLink to="/settings" exact-active-class="dark:bg-slate-600 bg-slate-400"
       class="dark:hover:bg-slate-500 hover:bg-slate-500"><i class="fas fa-cog"></i> {{ t('settings') }}
     </RouterLink>

@@ -4,6 +4,16 @@ export default {
     settings: 'Settings',
     about: 'About',
 
+    // luna
+    name: 'Name',
+    replaceCurScript: 'Replace current script?',
+    scriptNoSavedYet: 'Current script not saved yet!',
+    none: 'None',
+    confirmRemoveCore: 'Remove script [{name}]?',
+    hidden: 'Hidden',
+    autorun: 'Autorun',
+    loadClr: 'LoadCLR',
+
     shareLinks: 'Share links',
     nNewServerImported: `Import {count} new server(s).`,
     scanQrCode: 'Scan QR code',

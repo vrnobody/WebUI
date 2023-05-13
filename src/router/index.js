@@ -11,6 +11,11 @@ const router = createRouter({
       component: () => import('../views/Servers.vue'),
     },
     {
+      path: '/luna',
+      name: 'luna',
+      component: () => import('../views/Luna.vue'),
+    },
+    {
       path: '/import',
       name: 'import',
       // route level code-splitting
