@@ -1,3 +1,7 @@
+# edit by nobody
+public/ace-builds
+public/ace-linter
+
 # Logs
 logs
 *.log

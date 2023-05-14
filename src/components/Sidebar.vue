@@ -5,6 +5,7 @@ import { onMounted } from 'vue'
 import utils from "../misc/utils.js"
 import cfg from "../config.js"
 import config from '../config.js'
+import store from '../misc/store.js'
 
 const { _, t } = useI18n()
 
@@ -51,6 +52,7 @@ function checkServerVersion() {
 function changeThemeMode(mode) {
   config.saveThemeMode(mode)
   utils.reloadThemeMode()
+  store.onThemeChanges.value = !store.onThemeChanges.value
 }
 
 onMounted(() => {

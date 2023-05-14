@@ -77,11 +77,45 @@ function call(callback, fn, ps) {
     post(callback, JSON.stringify(req))
 }
 
-function init(tt) {
+async function init(tt) {
     t = tt
+
+    const localLinterUrl = window.location.origin + "/ace/linters/"
+    let provider = LanguageProvider.fromCdn(localLinterUrl);
+
+    const schema = await import('../assets/v4-config-schema.json')
+
+    provider.setGlobalOptions("json", {
+        schemas: [
+            {
+                uri: "common.schema.json",
+                schema: JSON.stringify(schema),
+            }
+        ]
+    });
+    window.jsonLintProvider = provider
+}
+
+function showScrollbarY() {
+    document.body.style.overflowY = ''
+}
+
+function hideScrollbarY() {
+    document.body.style.overflowY = 'hidden'
+}
+
+function updateEditorTheme(editor) {
+    if (editor === null) {
+        return
+    }
+    const theme = isDarkMode() ? "ace/theme/solarized_dark" : "ace/theme/solarized_light"
+    editor.setTheme(theme)
 }
 
 export default {
+    updateEditorTheme,
+    showScrollbarY,
+    hideScrollbarY,
     call,
     init,
     reloadThemeMode,

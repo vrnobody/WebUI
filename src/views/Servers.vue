@@ -5,6 +5,7 @@ import { onMounted, ref, defineAsyncComponent } from 'vue'
 import { VueDraggableNext } from 'vue-draggable-next'
 
 const VPagination = defineAsyncComponent(() => import("@hennge/vue3-pagination"))
+const JsonEditor = defineAsyncComponent(() => import("../components/JsonEditor.vue"))
 
 const { _, t } = useI18n()
 const servSettingKeys = ["index", "name", "mark", "remark", "tag1", "tag2", "tag3"]
@@ -349,10 +350,14 @@ onMounted(() => {
   </div>
   <div v-if="isJsonEditorVisible"
     class="dark:bg-slate-700 bg-slate-300 left-0 md:left-56 opacity-95 fixed z-50 flex flex-col right-0 bottom-0 p-4 top-0">
-    <div class="block grow w-full h-4/5">
+    <!-- 
+      <div class="block grow w-full h-4/5" id="json-editor-container">
+      
       <textarea v-on:keydown="bindJsonEditorKeydownEvent($event)" class="dark:bg-slate-500 w-full h-full bg-amber-50"
         v-model="servConfig" />
     </div>
+  -->
+    <JsonEditor v-model="servConfig" />
     <div class="flex w-full h-10 justify-center items-end">
       <button @click="saveServConfig" class="my-0 mx-4">{{ GenSaveButtonText() }}</button>
       <button @click="closeJsonEditor" class="my-0 mx-4">{{ t('close') }}</button>

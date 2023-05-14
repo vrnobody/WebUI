@@ -1,19 +1,23 @@
 <script setup>
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, defineAsyncComponent } from 'vue'
 import { useI18n } from '@yangss/vue3-i18n'
 import utils from '../misc/utils.js'
+
+const LuaEditor = defineAsyncComponent(() => import("../components/LuaEditor.vue"))
 
 const { _, t } = useI18n()
 const scriptName = ref('')
 const scriptContent = ref('')
 const logContent = ref('')
-const scriptCache = ref({})
+const scriptDb = ref({})
 
 let luavm = ''
 
 let logContainer = ref(null)
 
 let logUpdater = 0
+
+let lastScriptContent = ""
 
 function saveScript() {
   const name = scriptName.value
@@ -22,7 +26,8 @@ function saveScript() {
     const msg = ok ? t('success') : t('failed')
     Swal.fire(msg)
     if (ok) {
-      scriptCache[name] = script
+      scriptDb[name] = script
+      lastScriptContent = script
       loadScriptsFromServer()
     }
   }
@@ -31,14 +36,15 @@ function saveScript() {
 
 function loadScript() {
   const name = scriptName.value
-  const scripts = scriptCache.value
+  const scripts = scriptDb.value
   for (const key in scripts) {
     if (key === name) {
       const script = scripts[name]
       const cur = scriptContent.value
-      if (!cur || cur.length === 0) {
+      if (lastScriptContent === null || lastScriptContent.length < 1 || lastScriptContent === cur) {
         scriptContent.value = script
-      } else if (script !== cur) {
+        lastScriptContent = script
+      } else {
         Swal.fire({
           title: t('replaceCurScript'),
           showDenyButton: true,
@@ -47,6 +53,7 @@ function loadScript() {
         }).then((result) => {
           if (result.isConfirmed) {
             scriptContent.value = script
+            lastScriptContent = script
           }
         })
         return
@@ -59,7 +66,7 @@ function loadScriptsFromServer() {
   const next = function (str) {
     try {
       const j = JSON.parse(str)
-      scriptCache.value = j
+      scriptDb.value = j
     } catch (err) {
       Swal.fire(err.toString())
     }
@@ -72,6 +79,9 @@ function updateLog() {
     return
   }
   const next = function (log) {
+    if (log === logContent.value) {
+      return
+    }
     logContent.value = log || ''
     nextTick(() => {
       logContainer.value.scrollTop = logContainer.value.scrollHeight + 120
@@ -109,23 +119,47 @@ function abortScript() {
 }
 
 function newScript() {
-  const name = scriptName.value
-  const script = scriptContent.value
-  const cache = scriptCache.value[name]
-  if (script && script.length > 0 && script !== cache) {
-    Swal.fire(t('scriptNoSavedYet'))
-  } else {
+  const cur = scriptContent.value
+  if (lastScriptContent === null || lastScriptContent.length < 1 || lastScriptContent === cur) {
     scriptContent.value = ''
     scriptName.value = ''
+    lastScriptContent = ''
+  } else {
+    Swal.fire(t('scriptNoSavedYet'))
   }
 }
 
+function onKeyDown(e) {
+  switch (e.key) {
+    case 'F5':
+      runScript()
+      e.preventDefault()
+      break;
+    case 'F6':
+      stopScript()
+      e.preventDefault()
+      break;
+    case 'F7':
+      abortScript()
+      e.preventDefault()
+      break;
+    case 'F8':
+      clearLog()
+      e.preventDefault()
+      break;
+  }
+
+}
+
+
 onMounted(() => {
+  document.addEventListener('keydown', onKeyDown)
   loadScriptsFromServer()
   logUpdater = setInterval(updateLog, 1000)
 })
 
 onUnmounted(() => {
+  document.removeEventListener('keydown', onKeyDown)
   clearInterval(logUpdater)
   removeLuaVm()
 })
@@ -142,7 +176,7 @@ onUnmounted(() => {
         <input type="text" class="w-full px-2 dark:bg-slate-500 bg-neutral-100" list="scriptname-datalist"
           v-model="scriptName" @change="loadScript" />
         <datalist id="scriptname-datalist" class="dark:bg-slate-600">
-          <option v-for="(_, key) in scriptCache" :value="key" class="dark:bg-slate-600"></option>
+          <option v-for="(_, key) in scriptDb" :value="key" class="dark:bg-slate-600"></option>
         </datalist>
       </div>
       <button class="mx-1" @click="newScript"><i class="fas fa-file-code"></i></button>
@@ -153,10 +187,7 @@ onUnmounted(() => {
       <button class="mx-1" @click="clearLog"><i class="fas fa-broom"></i></button>
     </div>
     <div class="flex grow w-full flex-row">
-      <div class="grow mr-1 mt-1">
-        <textarea class="dark:bg-slate-500 bg-neutral-100 w-full h-full p-2" v-model="scriptContent">
-        </textarea>
-      </div>
+      <LuaEditor v-model="scriptContent" />
       <div class="w-[30%] ml-1 mt-1">
         <textarea readonly class="dark:bg-slate-600 bg-neutral-200 w-full h-full p-1" v-model="logContent"
           ref="logContainer"></textarea>
