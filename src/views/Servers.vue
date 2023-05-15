@@ -23,7 +23,7 @@ let curServUid = ""
 let isServSettingsEditorVisible = ref(false)
 let servSettings = ref({})
 
-function GenSaveButtonText() {
+function genSaveButtonText() {
   if (curServUid && curServUid.length > 0) {
     return t('save')
   }
@@ -76,7 +76,7 @@ function editServConfig(uid) {
 
 function openEmptyJsonEditor() {
   curServUid = ""
-  servConfig.value = "{}"
+  servConfig.value = "{\n\n}"
   isJsonEditorVisible.value = true
 }
 
@@ -101,11 +101,6 @@ function saveServConfig() {
   } catch (err) {
     Swal.fire(err.toString())
   }
-}
-
-function parseServerInfo(r) {
-  pages = r.pages
-  data.value = r.data
 }
 
 function selectAll() {
@@ -154,17 +149,17 @@ function restartServ(uid) {
 }
 
 function search() {
-  let pn = 1
-  curPageNum.value = pn
-  utils.call(parseServerInfo, "GetSerializedServers", [
-    pn,
-    searchType.value,
-    searchKeyword.value,
-  ])
+  curPageNum.value = 1
+  refresh()
 }
 
 function refresh() {
-  utils.call(parseServerInfo, "GetSerializedServers", [
+  const next = function (r) {
+    pages = r.pages
+    data.value = r.data
+  }
+
+  utils.call(next, "GetSerializedServers", [
     curPageNum.value,
     searchType.value,
     searchKeyword.value,
@@ -185,6 +180,7 @@ function servOrderChanged(evt) {
   } else {
     idx = servs[newIndex + 1].index - 0.05
   }
+
   const next = function (ok) {
     if (!ok) {
       Swal.fire(t('error'))
@@ -359,7 +355,7 @@ onMounted(() => {
   -->
     <JsonEditor v-model="servConfig" />
     <div class="flex w-full h-10 justify-center items-end">
-      <button @click="saveServConfig" class="my-0 mx-4">{{ GenSaveButtonText() }}</button>
+      <button @click="saveServConfig" class="my-0 mx-4">{{ genSaveButtonText() }}</button>
       <button @click="closeJsonEditor" class="my-0 mx-4">{{ t('close') }}</button>
     </div>
   </div>

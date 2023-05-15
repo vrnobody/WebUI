@@ -48,12 +48,8 @@ function post(callback, content) {
                 return
             }
 
-            if (callback === null) {
-                return
-            }
-
             try {
-                callback(r)
+                callback && callback(r)
             } catch (err) {
                 const fn = callback.name + "()"
                 pop('callbackFuncError', [fn, err])
@@ -79,21 +75,6 @@ function call(callback, fn, ps) {
 
 async function init(tt) {
     t = tt
-
-    const localLinterUrl = window.location.origin + "/ace/linters/"
-    let provider = LanguageProvider.fromCdn(localLinterUrl);
-
-    const schema = await import('../assets/v4-config-schema.json')
-
-    provider.setGlobalOptions("json", {
-        schemas: [
-            {
-                uri: "common.schema.json",
-                schema: JSON.stringify(schema),
-            }
-        ]
-    });
-    window.jsonLintProvider = provider
 }
 
 function showScrollbarY() {
@@ -112,8 +93,17 @@ function updateEditorTheme(editor) {
     editor.setTheme(theme)
 }
 
+function destroyEditor(editor) {
+    if (!editor) {
+        return
+    }
+    editor.destroy()
+    editor.container.remove()
+}
+
 export default {
     updateEditorTheme,
+    destroyEditor,
     showScrollbarY,
     hideScrollbarY,
     call,

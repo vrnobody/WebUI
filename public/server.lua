@@ -160,6 +160,14 @@ local function CalcTotalPageNumber(total)
     return pages
 end
 
+function GenLuaModuleSnippets(code)
+    return Sys:LuaGenModuleSnippets(code)
+end
+
+function GetLuaStaticSnippets()
+    return Sys:LuaGetStaticSnippets()
+end
+
 function ChangeLuaCoreIndex(name, index)
     return Sys:LusServSetIndex(name, index)
 end    

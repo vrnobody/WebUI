@@ -6,6 +6,8 @@ import store from '../misc/store.js'
 const props = defineProps(['modelValue'])
 const emit = defineEmits(['update:modelValue'])
 
+let editor = null
+
 const servConfig = computed({
   get() {
     return props.modelValue
@@ -15,11 +17,29 @@ const servConfig = computed({
   }
 })
 
-let editor = null
-
 watch(store.onThemeChanges, () => {
   utils.updateEditorTheme(editor)
 })
+
+async function createJsonConfigV4LintSvcProvider() {
+  const localLinterUrl = window.location.origin + "/ace/linters/"
+  const provider = LanguageProvider.fromCdn(localLinterUrl);
+
+  // const schema = await import('../assets/v4-config-schema.json')
+  const r = await fetch('/ace/linters/v4-config-schema.json')
+  const schema = await r.text()
+
+  provider.setGlobalOptions("json", {
+    schemas: [
+      {
+        uri: "common.schema.json",
+        schema: schema,
+      }
+    ]
+  });
+
+  return provider
+}
 
 onMounted(async () => {
 
@@ -36,8 +56,9 @@ onMounted(async () => {
     enableLiveAutocompletion: true
   })
 
-  jsonLintProvider.registerEditor(editor);
-  jsonLintProvider.setSessionOptions(editor.session, { schemaUri: "common.schema.json" });
+  window.jsonLintSvcProvider = window.jsonLintSvcProvider || await createJsonConfigV4LintSvcProvider()
+  window.jsonLintSvcProvider.registerEditor(editor);
+  window.jsonLintSvcProvider.setSessionOptions(editor.session, { schemaUri: "common.schema.json" });
 
   editor.on('change', function () {
     servConfig.value = editor.getValue()
@@ -45,10 +66,7 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
-  if (editor) {
-    editor.destroy()
-    editor.container.remove()
-  }
+  utils.destroyEditor(editor)
   utils.showScrollbarY()
 })
 

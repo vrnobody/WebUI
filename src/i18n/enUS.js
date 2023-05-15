@@ -13,6 +13,8 @@ export default {
     hidden: 'Hidden',
     autorun: 'Autorun',
     loadClr: 'LoadCLR',
+    editor: 'Editor',
+    manager: 'Manager',
 
     shareLinks: 'Share links',
     nNewServerImported: `Import {count} new server(s).`,

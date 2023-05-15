@@ -13,6 +13,8 @@ export default {
     hidden: '隐藏',
     autorun: '自启动',
     loadClr: '加载CLR',
+    editor: '编辑器',
+    manager: '管理器',
 
     shareLinks: '分享链接',
     nNewServerImported: `导入了{count}个服务器。`,

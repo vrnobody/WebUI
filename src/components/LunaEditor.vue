@@ -75,10 +75,17 @@ function loadScriptsFromServer() {
 }
 
 function updateLog() {
-  if (luavm === null || luavm.length === 0) {
+  if (!luavm) {
+    clearInterval(logUpdater)
     return
   }
   const next = function (log) {
+
+    if (!log) {
+      clearInterval(logUpdater)
+      return
+    }
+
     if (log === logContent.value) {
       return
     }
@@ -104,8 +111,10 @@ function runScript() {
   const name = scriptName.value
 
   removeLuaVm()
+  clearInterval(logUpdater)
   const next = function (handle) {
     luavm = handle
+    logUpdater = setInterval(updateLog, 1000)
   }
   utils.call(next, 'RunLuaScript', [name, script])
 }
@@ -148,14 +157,11 @@ function onKeyDown(e) {
       e.preventDefault()
       break;
   }
-
 }
-
 
 onMounted(() => {
   document.addEventListener('keydown', onKeyDown)
   loadScriptsFromServer()
-  logUpdater = setInterval(updateLog, 1000)
 })
 
 onUnmounted(() => {
@@ -168,12 +174,12 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="dark:bg-slate-700 bg-slate-300 left-0 md:left-56 opacity-95 fixed z-50 flex flex-col right-0 bottom-0 p-2 top-12">
+    class="dark:bg-slate-800 bg-slate-300 p-2 pt-0 left-0 md:left-56 opacity-95 fixed z-20 flex flex-col right-0 bottom-0 top-12">
     <!-- toolstrip -->
-    <div class="flex w-full dark:bg-slate-600 bg-slate-200 h-10 items-center text-base px-2">
+    <div class="flex w-full dark:bg-slate-500 bg-slate-400 h-10 items-center text-base px-2">
       <label class="mx-1">{{ t('name') }}</label>
       <div class="grow mx-1">
-        <input type="text" class="w-full px-2 dark:bg-slate-500 bg-neutral-100" list="scriptname-datalist"
+        <input type="text" class="w-full px-2 dark:bg-slate-600 bg-neutral-100" list="scriptname-datalist"
           v-model="scriptName" @change="loadScript" />
         <datalist id="scriptname-datalist" class="dark:bg-slate-600">
           <option v-for="(_, key) in scriptDb" :value="key" class="dark:bg-slate-600"></option>
@@ -187,9 +193,11 @@ onUnmounted(() => {
       <button class="mx-1" @click="clearLog"><i class="fas fa-broom"></i></button>
     </div>
     <div class="flex grow w-full flex-row">
-      <LuaEditor v-model="scriptContent" />
-      <div class="w-[30%] ml-1 mt-1">
-        <textarea readonly class="dark:bg-slate-600 bg-neutral-200 w-full h-full p-1" v-model="logContent"
+      <div class="flex w-[70%] min-w-[20%] overflow-auto resize-x">
+        <LuaEditor v-model="scriptContent" />
+      </div>
+      <div class="grow ml-1 mt-1 flex">
+        <textarea readonly class="dark:bg-slate-600 bg-neutral-200 grow p-1 resize-none" v-model="logContent"
           ref="logContainer"></textarea>
       </div>
     </div>
