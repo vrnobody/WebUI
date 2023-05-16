@@ -85,9 +85,9 @@ export default {
     devHostUrl: 'http://localhost:4000',
     releaseHostUrl: '/',
     supportedServerVersions: [
-        "0.0.1.2",
+        "0.0.1.3",
     ],
-    supportedAppVersion: '1.6.9.2',
+    supportedAppVersion: '1.6.9.3',
     get,
     set,
     reload,

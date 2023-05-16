@@ -1,7 +1,7 @@
 <script setup>
 import { useI18n } from '@yangss/vue3-i18n'
 import utils from '../misc/utils.js'
-import { onMounted, ref, defineAsyncComponent } from 'vue'
+import { onMounted, onUnmounted, ref, defineAsyncComponent, nextTick } from 'vue'
 import { VueDraggableNext } from 'vue-draggable-next'
 
 const VPagination = defineAsyncComponent(() => import("@hennge/vue3-pagination"))
@@ -22,6 +22,7 @@ let servConfig = ref("")
 let curServUid = ""
 let isServSettingsEditorVisible = ref(false)
 let servSettings = ref({})
+let logContainer = ref(null)
 
 function genSaveButtonText() {
   if (curServUid && curServUid.length > 0) {
@@ -101,6 +102,45 @@ function saveServConfig() {
   } catch (err) {
     Swal.fire(err.toString())
   }
+}
+
+let logUpdateTimer = 0
+const logContent = ref("")
+const isLogWindowVisible = ref(false)
+
+function closeLogWindow() {
+  isLogWindowVisible.value = false
+  utils.showScrollbarY()
+}
+
+function openLogWindowFor(uid) {
+  curServUid = uid
+  logContent.value = ""
+
+  utils.hideScrollbarY()
+  isLogWindowVisible.value = true
+
+  clearInterval(logUpdateTimer)
+  const updateLog = function (log) {
+    if (!isLogWindowVisible.value) {
+      return
+    }
+    if (logContent.value === log) {
+      return
+    }
+    logContent.value = log
+    nextTick(() => {
+      logContainer.value.scrollTop = logContainer.value.scrollHeight + 120
+    })
+  }
+  const getLog = function () {
+    if (!isLogWindowVisible.value) {
+      clearInterval(logUpdateTimer)
+      return
+    }
+    utils.call(updateLog, 'GetLog', [curServUid])
+  }
+  logUpdateTimer = setInterval(getLog, 1000)
 }
 
 function selectAll() {
@@ -191,48 +231,18 @@ function servOrderChanged(evt) {
   utils.call(next, "ChangeServIndex", [curServ.uid, idx])
 }
 
-function insertAtCursor(el, text) {
-  text = text || '';
-  if (document.selection) {
-    // IE
-    el.focus();
-    var sel = document.selection.createRange();
-    sel.text = text;
-  } else if (el.selectionStart || el.selectionStart === 0) {
-    // Others
-    var startPos = el.selectionStart;
-    var endPos = el.selectionEnd;
-    el.value = el.value.substring(0, startPos) +
-      text +
-      el.value.substring(endPos, el.value.length);
-    el.selectionStart = startPos + text.length;
-    el.selectionEnd = startPos + text.length;
-  } else {
-    el.value += text;
-  }
-
-  // vue will not auto-update ref()
-  servConfig.value = el.value;
-};
-
-function bindJsonEditorKeydownEvent(e) {
-  const editor = e.target
-  const TABKEY = 9;
-  if (e.keyCode == TABKEY) {
-    insertAtCursor(editor, "    ");
-    if (e.preventDefault) {
-      e.preventDefault();
-    }
-    return false;
-  }
-}
-
 onMounted(() => {
   refresh()
+})
+
+onUnmounted(() => {
+  clearInterval(logUpdateTimer)
+  utils.showScrollbarY()
 })
 </script>
 
 <template>
+  <!-- header -->
   <div class="left-0 md:left-56 flex fixed top-12 right-0 grow z-10">
     <div class="dark:bg-slate-500 dark:text-neutral-700 grow bg-slate-400 text-xs text-neutral-600 table h-6">
       <div class="table-cell py-0 px-1 align-middle text-center w-12">{{ t('status') }}</div>
@@ -242,9 +252,11 @@ onMounted(() => {
       <div class="hidden sm:table-cell  py-0 px-1 align-middle text-center w-60 lg:w-[28%]">{{ t('summary') }}
       </div>
       <div class="hidden lg:table-cell py-0 px-1 align-middle text-center w-56">{{ t('tags') }}</div>
-      <div class="table-cell py-0 px-1 align-middle text-center w-16">{{ t('controls') }}</div>
+      <div class="table-cell py-0 px-1 align-middle text-center w-24">{{ t('controls') }}</div>
     </div>
   </div>
+
+  <!-- servers list -->
   <div class="flex flex-col">
     <div class="block w-full h-6"></div>
     <ul>
@@ -278,12 +290,15 @@ onMounted(() => {
                   v-for="tag in serv.tags" @click="editServSettings(serv.uid)">{{ tag }}</div>
               </div>
             </div>
-            <div class="table-cell py-0 px-1 align-middle text-center w-16">
+            <div class="table-cell py-0 px-1 align-middle text-center w-24">
               <button class="text-xl my-0 mx-1 text-red-700" @click="restartServ(serv.uid)">
                 <i class="fa fa-play"></i>
               </button>
               <button class="text-xl my-0 mx-1" @click="editServConfig(serv.uid)">
                 <i class="fas fa-edit"></i>
+              </button>
+              <button class="text-xl my-0 mx-1" @click="openLogWindowFor(serv.uid)">
+                <i class="fas fa-file-alt"></i>
               </button>
             </div>
           </div>
@@ -292,6 +307,8 @@ onMounted(() => {
     </ul>
     <div class="block grow h-10"></div>
   </div>
+
+  <!-- toolstrip -->
   <div class="md:left-56 left-8 top-0 h-12 py-0 px-4 flex grow justify-left items-center fixed z-20">
     <div class="hidden sm:flex">
       <select v-model="searchType" class="dark:bg-slate-500 bg-neutral-50 w-20 md:w-24 inline-block">
@@ -318,7 +335,13 @@ onMounted(() => {
       <button @click="openEmptyJsonEditor" class="my-0 mx-1"><i class="fas fa-plus"></i></button>
       <button @click="deleteSelected" class="my-0 mx-1"><i class="fas fa-trash-alt"></i></button>
     </div>
+    <div class="dark:bg-slate-500 bg-slate-200 h-3/4 w-0.5 m-1"></div>
+    <div class="m-0 text-2xl">
+      <button @click="openLogWindowFor(null)" class="my-0 mx-1"><i class="fas fa-file-alt"></i></button>
+    </div>
   </div>
+
+  <!-- pager -->
   <div
     class="dark:bg-slate-800 pagh-8 py-0 px-5 flex grow justify-left items-center fixed z-10 right-0 bottom-0 bg-neutral-200"
     v-if="pages > 1">
@@ -344,15 +367,22 @@ onMounted(() => {
       <button @click="closeServSettingsEditor" class="my-0 mx-4">{{ t('close') }}</button>
     </div>
   </div>
+
+  <!-- log window -->
+  <div v-if="isLogWindowVisible"
+    class="dark:bg-slate-700 bg-slate-300 left-0 md:left-56 opacity-95 fixed z-50 flex flex-col right-0 bottom-0 p-4 top-0">
+    <div class="dark:bg-slate-600 flex grow w-full h-4/5 p-4 bg-neutral-200">
+      <textarea readonly class="dark:bg-slate-600 bg-neutral-200 grow p-1 resize-none" v-model="logContent"
+        ref="logContainer"></textarea>
+    </div>
+    <div class="flex w-full h-10 justify-center items-end">
+      <button @click="closeLogWindow" class="my-0 mx-4">{{ t('close') }}</button>
+    </div>
+  </div>
+
+  <!-- json editro -->
   <div v-if="isJsonEditorVisible"
     class="dark:bg-slate-700 bg-slate-300 left-0 md:left-56 opacity-95 fixed z-50 flex flex-col right-0 bottom-0 p-4 top-0">
-    <!-- 
-      <div class="block grow w-full h-4/5" id="json-editor-container">
-      
-      <textarea v-on:keydown="bindJsonEditorKeydownEvent($event)" class="dark:bg-slate-500 w-full h-full bg-amber-50"
-        v-model="servConfig" />
-    </div>
-  -->
     <JsonEditor v-model="servConfig" />
     <div class="flex w-full h-10 justify-center items-end">
       <button @click="saveServConfig" class="my-0 mx-4">{{ genSaveButtonText() }}</button>

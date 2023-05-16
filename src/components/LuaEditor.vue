@@ -2,6 +2,7 @@
 import { onMounted, onUnmounted, computed, watch } from 'vue'
 import utils from '../misc/utils.js'
 import store from '../misc/store.js'
+import config from '../config';
 
 const props = defineProps(['modelValue'])
 const emit = defineEmits(['update:modelValue'])
@@ -45,6 +46,8 @@ callback(null, [
 */
 
 let staticSnippets = []
+let staticSnippetsLower = []
+let staticKeywordSnippets = []
 let moduleSnippets = []
 
 const moduleCompleter = {
@@ -56,13 +59,57 @@ const moduleCompleter = {
   }
 }
 
+function measureSimilarity(target, standar) {
+  const tlen = target.length
+  const slen = standar.length
+
+  if (tlen > slen) {
+    return 0
+  }
+
+  target = target.toLowerCase()
+  let score = 0
+  let tIdx = 0
+  for (let i = 0; i < slen; i++) {
+    if (target.charAt(tIdx) === standar.charAt(i)) {
+      score = score + (tlen - tIdx) * 2 + (100 - i)
+      tIdx++
+    }
+    if (tIdx >= tlen) {
+      break;
+    }
+  }
+  return score
+}
+
+function genBestMatchSnippets(prefix) {
+  let r = []
+  const slen = staticSnippetsLower.length
+  const target = prefix.toLowerCase()
+  for (let i = 0; i < slen; i++) {
+    const snippet = staticSnippetsLower[i]
+    const score = measureSimilarity(target, snippet)
+    if (score > 0) {
+      const snp = staticSnippets[i]
+      r.push(snp)
+    }
+  }
+  return r
+}
+
 const staticCompleter = {
+  identifierRegexps: [/[a-zA-Z_0-9:\.\(\",]/],
   getCompletions: function (source, session, pos, prefix, callback) {
     if (session !== editor.session) {
       console.log('staticCompleter: wrong session, pass!')
       return
     }
-    callback(null, staticSnippets)
+    if (prefix.length < 2) {
+      callback(null, staticKeywordSnippets)
+      return
+    }
+    let snippets = genBestMatchSnippets(prefix)
+    callback(null, snippets)
   }
 }
 
@@ -80,13 +127,24 @@ function updateStaticSnippets(snippets) {
   try {
     const j = JSON.parse(snippets)
     staticSnippets = j
+    let keywords = []
+    let lowers = []
+    for (const snippet of staticSnippets) {
+      lowers.push(snippet.value.toLowerCase())
+      if (snippet.meta === "keyword") {
+        snippet['score'] = 100
+        keywords.push(snippet)
+      }
+    }
+    staticSnippetsLower = lowers
+    staticKeywordSnippets = keywords
   } catch (err) {
     Swal.fire(err.toString())
   }
 }
 
 function replaceModuleSnippets(snippets) {
-  if (!snippets || snippets.length < 1) {
+  if (!snippets) {
     return
   }
   try {
@@ -133,7 +191,11 @@ onMounted(async () => {
   editor.completers.unshift(staticCompleter)
   editor.completers.push(moduleCompleter)
 
-  window.debugEditor = editor
+  if (config.isDevMode) {
+    console.log('export window.debugEditor for debugging')
+    window.debugEditor = editor
+  }
+
 
   editor.on('change', function () {
     const text = editor.getValue()

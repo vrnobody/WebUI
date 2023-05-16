@@ -8,7 +8,7 @@ local public = "./lua/webui"
 -- confings
 local Logger = require('lua.modules.logger')
 
-local version = "0.0.1.2"
+local version = "0.0.1.3"
 local pageSize = 50
 
 local logLevel = #args > 1 and args[2] or Logger.logLevels.Debug
@@ -158,6 +158,18 @@ local function CalcTotalPageNumber(total)
         pages = 1
     end
     return pages
+end
+
+function GetLog(uid)
+    if string.isempty(uid) then
+        return Misc:GetLogAsString()
+    end
+    local coreServ = utils.GetFirstServerWithUid(uid)
+    if coreServ == nil then
+        return nil
+    end
+    local coreLogger = coreServ:GetLogger()
+    return coreLogger:GetLogAsString()
 end
 
 function GenLuaModuleSnippets(code)
