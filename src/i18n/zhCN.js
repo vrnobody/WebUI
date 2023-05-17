@@ -15,6 +15,8 @@ export default {
     loadClr: '加载CLR',
     editor: '编辑器',
     manager: '管理器',
+    vars: '变量',
+    funcs: '函数',
 
     shareLinks: '分享链接',
     nNewServerImported: `导入了{count}个服务器。`,
@@ -28,6 +30,7 @@ export default {
     summary: '摘要',
     tags: '标签',
     controls: '控制',
+    loading: '加载中...',
 
     jump: '跳转',
 
@@ -40,6 +43,7 @@ export default {
     save: "保存",
     close: "关闭",
 
+    servListIsEmpty: '服务器列表为空',
     confirmDeleteNServers: `确定删除{count}个服务器吗？`,
     yes: '是',
     no: '否',

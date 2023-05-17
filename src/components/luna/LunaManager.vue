@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import utils from '../misc/utils.js'
+import utils from '../../misc/utils.js'
 import { useI18n } from '@yangss/vue3-i18n'
 import { VueDraggableNext } from 'vue-draggable-next'
 

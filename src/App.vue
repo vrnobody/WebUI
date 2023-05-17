@@ -1,7 +1,7 @@
 <script setup>
 import { RouterView } from 'vue-router'
-import CompHeader from './components/Header.vue'
-import CompSidebar from './components/Sidebar.vue'
+import CompHeader from './components/app/Header.vue'
+import CompSidebar from './components/app/Sidebar.vue'
 import { useI18n } from '@yangss/vue3-i18n'
 import { onBeforeMount } from 'vue'
 import utils from './misc/utils'

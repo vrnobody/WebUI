@@ -15,6 +15,8 @@ export default {
     loadClr: 'LoadCLR',
     editor: 'Editor',
     manager: 'Manager',
+    vars: 'Vars',
+    funcs: 'Funcs',
 
     shareLinks: 'Share links',
     nNewServerImported: `Import {count} new server(s).`,
@@ -28,6 +30,7 @@ export default {
     summary: 'Summary',
     tags: 'Tags',
     controls: 'Controls',
+    loading: 'Loading...',
 
     search: 'Search',
     jump: 'Jump',
@@ -38,6 +41,7 @@ export default {
     save: 'Save',
     close: 'Close',
 
+    servListIsEmpty: 'Server list is empty.',
     confirmDeleteNServers: `Delete {count} server(s)?`,
     yes: 'Yes',
     no: 'No',

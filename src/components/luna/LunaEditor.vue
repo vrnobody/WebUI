@@ -1,9 +1,9 @@
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick, defineAsyncComponent } from 'vue'
 import { useI18n } from '@yangss/vue3-i18n'
-import utils from '../misc/utils.js'
+import utils from '../../misc/utils.js'
 
-const LuaEditor = defineAsyncComponent(() => import("../components/LuaEditor.vue"))
+const LuaEditor = defineAsyncComponent(() => import("./LuaEditor.vue"))
 
 const { _, t } = useI18n()
 const scriptName = ref('')
@@ -193,7 +193,7 @@ onUnmounted(() => {
       <button class="mx-1" @click="clearLog"><i class="fas fa-broom"></i></button>
     </div>
     <div class="flex grow w-full flex-row">
-      <div class="flex w-[70%] min-w-[20%] overflow-auto resize-x">
+      <div class="flex w-[70%] min-w-[20%] overflow-auto resize-x flex-col">
         <LuaEditor v-model="scriptContent" />
       </div>
       <div class="grow ml-1 mt-1 flex">

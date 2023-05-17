@@ -1,6 +1,6 @@
 <script setup>
 import { useI18n } from '@yangss/vue3-i18n'
-import cfg from '../config.js'
+import cfg from '../../config.js'
 
 const { locale } = useI18n()
 

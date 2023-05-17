@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, onUnmounted, computed, watch } from 'vue'
-import utils from '../misc/utils.js'
-import store from '../misc/store.js'
+import utils from '../../misc/utils.js'
+import store from '../../misc/store.js'
 
 const props = defineProps(['modelValue'])
 const emit = defineEmits(['update:modelValue'])
@@ -49,6 +49,7 @@ onMounted(async () => {
   utils.updateEditorTheme(editor)
   editor.session.setMode("ace/mode/json")
   editor.setValue(servConfig.value)
+  editor.clearSelection()
 
   editor.setOptions({
     enableBasicAutocompletion: true,

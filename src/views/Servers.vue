@@ -1,173 +1,59 @@
 <script setup>
-import { useI18n } from '@yangss/vue3-i18n'
 import utils from '../misc/utils.js'
 import { onMounted, onUnmounted, ref, defineAsyncComponent, nextTick } from 'vue'
 import { VueDraggableNext } from 'vue-draggable-next'
+import ConfigEditor from '../components/servers/ConfigEditor.vue'
+import LogViewer from '../components/servers/LogViewer.vue'
+import SettingsEditor from '../components/servers/SettingsEditor.vue'
+import FadeTransition from '../components/transitions/FadeTransition.vue'
+import LoadingWidget from '../components/widgets/Loading.vue'
 
 const VPagination = defineAsyncComponent(() => import("@hennge/vue3-pagination"))
-const JsonEditor = defineAsyncComponent(() => import("../components/JsonEditor.vue"))
 
-const { _, t } = useI18n()
-const servSettingKeys = ["index", "name", "mark", "remark", "tag1", "tag2", "tag3"]
+const t = utils.getTranslator()
 
-let curPageNum = ref(1)
-let pages = ref(15)
-let searchType = ref("summary")
-let searchKeyword = ref("")
+const curPageNum = ref(1)
+const pages = ref(15)
+const searchType = ref("summary")
+const searchKeyword = ref("")
+const isLoading = ref(true)
+const curServUid = ref('')
+const curServTitle = ref('')
 
-let data = ref([])
+let servsInfo = ref([])
 
-let isJsonEditorVisible = ref(false)
-let servConfig = ref("")
-let curServUid = ""
-let isServSettingsEditorVisible = ref(false)
-let servSettings = ref({})
-let logContainer = ref(null)
-
-function genSaveButtonText() {
-  if (curServUid && curServUid.length > 0) {
-    return t('save')
-  }
-  return t('add')
-}
-
-function editServSettings(uid) {
-  curServUid = uid
-  const next = function (tags) {
-    if (tags) {
-      servSettings.value = tags
-      isServSettingsEditorVisible.value = true
-      return
-    }
-    Swal.fire(err.toString())
-  }
-  utils.call(next, "GetServSettings", [uid])
-}
-
-function saveServSettings() {
-  const next = function (ok) {
-    if (ok) {
-      closeServSettingsEditor()
-      refresh()
-      return
-    }
-    Swal.fire(t('failed'))
-  }
-  utils.call(next, "SaveServSettings", [curServUid, servSettings.value])
-}
-
-function closeServSettingsEditor() {
-  isServSettingsEditorVisible.value = false
-}
-
-function editServConfig(uid) {
-  curServUid = uid
-  let next = function (config) {
-    try {
-      const j = JSON.parse(config)
-      const s = JSON.stringify(j, null, 4)
-      servConfig.value = s
-      isJsonEditorVisible.value = true
-    } catch (err) {
-      Swal.fire(err.toString())
-    }
-  }
-  utils.call(next, "GetServerConfig", [uid])
-}
-
-function openEmptyJsonEditor() {
-  curServUid = ""
-  servConfig.value = "{\n\n}"
-  isJsonEditorVisible.value = true
-}
-
-function closeJsonEditor() {
-  isJsonEditorVisible.value = false
-}
-
-function saveServConfig() {
-  let next = function (err) {
-    if (err) {
-      Swal.fire(t(err))
-      return
-    }
-    isJsonEditorVisible.value = false
-    refresh()
-  }
-
-  try {
-    const config = servConfig.value
-    const uid = curServUid
-    utils.call(next, "SaveServerConfig", [uid, config])
-  } catch (err) {
-    Swal.fire(err.toString())
-  }
-}
-
-let logUpdateTimer = 0
-const logContent = ref("")
-const isLogWindowVisible = ref(false)
-
-function closeLogWindow() {
-  isLogWindowVisible.value = false
-  utils.showScrollbarY()
-}
-
-function openLogWindowFor(uid) {
-  curServUid = uid
-  logContent.value = ""
-
-  utils.hideScrollbarY()
-  isLogWindowVisible.value = true
-
-  clearInterval(logUpdateTimer)
-  const updateLog = function (log) {
-    if (!isLogWindowVisible.value) {
-      return
-    }
-    if (logContent.value === log) {
-      return
-    }
-    logContent.value = log
-    nextTick(() => {
-      logContainer.value.scrollTop = logContainer.value.scrollHeight + 120
-    })
-  }
-  const getLog = function () {
-    if (!isLogWindowVisible.value) {
-      clearInterval(logUpdateTimer)
-      return
-    }
-    utils.call(updateLog, 'GetLog', [curServUid])
-  }
-  logUpdateTimer = setInterval(getLog, 1000)
+const hWnds = {
+  logViwer: ref(false),
+  configEditor: ref(false),
+  settingsEditor: ref(false),
 }
 
 function selectAll() {
-  for (const serv of data.value) {
+  for (const serv of servsInfo.value) {
     serv.selected = true
   }
 }
 
 function invertSelection() {
-  for (const serv of data.value) {
+  for (const serv of servsInfo.value) {
     serv.selected = !serv.selected
   }
 }
 
 function deleteSelected() {
-  let uids = data.value.filter(el => el.selected).map(el => el.uid)
+  const uids = servsInfo.value.filter(el => el.selected).map(el => el.uid)
   if (uids.length < 1) {
     Swal.fire(t('noServerSelected'))
     return
   }
 
-  let title = t('confirmDeleteNServers', { count: uids.length })
-  let next = function (success) {
+  const title = t('confirmDeleteNServers', { count: uids.length })
+  const next = function (success) {
     const msg = success ? t('serversDeleted') : t('deleteFailed')
     Swal.fire(msg)
     refresh()
   }
+
   Swal.fire({
     title: title,
     showDenyButton: true,
@@ -195,8 +81,9 @@ function search() {
 
 function refresh() {
   const next = function (r) {
-    pages = r.pages
-    data.value = r.data
+    pages.value = r.pages
+    servsInfo.value = r.data
+    isLoading.value = false
   }
 
   utils.call(next, "GetSerializedServers", [
@@ -207,7 +94,7 @@ function refresh() {
 }
 
 function servOrderChanged(evt) {
-  const servs = data.value
+  const servs = servsInfo.value
   const maxIndex = servs.length - 1
   if (maxIndex < 1) {
     return
@@ -231,83 +118,47 @@ function servOrderChanged(evt) {
   utils.call(next, "ChangeServIndex", [curServ.uid, idx])
 }
 
+function getServTitleByUid(uid) {
+  const servs = servsInfo.value
+  for (const serv of servs) {
+    if (serv.uid === uid) {
+      return serv.index + '.[' + utils.trim(serv.name, 18) + ']' + serv.summary
+    }
+  }
+  return null
+}
+
+function openWindow(handle, uid) {
+  curServUid.value = uid
+  curServTitle.value = getServTitleByUid(uid)
+  handle.value = true
+}
+
+function closeWindow(handle) {
+  handle.value = false
+  if (handle !== hWnds.logViwer) {
+    refresh()
+  }
+}
+
+function isShowPopWindow() {
+  for (const key in hWnds) {
+    if (hWnds[key].value) {
+      return true
+    }
+  }
+  return false
+}
+
 onMounted(() => {
   refresh()
 })
 
 onUnmounted(() => {
-  clearInterval(logUpdateTimer)
-  utils.showScrollbarY()
 })
 </script>
 
 <template>
-  <!-- header -->
-  <div class="left-0 md:left-56 flex fixed top-12 right-0 grow z-10">
-    <div class="dark:bg-slate-500 dark:text-neutral-700 grow bg-slate-400 text-xs text-neutral-600 table h-6">
-      <div class="table-cell py-0 px-1 align-middle text-center w-12">{{ t('status') }}</div>
-      <div class="table-cell py-0 px-1 align-middle text-center w-12">{{ t('select') }}</div>
-      <div class="table-cell py-0 px-1 align-middle text-center w-16">{{ t('index') }}</div>
-      <div class="table-cell py-0 px-1 align-middle text-center">{{ t('title') }}</div>
-      <div class="hidden sm:table-cell  py-0 px-1 align-middle text-center w-60 lg:w-[28%]">{{ t('summary') }}
-      </div>
-      <div class="hidden lg:table-cell py-0 px-1 align-middle text-center w-56">{{ t('tags') }}</div>
-      <div class="table-cell py-0 px-1 align-middle text-center w-24">{{ t('controls') }}</div>
-    </div>
-  </div>
-
-  <!-- servers list -->
-  <div class="flex flex-col">
-    <div class="block w-full h-6"></div>
-    <ul>
-      <VueDraggableNext ghost-class="ghost" :list="data" @change="servOrderChanged">
-        <li v-for="serv in data" :key="serv.uid" class="dark:odd:bg-slate-600 odd:bg-neutral-200">
-          <div class="cursor-grab grow text-base table w-full h-8">
-            <div class="table-cell py-0 px-1 align-middle text-center w-12">
-              <div v-if="serv.on"
-                class="dark:bg-lime-700 dark:text-neutral-200 bg-lime-500 inline-block text-neutral-100 text-xs py-0.5 px-1 rounded cursor-pointer"
-                @click="stopServ(serv.uid)">ON</div>
-            </div>
-            <div class="table-cell py-0 px-1 align-middle text-center w-12">
-              <input type="checkbox" v-model="serv.selected" class="w-4 h-4" />
-            </div>
-            <div class="table-cell py-0 px-1 align-middle text-center w-16">{{ serv['index'] }}</div>
-            <div class="table-cell py-1 px-2 align-middle text-left break-all">
-              <p class="whitespace-pre-wrap">{{ serv['name'] }}</p>
-            </div>
-            <div class="hidden sm:table-cell lg:w-[28%] py-1 px-2 align-middle text-left break-all w-60">{{
-              serv['summary']
-            }}
-            </div>
-            <div class="hidden lg:table-cell py-1 px-2 align-middle text-left break-all w-56">
-              <div class="flex flex-wrap justify-start">
-                <div v-if="serv.tags && serv.tags.length < 1" class="text-base py-0 px-1 cursor-pointer text-blue-400"
-                  @click="editServSettings(serv.uid)">
-                  <i class="fas fa-tags"></i>
-                </div>
-                <div
-                  class="dark:bg-cyan-700 bg-cyan-600 dark:text-neutral-300 text-neutral-200 cursor-pointer rounded inline-block text-xs py-0.5 px-1 max-w-[4.5rem] text-ellipsis overflow-hidden whitespace-nowrap my-0.5 mx-0.5"
-                  v-for="tag in serv.tags" @click="editServSettings(serv.uid)">{{ tag }}</div>
-              </div>
-            </div>
-            <div class="table-cell py-0 px-1 align-middle text-center w-24">
-              <button class="text-xl my-0 mx-1 text-red-700" @click="restartServ(serv.uid)">
-                <i class="fa fa-play"></i>
-              </button>
-              <button class="text-xl my-0 mx-1" @click="editServConfig(serv.uid)">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="text-xl my-0 mx-1" @click="openLogWindowFor(serv.uid)">
-                <i class="fas fa-file-alt"></i>
-              </button>
-            </div>
-          </div>
-        </li>
-      </VueDraggableNext>
-    </ul>
-    <div class="block grow h-10"></div>
-  </div>
-
   <!-- toolstrip -->
   <div class="md:left-56 left-8 top-0 h-12 py-0 px-4 flex grow justify-left items-center fixed z-20">
     <div class="hidden sm:flex">
@@ -332,13 +183,86 @@ onUnmounted(() => {
     </div>
     <div class="dark:bg-slate-500 bg-slate-200 h-3/4 w-0.5 m-1"></div>
     <div class="m-0 text-2xl">
-      <button @click="openEmptyJsonEditor" class="my-0 mx-1"><i class="fas fa-plus"></i></button>
+      <button @click="openWindow(hWnds.configEditor, null)" class="my-0 mx-1"><i class="fas fa-plus"></i></button>
       <button @click="deleteSelected" class="my-0 mx-1"><i class="fas fa-trash-alt"></i></button>
     </div>
     <div class="dark:bg-slate-500 bg-slate-200 h-3/4 w-0.5 m-1"></div>
     <div class="m-0 text-2xl">
-      <button @click="openLogWindowFor(null)" class="my-0 mx-1"><i class="fas fa-file-alt"></i></button>
+      <button @click="openWindow(hWnds.logViwer, null)" class="my-0 mx-1"><i class="fas fa-file-alt"></i></button>
     </div>
+  </div>
+
+  <!-- header -->
+  <div class="left-0 md:left-56 flex fixed top-12 right-0 grow z-10">
+    <div class="dark:bg-slate-500 dark:text-neutral-700 grow bg-slate-400 text-xs text-neutral-600 table h-6">
+      <div class="table-cell py-0 px-1 align-middle text-center w-12">{{ t('status') }}</div>
+      <div class="table-cell py-0 px-1 align-middle text-center w-12">{{ t('select') }}</div>
+      <div class="table-cell py-0 px-1 align-middle text-center w-16">{{ t('index') }}</div>
+      <div class="table-cell py-0 px-1 align-middle text-center">{{ t('title') }}</div>
+      <div class="hidden sm:table-cell  py-0 px-1 align-middle text-center w-60 lg:w-[28%]">{{ t('summary') }}
+      </div>
+      <div class="hidden lg:table-cell py-0 px-1 align-middle text-center w-56">{{ t('tags') }}</div>
+      <div class="table-cell py-0 px-1 align-middle text-center w-24">{{ t('controls') }}</div>
+    </div>
+  </div>
+
+  <!-- loading -->
+  <LoadingWidget v-if="isLoading" />
+
+  <!-- empty list -->
+  <div v-if="servsInfo.length <= 0" class="flex justify-center">
+    <div v-if="!isLoading" class="text-lg mt-8">{{ t('servListIsEmpty') }}</div>
+  </div>
+  <!-- servers list -->
+  <div v-else class="flex flex-col">
+    <div class="block w-full h-6"></div>
+    <ul>
+      <VueDraggableNext ghost-class="ghost" :list="servsInfo" @change="servOrderChanged">
+        <li v-for="serv in servsInfo" :key="serv.uid" class="dark:odd:bg-slate-600 odd:bg-neutral-200">
+          <div class="cursor-grab grow text-base table w-full h-8">
+            <div class="table-cell py-0 px-1 align-middle text-center w-12">
+              <div v-if="serv.on"
+                class="dark:bg-lime-700 dark:text-neutral-200 bg-lime-500 inline-block text-neutral-100 text-xs py-0.5 px-1 rounded cursor-pointer"
+                @click="stopServ(serv.uid)">ON</div>
+            </div>
+            <div class="table-cell py-0 px-1 align-middle text-center w-12">
+              <input type="checkbox" v-model="serv.selected" class="w-4 h-4" />
+            </div>
+            <div class="table-cell py-0 px-1 align-middle text-center w-16">{{ serv['index'] }}</div>
+            <div class="table-cell py-1 px-2 align-middle text-left break-all">
+              <p class="whitespace-pre-wrap">{{ serv['name'] }}</p>
+            </div>
+            <div class="hidden sm:table-cell lg:w-[28%] py-1 px-2 align-middle text-left break-all w-60">{{
+              serv['summary']
+            }}
+            </div>
+            <div class="hidden lg:table-cell py-1 px-2 align-middle text-left break-all w-56">
+              <div class="flex flex-wrap justify-start">
+                <div v-if="serv.tags && serv.tags.length < 1" class="text-base py-0 px-1 cursor-pointer text-blue-400"
+                  @click="openWindow(hWnds.settingsEditor, serv.uid)">
+                  <i class="fas fa-tags"></i>
+                </div>
+                <div
+                  class="dark:bg-cyan-700 bg-cyan-600 dark:text-neutral-300 text-neutral-200 cursor-pointer rounded inline-block text-xs py-0.5 px-1 max-w-[4.5rem] text-ellipsis overflow-hidden whitespace-nowrap my-0.5 mx-0.5"
+                  v-for="tag in serv.tags" @click="openWindow(hWnds.settingsEditor, serv.uid)">{{ tag }}</div>
+              </div>
+            </div>
+            <div class="table-cell py-0 px-1 align-middle text-center w-24">
+              <button class="text-xl my-0 mx-1 text-red-700" @click="restartServ(serv.uid)">
+                <i class="fa fa-play"></i>
+              </button>
+              <button class="text-xl my-0 mx-1" @click="openWindow(hWnds.configEditor, serv.uid)">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="text-xl my-0 mx-1" @click="openWindow(hWnds.logViwer, serv.uid)">
+                <i class="fas fa-file-alt"></i>
+              </button>
+            </div>
+          </div>
+        </li>
+      </VueDraggableNext>
+    </ul>
+    <div class="block grow h-10"></div>
   </div>
 
   <!-- pager -->
@@ -350,45 +274,19 @@ onUnmounted(() => {
     <input v-model="curPageNum" class="dark:bg-slate-600 text-center text-sm my-1 mx-2 w-12" @keyup.enter="refresh" />
     <button @click="refresh" class="text-sm">{{ t('jump') }}</button>
   </div>
-  <div v-if="isServSettingsEditorVisible"
-    class="dark:bg-slate-700 bg-slate-300 left-0 md:left-56 opacity-95 fixed z-50 flex flex-col right-0 bottom-0 p-4 top-0">
-    <div class="dark:bg-slate-600 block grow w-full h-4/5 p-4 bg-neutral-200">
-      <div v-for="key in servSettingKeys">
-        <div class="flex items-center h-9">
-          <div class="py-0 px-4 w-24">{{ key }}</div>
-          <div class="flex grow py-0 px-4">
-            <input type="text" v-model="servSettings[key]" class="dark:bg-slate-500 bg-neutral-100 grow" />
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="flex w-full h-10 justify-center items-end">
-      <button @click="saveServSettings" class="my-0 mx-4">{{ t('save') }}</button>
-      <button @click="closeServSettingsEditor" class="my-0 mx-4">{{ t('close') }}</button>
-    </div>
-  </div>
 
-  <!-- log window -->
-  <div v-if="isLogWindowVisible"
-    class="dark:bg-slate-700 bg-slate-300 left-0 md:left-56 opacity-95 fixed z-50 flex flex-col right-0 bottom-0 p-4 top-0">
-    <div class="dark:bg-slate-600 flex grow w-full h-4/5 p-4 bg-neutral-200">
-      <textarea readonly class="dark:bg-slate-600 bg-neutral-200 grow p-1 resize-none" v-model="logContent"
-        ref="logContainer"></textarea>
+  <!-- popup window -->
+  <FadeTransition>
+    <div v-if="isShowPopWindow()"
+      class="transition-transform dark:bg-slate-700 bg-slate-300 left-0 md:left-56 opacity-95 fixed z-50 flex flex-col right-0 bottom-0 p-4 top-0">
+      <SettingsEditor v-if="hWnds.settingsEditor.value" @onClose="closeWindow(hWnds.settingsEditor)"
+        v-model:uid="curServUid" v-model:title="curServTitle" />
+      <ConfigEditor v-if="hWnds.configEditor.value" @onClose="closeWindow(hWnds.configEditor)" v-model:uid="curServUid"
+        v-model:title="curServTitle" />
+      <LogViewer v-if="hWnds.logViwer.value" @onClose="closeWindow(hWnds.logViwer)" v-model:uid="curServUid"
+        v-model:title="curServTitle" />
     </div>
-    <div class="flex w-full h-10 justify-center items-end">
-      <button @click="closeLogWindow" class="my-0 mx-4">{{ t('close') }}</button>
-    </div>
-  </div>
-
-  <!-- json editro -->
-  <div v-if="isJsonEditorVisible"
-    class="dark:bg-slate-700 bg-slate-300 left-0 md:left-56 opacity-95 fixed z-50 flex flex-col right-0 bottom-0 p-4 top-0">
-    <JsonEditor v-model="servConfig" />
-    <div class="flex w-full h-10 justify-center items-end">
-      <button @click="saveServConfig" class="my-0 mx-4">{{ genSaveButtonText() }}</button>
-      <button @click="closeJsonEditor" class="my-0 mx-4">{{ t('close') }}</button>
-    </div>
-  </div>
+  </FadeTransition>
 </template>
 
 <style scoped>

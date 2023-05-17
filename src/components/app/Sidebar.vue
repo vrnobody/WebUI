@@ -2,10 +2,9 @@
 import { RouterLink } from 'vue-router'
 import { useI18n } from '@yangss/vue3-i18n'
 import { onMounted } from 'vue'
-import utils from "../misc/utils.js"
-import cfg from "../config.js"
-import config from '../config.js'
-import store from '../misc/store.js'
+import utils from "../../misc/utils.js"
+import config from '../../config.js'
+import store from '../../misc/store.js'
 
 const { _, t } = useI18n()
 
@@ -21,7 +20,7 @@ function IsNewerVersion(minVer, curVer) {
 }
 
 function checkAppVersion() {
-  const ver = cfg.supportedAppVersion
+  const ver = config.supportedAppVersion
   const cb = function (appVer) {
     const ok = IsNewerVersion(ver, appVer)
     if (!ok) {
@@ -36,7 +35,7 @@ function checkAppVersion() {
 }
 
 function checkServerVersion() {
-  let vers = cfg.supportedServerVersions
+  let vers = config.supportedServerVersions
   let cb = function (servVer) {
     if (vers.indexOf(servVer) < 0) {
       let msg = t('server_ver_not_supported', {

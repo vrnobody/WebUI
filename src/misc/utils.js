@@ -77,6 +77,10 @@ async function init(tt) {
     t = tt
 }
 
+function getTranslator() {
+    return t
+}
+
 function showScrollbarY() {
     document.body.style.overflowY = ''
 }
@@ -101,7 +105,16 @@ function destroyEditor(editor) {
     editor.container.remove()
 }
 
+function trim(str, len) {
+    if (str.length < len - 3) {
+        return str
+    }
+    return str.slice(0, len - 3) + '...'
+}
+
 export default {
+    trim,
+    getTranslator,
     updateEditorTheme,
     destroyEditor,
     showScrollbarY,

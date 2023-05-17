@@ -172,6 +172,10 @@ function GetLog(uid)
     return coreLogger:GetLogAsString()
 end
 
+function LuaAnalyzeCode(code)
+    return Sys:LuaAnalyzeCode(code)
+end
+
 function GenLuaModuleSnippets(code)
     return Sys:LuaGenModuleSnippets(code)
 end

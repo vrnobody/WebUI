@@ -1,8 +1,8 @@
 <script setup>
 
 import { ref, markRaw } from 'vue'
-import CompEditor from '../components/LunaEditor.vue'
-import CompManager from '../components/LunaManager.vue'
+import CompEditor from '../components/luna/LunaEditor.vue'
+import CompManager from '../components/luna/LunaManager.vue'
 import { useI18n } from '@yangss/vue3-i18n'
 const { _, t } = useI18n()
 
