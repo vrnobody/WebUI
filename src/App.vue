@@ -56,6 +56,7 @@ onBeforeMount(() => {
   height: 0.4rem;
   width: 1.8rem;
   border-radius: 0.4rem;
+  transition: 0.4s;
 }
 
 .hamburger-menu-button::before {
@@ -69,16 +70,16 @@ onBeforeMount(() => {
 }
 
 #hamburger-menu-toggle:checked+.hamburger-menu-button-container .hamburger-menu-button::before {
-  margin-top: 0px;
-  transform: rotate(405deg);
+  width: 60%;
+  transform: translateX(0.8rem) translateY(0.15rem) rotate(45deg);
 }
 
 #hamburger-menu-toggle:checked+.hamburger-menu-button-container .hamburger-menu-button {
-  background: none;
+  transform: rotate(180deg);
 }
 
 #hamburger-menu-toggle:checked+.hamburger-menu-button-container .hamburger-menu-button::after {
-  margin-top: 0px;
-  transform: rotate(-405deg);
+  width: 60%;
+  transform: translateX(0.8rem) translateY(-0.15rem) rotate(-45deg);
 }
 </style>

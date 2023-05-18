@@ -19,19 +19,23 @@ let logUpdater = 0
 
 let lastScriptContent = ""
 
-function saveScript() {
+function saveScript(quiet) {
   const name = scriptName.value
   const script = scriptContent.value
-  const next = function (ok) {
-    const msg = ok ? t('success') : t('failed')
-    Swal.fire(msg)
+  const showResult = function (ok) {
     if (ok) {
       scriptDb[name] = script
       lastScriptContent = script
       loadScriptsFromServer()
     }
+
+    if (quiet && ok) {
+      return
+    }
+    const msg = ok ? t('success') : t('failed')
+    Swal.fire(msg)
   }
-  utils.call(next, 'AddLuaScript', [name, script])
+  utils.call(showResult, 'AddLuaScript', [name, script])
 }
 
 function loadScript() {
@@ -91,14 +95,19 @@ function updateLog() {
     }
     logContent.value = log || ''
     nextTick(() => {
-      logContainer.value.scrollTop = logContainer.value.scrollHeight + 120
+      if (logContainer.value) {
+        logContainer.value.scrollTop = logContainer.value.scrollHeight + 120
+      }
     })
   }
   utils.call(next, 'GetLuaVmLog', [luavm])
 }
 
 function clearLog() {
-  utils.call(null, 'ClearLuaVmLog', [luavm])
+  function next() {
+    logContent.value = ''
+  }
+  utils.call(next, 'ClearLuaVmLog', [luavm])
 }
 
 function removeLuaVm() {
@@ -114,6 +123,7 @@ function runScript() {
   clearInterval(logUpdater)
   const next = function (handle) {
     luavm = handle
+    isLogPanelVisible.value = true
     logUpdater = setInterval(updateLog, 1000)
   }
   utils.call(next, 'RunLuaScript', [name, script])
@@ -139,6 +149,13 @@ function newScript() {
 }
 
 function onKeyDown(e) {
+
+  if (e.ctrlKey && e.key === 's') {
+    e.preventDefault()
+    saveScript(true)
+    return
+  }
+
   switch (e.key) {
     case 'F5':
       runScript()
@@ -170,11 +187,17 @@ onUnmounted(() => {
   removeLuaVm()
 })
 
+const isFullScreen = ref(false)
+function onFullScreenHandler(fullScreen) {
+  isFullScreen.value = fullScreen
+}
+
+const isLogPanelVisible = ref(false)
 </script>
 
 <template>
-  <div
-    class="dark:bg-slate-800 bg-slate-300 p-2 pt-0 left-0 md:left-56 opacity-95 fixed z-20 flex flex-col right-0 bottom-0 top-12">
+  <div class="dark:bg-slate-800 bg-slate-300 p-2 fixed flex flex-col right-0 bottom-0"
+    :class="{ 'z-50 left-0 right-0 top-0': isFullScreen, 'z-20 top-12 pt-0 left-0 md:left-56': !isFullScreen }">
     <!-- toolstrip -->
     <div class="flex w-full dark:bg-slate-500 bg-slate-400 h-10 items-center text-base px-2">
       <label class="mx-1">{{ t('name') }}</label>
@@ -186,17 +209,18 @@ onUnmounted(() => {
         </datalist>
       </div>
       <button class="mx-1" @click="newScript"><i class="fas fa-file-code"></i></button>
-      <button class="mx-1" @click="saveScript"><i class="fas fa-save"></i></button>
+      <button class="mx-1" @click="saveScript(false)"><i class="fas fa-save"></i></button>
       <button class="mx-1" @click="runScript"><i class="fas fa-play"></i></button>
       <button class="mx-1" @click="stopScript"><i class="fas fa-stop"></i></button>
       <button class="mx-1" @click="abortScript"><i class="fas fa-stop-circle"></i></button>
       <button class="mx-1" @click="clearLog"><i class="fas fa-broom"></i></button>
     </div>
     <div class="flex grow w-full flex-row">
-      <div class="flex w-[70%] min-w-[20%] overflow-auto resize-x flex-col">
-        <LuaEditor v-model="scriptContent" />
+      <div class="flex w-[70%] min-w-[20%] overflow-auto resize-x flex-col" :class="{ 'grow': !isLogPanelVisible }">
+        <LuaEditor v-model:script="scriptContent" @onFullScreen="onFullScreenHandler"
+          v-model:logPanelVisible="isLogPanelVisible" />
       </div>
-      <div class="grow ml-1 mt-1 flex">
+      <div v-if="isLogPanelVisible" class="grow ml-1 mt-1 flex">
         <textarea readonly class="dark:bg-slate-600 bg-neutral-200 grow p-1 resize-none" v-model="logContent"
           ref="logContainer"></textarea>
       </div>

@@ -5,30 +5,51 @@ import store from '../../misc/store.js'
 import config from '../../config';
 
 const t = utils.getTranslator()
-const props = defineProps(['modelValue'])
-const emit = defineEmits(['update:modelValue'])
+const props = defineProps(['script', 'logPanelVisible'])
+const emit = defineEmits(['update:script', 'update:logPanelVisible', 'onFullScreen'])
 
 const script = computed({
   get() {
-    return props.modelValue
+    return props.script
   },
   set(value) {
-    emit('update:modelValue', value)
+    emit('update:script', value)
+  }
+})
+
+const isLogPanelVisible = computed({
+  get() {
+    return props.logPanelVisible
+  },
+  set(value) {
+    emit('update:logPanelVisible', value)
   }
 })
 
 let editor = null
 const curAst = ref({})
-const globalVarList = ref({})
-const functionList = ref({})
+const globalVarList = ref([])
+const functionList = ref([])
 
 watch(props, (newProps) => {
   if (editor === null) {
     return
   }
-  const v = newProps.modelValue
+  const v = newProps.script
   updateEditorContent(v)
 })
+
+const isFullScreen = ref(false)
+
+function toggleFullScreen() {
+  const v = !isFullScreen.value
+  isFullScreen.value = v
+  emit('onFullScreen', v)
+}
+
+function toggleLogPanel() {
+  isLogPanelVisible.value = !isLogPanelVisible.value
+}
 
 function updateEditorContent(content) {
   if (editor.getValue() === content) {
@@ -36,6 +57,7 @@ function updateEditorContent(content) {
   }
   editor.setValue(content)
   editor.clearSelection()
+  updateModuleSnippets(content)
 }
 
 watch(store.onThemeChanges, () => {
@@ -152,12 +174,16 @@ function updateStaticSnippets(snippets) {
   }
 }
 
+function caseInSensitiveComparer(a, b) {
+  return a.toLowerCase().localeCompare(b.toLowerCase())
+}
+
 function replaceCurAst(ast) {
   try {
     const o = JSON.parse(ast)
     curAst.value = o
-    globalVarList.value = o.vars
-    functionList.value = o.funcs
+    globalVarList.value = Object.keys(o.vars).sort(caseInSensitiveComparer)
+    functionList.value = Object.keys(o.funcs).sort(caseInSensitiveComparer)
   } catch (err) {
     console.log(err.toString())
   }
@@ -257,7 +283,7 @@ function gotoLine(row) {
   editor.gotoLine(row)
 }
 
-function moveCursor(editor, isForward) {
+function moveCursor(isForward) {
   cursorHistoryIndex = cursorHistoryIndex + (isForward ? 1 : -1)
   if (cursorHistoryIndex >= cursorHistoryCache.length) {
     cursorHistoryIndex = cursorHistoryCache.length - 1
@@ -308,16 +334,16 @@ function addCustomCommands(editor) {
   editor.commands.addCommand({
     name: 'cursor go back',
     bindKey: { win: 'Ctrl--', mac: 'Command--' },
-    exec: function (editor) {
-      moveCursor(editor, false)
+    exec: function () {
+      moveCursor(false)
     },
     readOnly: false,
   })
   editor.commands.addCommand({
     name: 'cursor go forward',
     bindKey: { win: 'Ctrl-=', mac: 'Command-=' },
-    exec: function (editor) {
-      moveCursor(editor, true)
+    exec: function () {
+      moveCursor(true)
     },
     readOnly: false,
   })
@@ -357,8 +383,8 @@ onMounted(async () => {
   editor = ace.edit('lua-editor-container')
 
   if (config.isDevMode) {
-    console.log('export window.debugEditor for debugging')
-    window.debugEditor = editor
+    console.log('export window.editor for debugging')
+    window.editor = editor
   }
 
   initEditor(editor)
@@ -370,22 +396,38 @@ onUnmounted(() => {
   removeCompleter(moduleCompleter)
 })
 
-
-
 </script>
 
 <template>
-  <div class="dark:bg-slate-500 bg-slate-400 mr-1 mt-1 p-1 flex">
-    <label class="flex w-14 justify-end px-2 shrink-0">{{ t('vars') }}</label>
-    <select class="dark:bg-slate-600 bg-slate-300 grow h-6 min-w-0" @change="selectGlobalVar($event)">
-      <option v-for="(_, key) in globalVarList" :value="key">{{ key }}</option>
+  <div class="dark:bg-slate-500 bg-slate-400 mt-1 py-1 px-2 flex">
+    <label class="px-1">{{ t('vars') }}</label>
+    <select class="dark:bg-slate-600 bg-slate-300 grow h-6 min-w-0" @change="selectGlobalVar($event)"
+      onfocus="this.selectedIndex = -1;">
+      <option v-for="v in globalVarList" :value="v">{{ v }}</option>
     </select>
-    <label class="flex w-14 justify-end px-2 shrink-0">{{ t('funcs') }}</label>
-    <select class="dark:bg-slate-600 bg-slate-300 grow h-6 min-w-0" @change="selectFunction($event)">
-      <option v-for="(_, key) in functionList" :value="key">{{ key }}</option>
+    <label class="px-1 ml-2">{{ t('funcs') }}</label>
+    <select class="dark:bg-slate-600 bg-slate-300 grow h-6 min-w-0" @change="selectFunction($event)"
+      onfocus="this.selectedIndex = -1;">
+      <option v-for="v in functionList" :value="v">{{ v }}</option>
     </select>
+    <button @click="toggleFullScreen" class="px-2 w-6 shrink-0">
+      <div v-if="isFullScreen">
+        <i class="fas fa-compress-arrows-alt"></i>
+      </div>
+      <div v-else>
+        <i class="fas fa-expand-arrows-alt"></i>
+      </div>
+    </button>
+    <button @click="toggleLogPanel" class="px-2 w-6 shrink-0">
+      <div v-if="isLogPanelVisible">
+        <i class="fas fa-arrow-right"></i>
+      </div>
+      <div v-else>
+        <i class="fas fa-arrow-left"></i>
+      </div>
+    </button>
   </div>
-  <div class="grow mr-1 mt-1 text-base" id="lua-editor-container"></div>
+  <div class="grow mt-1 text-base" id="lua-editor-container"></div>
 </template>
 
 <style scoped></style>
