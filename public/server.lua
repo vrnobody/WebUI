@@ -314,7 +314,7 @@ function GetSerializedServers(pageNum, searchType, keyword)
     -- sLog:Debug("params:", pageNum, searchType, keyword)
     local servs = Server:GetAllServers()
     local r = {
-        ["pages"] = 0,
+        ["pages"] = 1,
         ["data"] = {},
     }
     

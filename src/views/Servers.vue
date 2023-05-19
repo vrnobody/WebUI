@@ -13,7 +13,7 @@ const VPagination = defineAsyncComponent(() => import("@hennge/vue3-pagination")
 const t = utils.getTranslator()
 
 const curPageNum = ref(1)
-const pages = ref(15)
+const pages = ref(0)
 const searchType = ref("summary")
 const searchKeyword = ref("")
 const isLoading = ref(true)
