@@ -57,9 +57,10 @@ onMounted(async () => {
     enableLiveAutocompletion: true
   })
 
-  window.jsonLintSvcProvider = window.jsonLintSvcProvider || await createJsonConfigV4LintSvcProvider()
-  window.jsonLintSvcProvider.registerEditor(editor);
-  window.jsonLintSvcProvider.setSessionOptions(editor.session, { schemaUri: "common.schema.json" });
+  const provider = window.aceJsonLintSvcProvider || await createJsonConfigV4LintSvcProvider()
+  provider.registerEditor(editor)
+  provider.setSessionOptions(editor.session, { schemaUri: "common.schema.json" })
+  window.aceJsonLintSvcProvider = provider
 
   editor.on('change', function () {
     servConfig.value = editor.getValue()

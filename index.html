@@ -12,16 +12,15 @@
 
   <!-- ace editor -->
   <script src="/ace/ace.js"></script>
-  <script>
-    window.jsonLintSvcProvider = null // this variable has been taken
-    window.define = ace.define
-    window.require = ace.require
-  </script>
   <script src="/ace/ext-language_tools.js"></script>
   <script src="/ace/linters/ace-linters.js"></script>
 </head>
 
 <body>
+  <script>
+    // this variable has been taken
+    window.aceJsonLintSvcProvider = null 
+  </script>
   <div id="app"></div>
   <script type="module" src="/src/main.js"></script>
 </body>

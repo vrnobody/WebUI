@@ -185,7 +185,7 @@ function replaceCurAst(ast) {
     globalVarList.value = Object.keys(o.vars).sort(caseInSensitiveComparer)
     functionList.value = Object.keys(o.funcs).sort(caseInSensitiveComparer)
   } catch (err) {
-    console.log(err.toString())
+    console.log(err)
   }
 }
 
@@ -195,8 +195,8 @@ function replaceModuleSnippets(snippets) {
   }
   try {
     moduleSnippets = JSON.parse(snippets)
-  } catch (error) {
-    console.log(error)
+  } catch (err) {
+    console.log(err)
   }
 }
 
@@ -330,33 +330,21 @@ function getLineNumberFromAst(word) {
   return 0
 }
 
+function gotoDefinition() {
+  const t = getWordAtCursor(editor)
+  const row = getLineNumberFromAst(t)
+  if (row > 0) {
+    gotoLine(row)
+    pushCursorPosition()
+  }
+}
+
 function addCustomCommands(editor) {
   editor.commands.addCommand({
-    name: 'cursor go back',
-    bindKey: { win: 'Ctrl--', mac: 'Command--' },
-    exec: function () {
-      moveCursor(false)
-    },
-    readOnly: false,
-  })
-  editor.commands.addCommand({
-    name: 'cursor go forward',
-    bindKey: { win: 'Ctrl-=', mac: 'Command-=' },
-    exec: function () {
-      moveCursor(true)
-    },
-    readOnly: false,
-  })
-  editor.commands.addCommand({
-    name: 'cursor goto definition',
+    name: 'goto definition',
     bindKey: { win: 'F12', mac: 'F12' },
-    exec: function (editor) {
-      const t = getWordAtCursor(editor)
-      const row = getLineNumberFromAst(t)
-      if (row > 0) {
-        gotoLine(row)
-        pushCursorPosition()
-      }
+    exec: function () {
+      gotoDefinition()
     },
     readOnly: false,
   })
@@ -376,6 +364,24 @@ function selectFunction(evt) {
   pushCursorPosition()
 }
 
+function onKeyDown(e) {
+
+  if (!e.ctrlKey) {
+    return
+  }
+
+  switch (e.key) {
+    case '-':
+      e.preventDefault()
+      moveCursor(false)
+      break;
+    case '=':
+      e.preventDefault()
+      moveCursor(true)
+      break;
+  }
+}
+
 onMounted(async () => {
 
   utils.call(updateStaticSnippets, "GetLuaStaticSnippets")
@@ -388,12 +394,16 @@ onMounted(async () => {
   }
 
   initEditor(editor)
+  document.addEventListener('keydown', onKeyDown)
+  utils.hideScrollbarY()
 })
 
 onUnmounted(() => {
+  document.removeEventListener('keydown', onKeyDown)
   utils.destroyEditor(editor)
   removeCompleter(staticCompleter)
   removeCompleter(moduleCompleter)
+  utils.showScrollbarY()
 })
 
 </script>
