@@ -1,6 +1,6 @@
 <script setup>
 import utils from '../misc/utils.js'
-import { onMounted, onUnmounted, ref, defineAsyncComponent, nextTick } from 'vue'
+import { onMounted, onUnmounted, ref, defineAsyncComponent } from 'vue'
 import { VueDraggableNext } from 'vue-draggable-next'
 import ConfigEditor from '../components/servers/ConfigEditor.vue'
 import LogViewer from '../components/servers/LogViewer.vue'
@@ -12,7 +12,9 @@ const VPagination = defineAsyncComponent(() => import("@hennge/vue3-pagination")
 
 const t = utils.getTranslator()
 
+
 const curPageNum = ref(1)
+const curPageNumText = ref('1')
 const pages = ref(0)
 const searchType = ref("summary")
 const searchKeyword = ref("")
@@ -81,6 +83,7 @@ function search() {
 
 function refresh() {
   const next = function (r) {
+    curPageNumText.value = curPageNum.value.toString()
     pages.value = r.pages
     servsInfo.value = r.data
     isLoading.value = false
@@ -148,6 +151,12 @@ function isShowPopWindow() {
     }
   }
   return false
+}
+
+function jumpToPage() {
+  const pn = Math.floor(parseFloat(curPageNumText.value)) || 1
+  curPageNum.value = pn
+  refresh()
 }
 
 onMounted(() => {
@@ -271,7 +280,8 @@ onUnmounted(() => {
     v-if="pages > 1">
     <VPagination v-model="curPageNum" :pages="pages" :range-size="2" class="dark:bg-slate-800" active-color="#DCEDFF"
       @update:modelValue="refresh" />
-    <input v-model="curPageNum" class="dark:bg-slate-600 text-center text-sm my-1 mx-2 w-12" @keyup.enter="refresh" />
+    <input v-model="curPageNumText" class="dark:bg-slate-600 text-center text-sm my-1 mx-2 w-12"
+      @keyup.enter="jumpToPage" />
     <button @click="refresh" class="text-sm">{{ t('jump') }}</button>
   </div>
 
