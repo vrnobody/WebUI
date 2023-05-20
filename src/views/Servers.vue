@@ -282,7 +282,7 @@ onUnmounted(() => {
       @update:modelValue="refresh" />
     <input v-model="curPageNumText" class="dark:bg-slate-600 text-center text-sm my-1 mx-2 w-12"
       @keyup.enter="jumpToPage" />
-    <button @click="refresh" class="text-sm">{{ t('jump') }}</button>
+    <button @click="jumpToPage" class="text-sm">{{ t('jump') }}</button>
   </div>
 
   <!-- popup window -->
