@@ -220,8 +220,9 @@ onUnmounted(() => {
 
   <!-- empty list -->
   <div v-if="servsInfo.length <= 0" class="flex justify-center">
-    <div v-if="!isLoading" class="text-lg mt-8">{{ t('servListIsEmpty') }}</div>
+    <div v-if="!isLoading" class="text-lg mt-8">{{ t('listIsEmpty') }}</div>
   </div>
+
   <!-- servers list -->
   <div v-else class="flex flex-col">
     <div class="block w-full h-6"></div>

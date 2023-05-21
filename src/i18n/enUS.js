@@ -46,7 +46,7 @@ export default {
     save: 'Save',
     close: 'Close',
 
-    servListIsEmpty: 'Server list is empty.',
+    listIsEmpty: 'List is empty.',
     confirmDeleteNServers: `Delete {count} server(s)?`,
     yes: 'Yes',
     no: 'No',
@@ -59,6 +59,24 @@ export default {
     ok: 'Ok',
     done: 'Done',
     error: 'Error',
+
+    // settings
+    'maxConcurrentCore': 'Concurrent cores',
+    'enableUTlsfingerprint': 'Enable uTLS fingerprint',
+    'uTlsFingerprint': 'uTLS fingerprint',
+    'enableUserAgent': 'Enable custom user agent',
+    'userAgent': 'Custom user agent',
+    'enableSpeedtestSettings': 'Enable speedtest settings',
+    'speedtestUrl': 'Speedtest URL',
+    'speedtestTimeout': 'Speedtest timeout (ms)',
+    'speedtestSize': 'Speedtest size (KiB)',
+    'speettestCycles': 'Speedtest cycles',
+    'quickSwitchLantency': 'Quick switch Lantency (ms)',
+    'importTrojan': 'Import trojan://...',
+    'importShadowsocks': 'Import ss://...',
+    'importMode': 'Import mode (1.HTTP, 2.SOCKS)',
+    'importIp': 'Import IP',
+    'importPort': 'Import port',
 
     // server errors
     configIsEmpty: 'Config is empty!',

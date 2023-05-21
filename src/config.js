@@ -87,7 +87,7 @@ export default {
     supportedServerVersions: [
         "0.0.1.4",
     ],
-    supportedAppVersion: '1.6.9.3',
+    supportedAppVersion: '1.6.9.4',
     get,
     set,
     reload,

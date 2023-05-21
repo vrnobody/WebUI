@@ -101,8 +101,13 @@ onMounted(() => {
         </div>
     </div>
 
+    <!-- empty list -->
+    <div v-if="subs.length <= 0" class="flex justify-center">
+        <div class="text-lg mt-8">{{ t('listIsEmpty') }}</div>
+    </div>
+
     <!-- subs list -->
-    <div class="flex flex-col">
+    <div v-else class="flex flex-col">
         <div class="block w-full h-6"></div>
         <ul>
             <VueDraggableNext ghost-class="ghost" :list="subs">

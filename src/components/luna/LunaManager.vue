@@ -133,6 +133,11 @@ onUnmounted(() => {
         <div class="table-cell py-0 px-1 align-middle text-center w-20">{{ t('controls') }}</div>
       </div>
     </div>
+
+    <!-- empty list -->
+    <div v-if="coreInfos.length <= 0" class="flex justify-center">
+      <div class="text-lg mt-8">{{ t('listIsEmpty') }}</div>
+    </div>
     <!-- body -->
     <div class="flex flex-col">
       <div class="block w-full h-6"></div>

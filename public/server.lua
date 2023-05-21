@@ -398,8 +398,14 @@ function GetServerVersion()
     return version
 end
 
-function GetSettings()
-    return Misc:GetUserSettings()
+function SetUserSettings(props)
+    local p = json.encode(props)
+    return Misc:SetUserSettings(p)
+end
+
+function GetUserSettings(props)
+    local p = json.encode(props)
+    return Misc:GetUserSettings(p)
 end
 
 function SaveServerConfig(uid, config)

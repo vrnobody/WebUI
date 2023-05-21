@@ -48,7 +48,7 @@ export default {
     save: "保存",
     close: "关闭",
 
-    servListIsEmpty: '服务器列表为空',
+    listIsEmpty: '列表为空',
     confirmDeleteNServers: `确定删除{count}个服务器吗？`,
     yes: '是',
     no: '否',
@@ -61,6 +61,24 @@ export default {
     error: '错误',
     ok: 'Ok',
     done: '完成',
+
+    // settings
+    'maxConcurrentCore': '并发core数量',
+    'enableUTlsfingerprint': '启用自定义uTLS指纹',
+    'uTlsFingerprint': '自定义uTLS指纹',
+    'enableUserAgent': '启用自定义user agent',
+    'userAgent': '自定义user agent',
+    'enableSpeedtestSettings': '启用自定义测速设定',
+    'speedtestUrl': '测速URL',
+    'speedtestTimeout': '测速超时(ms)',
+    'speedtestSize': '测速大小(KiB)',
+    'speettestCycles': '测速次数',
+    'quickSwitchLantency': '快速切换延迟(ms)',
+    'importTrojan': '导入trojan://...',
+    'importShadowsocks': '导入ss://...',
+    'importMode': '导入模式(1.HTTP, 2.SOCKS)',
+    'importIp': '默认导入IP',
+    'importPort': '默认导入端口',
 
     // server errors
     configIsEmpty: 'config为空！',

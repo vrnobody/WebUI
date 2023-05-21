@@ -2,59 +2,108 @@
 import utils from '../misc/utils.js'
 import { onMounted, ref } from 'vue'
 
-let data = ref({})
+const t = utils.getTranslator()
 
-function parseSettings(settings) {
-  const importModes = ["config", "http", "socks", "custom"]
-  const s = JSON.parse(settings)
-  let d = {}
-  d["Culture"] = s["Culture"]
-  d["Import ss://..."] = s["ImportOptions"]["IsImportSsShareLink"]
-  d["Import trojan://..."] = s["ImportOptions"]["IsImportTrojanShareLink"]
-  const modeIdx = s["ImportOptions"]["Mode"]
-  if (modeIdx === 1 || modeIdx === 2) {
-    const defInbound = importModes[modeIdx] + "://" + s["ImportOptions"]["Ip"] + ":" + s["ImportOptions"]["Port"]
-    d["Default inbound"] = defInbound
-  }
-  d["Max concurrent"] = s["MaxConcurrentV2RayCoreNum"]
-  d["Switch latency"] = s["QuickSwitchServerLatency"] + "ms"
-  if (s["SpeedtestOptions"]["IsUse"]) {
-    d["Speedtest URL"] = s["SpeedtestOptions"]["Url"]
-  }
-  d["Subscription"] = JSON.parse(s["SubscribeUrls"]).length
-  d["Check V2RayGCon update"] = s["isCheckV2RayCoreUpdateWhenAppStart"]
-  d["Check core update"] = s["isCheckV2RayCoreUpdateWhenAppStart"]
-  d["Download core type"] = s["isDownloadWin32V2RayCore"] ? "win32" : "win64"
-  d["uTLS enabled"] = s["isEnableUtlsFingerprint"]
-  d["Selfsign cert"] = s["isSupportSelfSignedCert"]
-  d["Update using proxy"] = s["isUpdateUseProxy"]
-  d["uTLS fingerprint"] = s["uTlsFingerprint"]
-  d["Download core source"] = s["v2rayCoreDownloadSource"]
+const settings = ref({})
+const isRequireRerender = ref(false)
 
-  const od = Object.keys(d).sort().reduce((o, k) => {
-    o[k] = d[k]
-    return o
-  }, {})
-
-  data.value = od
+const propsTable = {
+  'maxConcurrentV2RayCoreNum': 'maxConcurrentCore',
+  'isEnableUtlsFingerprint': 'enableUTlsfingerprint',
+  'uTlsFingerprint': 'uTlsFingerprint',
+  'isUseCustomUserAgent': 'enableUserAgent',
+  'CustomUserAgent': 'userAgent',
+  'isUseCustomSpeedtestSettings': 'enableSpeedtestSettings',
+  'CustomSpeedtestUrl': 'speedtestUrl',
+  'CustomSpeedtestTimeout': 'speedtestTimeout',
+  'CustomSpeedtestExpectedSizeInKib': 'speedtestSize',
+  'CustomSpeedtestCycles': 'speettestCycles',
+  'QuickSwitchServerLantency': 'quickSwitchLantency',
+  'CustomDefImportTrojanShareLink': 'importTrojan',
+  'CustomDefImportSsShareLink': 'importShadowsocks',
+  'CustomDefImportMode': 'importMode',
+  'CustomDefImportIp': 'importIp',
+  'CustomDefImportPort': 'importPort',
 }
 
-function getSettings() {
-  utils.call(parseSettings, "GetSettings")
+function saveSettings() {
+  const props = settings.value
+  const next = function (ok) {
+    if (ok) {
+      loadSettings()
+      Swal.fire(t('success'))
+    } else {
+      Swal.file(t('failed'))
+    }
+  }
+  utils.call(next, 'SetUserSettings', [props])
 }
 
-onMounted(() => getSettings())
+function loadSettings() {
+  const names = Object.keys(propsTable)
+  const next = function (str) {
+    try {
+      settings.value = JSON.parse(str)
+      forceRerender()
+    } catch (err) {
+      Swal.fire(err.toString())
+    }
+  }
+  utils.call(next, "GetUserSettings", [names])
+}
+
+function getElementType(key) {
+  const s = settings.value
+  if (!s.hasOwnProperty(key)) {
+    return null
+  }
+  const t = typeof (s[key])
+  switch (t) {
+    case 'boolean':
+      return 'checkbox'
+    case 'number':
+    case 'string':
+      return 'text'
+    default:
+      break;
+  }
+  return 'span'
+}
+
+
+const forceRerender = () => {
+  isRequireRerender.value = !isRequireRerender.value
+}
+
+onMounted(() => {
+  loadSettings()
+})
 
 </script>
 
 <template>
+  <!-- settings list -->
   <div class="dark:text-neutral-100">
-    <ul>
-      <li v-for="(v, k) in data" class="dark:odd:bg-slate-600 odd:bg-neutral-200">
-        <div class="inline-flex w-60 shrink-0 mx-2 my-0.5">{{ k }}</div>
-        <div class="inline-flex mx-2 my-0.5">{{ v.toString() }}</div>
+    <ul :key="isRequireRerender">
+      <li v-for="(value, key) in propsTable"
+        class="dark:odd:bg-slate-600 odd:bg-neutral-300 dark:bg-slate-700 bg-neutral-200 flex items-center">
+        <div class="inline-flex w-[18rem] shrink-0 mx-2 my-0.5">{{ t(value) }}</div>
+        <div class="inline-flex mx-2 my-0.5 grow">
+          <input v-if="getElementType(key) === 'text'" type="text" v-model="settings[key]"
+            class="dark:bg-slate-500 bg-neutral-100 grow px-2 my-1 mx-2" />
+          <input v-if="getElementType(key) === 'checkbox'" type="checkbox" v-model="settings[key]"
+            class="w-4 h-4 my-1 mx-2" />
+        </div>
       </li>
     </ul>
+  </div>
+  <div class="block grow h-10"></div>
+
+  <!-- save button -->
+  <div class="dark:bg-slate-500 bg-slate-400 fixed bottom-0 right-0 z-10 flex-col py-1 px-1">
+    <div class="text-base">
+      <button @click="saveSettings" class="px-2"><i class="fas fa-save"></i> {{ t('save') }}</button>
+    </div>
   </div>
 </template>
 
