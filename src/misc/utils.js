@@ -112,7 +112,27 @@ function trim(str, len) {
     return str.slice(0, len - 3) + '...'
 }
 
+function confirm(title, onYes, onNo) {
+    Swal.fire({
+        title: title,
+        showDenyButton: true,
+        confirmButtonText: t('yes'),
+        denyButtonText: t('no'),
+    }).then((result) => {
+        if (result.isConfirmed) {
+            if (typeof (onYes) === 'function') {
+                onYes()
+            }
+        } else {
+            if (typeof (onNo) === 'function') {
+                onNo()
+            }
+        }
+    })
+}
+
 export default {
+    confirm,
     trim,
     getTranslator,
     updateEditorTheme,

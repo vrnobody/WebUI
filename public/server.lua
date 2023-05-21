@@ -8,7 +8,7 @@ local public = "./lua/webui"
 -- confings
 local Logger = require('lua.modules.logger')
 
-local version = "0.0.1.3"
+local version = "0.0.1.4"
 local pageSize = 50
 
 local logLevel = #args > 1 and args[2] or Logger.logLevels.Debug
@@ -158,6 +158,19 @@ local function CalcTotalPageNumber(total)
         pages = 1
     end
     return pages
+end
+
+function UpdateSubscriptions()
+    local proxyPort = Web:GetProxyPort()
+    return Web:UpdateSubscriptions(proxyPort)
+end
+
+function SaveSubscriptions(subs)
+    Misc:SetSubscriptionConfig(subs)
+end
+
+function GetSubscriptions()
+    return Misc:GetSubscriptionConfig()
 end
 
 function GetLog(uid)

@@ -19,9 +19,14 @@ export default {
     funcs: '函数',
 
     shareLinks: '分享链接',
+    subscriptions: '订阅',
     nNewServerImported: `导入了{count}个服务器。`,
     mark: '标记',
     scanQrCode: '扫描二维码',
+    enable: '启用',
+    update: '更新',
+    updating: '更新中...',
+    confirmRemoveSub: '删除订阅 [{name}]？',
 
     status: '状态',
     select: '选择',
@@ -54,6 +59,8 @@ export default {
     success: '成功',
     failed: '失败',
     error: '错误',
+    ok: 'Ok',
+    done: '完成',
 
     // server errors
     configIsEmpty: 'config为空！',

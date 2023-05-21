@@ -1,54 +1,50 @@
 <script setup>
-import utils from '../misc/utils.js'
-import { ref } from 'vue'
-import { useI18n } from '@yangss/vue3-i18n'
 
-const { _, t } = useI18n()
+import { ref, markRaw } from 'vue'
+import CompShareLink from '@/components/import/ShareLink.vue'
+import CompSubs from '@/components/import/Subscription.vue'
+import utils from '@/misc/utils.js'
 
-let content = ref("")
-let mark = ref("")
+const t = utils.getTranslator()
 
-function report(count) {
-  const msg = t('nNewServerImported', {
-    count: count
-  })
-  Swal.fire(msg)
+const curComponent = ref(null)
+
+const curCompIdx = ref(-1)
+
+function switchTo(idx) {
+  const comps = [
+    CompSubs,
+    CompShareLink,
+  ]
+  if (idx >= 0 && idx < comps.length && idx !== curCompIdx.value) {
+    curComponent.value = markRaw(comps[idx])
+    curCompIdx.value = idx
+  }
 }
 
-function scanQrCode() {
-  const mk = mark.value
-  utils.call(report, "ScanQrCode", [mk])
-}
-
-function importShareLinks() {
-  const links = content.value
-  const mk = mark.value
-  utils.call(report, "ImportShareLinks", [links, mk])
-}
+switchTo(0)
 
 </script>
 
 <template>
-  <div class="dark:bg-slate-700 md:left-56 flex  bg-neutral-200 fixed flex-col left-0 top-12 right-0 bottom-0 p-3">
-    <div class="dark:text-neutral-300 text-neutral-500 flex items-center justify-start">
-      {{ t('mark') }}
+  <!-- toolstrip -->
+  <div
+    class="dark:text-neutral-300 text-neutral-800 md:left-56 left-8 top-0 h-12 py-0 px-4 flex grow justify-left items-end fixed z-20">
+    <div class="m-0 text-lg">
+      <div @click="switchTo(0)" class="inline-block px-6 py-1 cursor-pointer"
+        :class="{ 'dark:bg-slate-500 bg-slate-400 rounded-t': curCompIdx == 0 }">
+        <i class="fas fa-star"></i> {{ t('subscriptions') }}
+      </div>
+      <div @click="switchTo(1)" class="inline-block px-6 py-1 cursor-pointer"
+        :class="{ 'dark:bg-slate-500 bg-slate-400 rounded-t': curCompIdx == 1 }">
+        <i class="fas fa-share-alt"></i> {{ t('shareLinks') }}
+      </div>
     </div>
-    <div class="w-full h-10">
-      <input v-model="mark" type="text" class="dark:bg-slate-500 bg-neutral-100 w-full py-1 px-2" />
-    </div>
-    <div class="dark:text-neutral-300  text-neutral-500 flex items-center justify-start">
-      {{ t('shareLinks') }}
-    </div>
-    <div class="flex w-full grow">
-      <textarea v-model="content" class="dark:bg-slate-500 bg-neutral-100 w-full h-full py-1 px-2"
-        placeholder="vmess://... vless://... trojan://...">
-      </textarea>
-    </div>
-    <div class="flex justify-center items-end h-8 w-full">
-      <button @click="importShareLinks" class="mx-2">{{ t('import') }}</button>
-      <button @click="scanQrCode" class="mx-2">{{ t('scanQrCode') }}</button>
-    </div>
+  </div>
 
+  <!-- body -->
+  <div class="dark:text-neutral-300 text-neutral-800">
+    <component :is="curComponent"></component>
   </div>
 </template>
 

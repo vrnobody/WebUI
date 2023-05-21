@@ -71,16 +71,11 @@ function startCore(name) {
 }
 
 function removeCore(name) {
-  Swal.fire({
-    title: t('confirmRemoveCore', { name: name }),
-    showDenyButton: true,
-    confirmButtonText: t('yes'),
-    denyButtonText: t('no'),
-  }).then((result) => {
-    if (result.isConfirmed) {
-      utils.call(refresh, 'RemoveLuaCore', [name])
-    }
-  })
+  const title = t('confirmRemoveCore', { name: name })
+  const onYes = function () {
+    utils.call(refresh, 'RemoveLuaCore', [name])
+  }
+  utils.confirm(title, onYes)
 }
 
 function closeCoreSettingsEditor() {

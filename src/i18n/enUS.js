@@ -19,9 +19,14 @@ export default {
     funcs: 'Funcs',
 
     shareLinks: 'Share links',
+    subscriptions: 'Subscriptions',
     nNewServerImported: `Import {count} new server(s).`,
     scanQrCode: 'Scan QR code',
     mark: 'Mark',
+    enable: 'Enable',
+    update: 'Update',
+    updating: 'Updating...',
+    confirmRemoveSub: 'Remove subscription [{name}]?',
 
     status: 'Status',
     select: 'Select',
@@ -51,6 +56,8 @@ export default {
 
     success: 'Success',
     failed: 'Failed',
+    ok: 'Ok',
+    done: 'Done',
     error: 'Error',
 
     // server errors
