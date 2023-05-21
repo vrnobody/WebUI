@@ -31,13 +31,13 @@ onMounted(() => {
 <template>
     <div class="dark:bg-slate-600 block grow w-full h-4/5 p-4 bg-neutral-200">
         <div class="flex items-center h-9">
-            <div class="py-0 px-4 w-24">alias</div>
+            <div class="py-0 px-4 w-24">{{ t('alias') }}</div>
             <div class="flex grow py-0 px-4">
                 <input type="text" v-model="settings.alias" class="dark:bg-slate-500 bg-neutral-100 grow" />
             </div>
         </div>
         <div class="flex items-center h-9">
-            <div class="py-0 px-4 w-24">url</div>
+            <div class="py-0 px-4 w-24">URL</div>
             <div class="flex grow py-0 px-4">
                 <input type="text" v-model="settings.url" class="dark:bg-slate-500 bg-neutral-100 grow" />
             </div>
@@ -45,9 +45,9 @@ onMounted(() => {
         <div class="flex items-center h-9">
             <div class="py-0 px-4 w-24"></div>
             <div class="flex grow py-0 px-4 items-center">
-                <input type="checkbox" v-model="settings.isUse" class="w-4 h-4" id="is-sub-enabled" />
+                <input type="checkbox" v-model="settings.isUse" class="w-4 h-4 mr-1" id="is-sub-enabled" />
                 <label for="is-sub-enabled">{{ t('enable') }}</label>
-                <input type="checkbox" v-model="settings.isSetMark" class="w-4 h-4 ml-4" id="is-sub-marked" />
+                <input type="checkbox" v-model="settings.isSetMark" class="w-4 h-4 ml-4 mr-1" id="is-sub-marked" />
                 <label for="is-sub-marked">{{ t('mark') }}</label>
             </div>
         </div>

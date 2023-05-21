@@ -7,7 +7,7 @@ import i18n from './i18n/config.js'
 
 import './assets/main.css'
 import './assets/index.css'
-import "@hennge/vue3-pagination/dist/vue3-pagination.css";
+import "@hennge/vue3-pagination/dist/vue3-pagination.css"
 
 const app = createApp(App)
 

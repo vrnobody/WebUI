@@ -23,10 +23,15 @@ export default {
     nNewServerImported: `Import {count} new server(s).`,
     scanQrCode: 'Scan QR code',
     mark: 'Mark',
+    remark: 'Remark',
+    tag1: 'Tag1',
+    tag2: 'Tag2',
+    tag3: 'Tag3',
     enable: 'Enable',
     update: 'Update',
     updating: 'Updating...',
     confirmRemoveSub: 'Remove subscription [{name}]?',
+    alias: 'Alias',
 
     status: 'Status',
     select: 'Select',
@@ -61,6 +66,8 @@ export default {
     error: 'Error',
 
     // settings
+    key: 'Key',
+    value: 'Value',
     'maxConcurrentCore': 'Concurrent cores',
     'enableUTlsfingerprint': 'Enable uTLS fingerprint',
     'uTlsFingerprint': 'uTLS fingerprint',

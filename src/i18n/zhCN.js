@@ -22,11 +22,17 @@ export default {
     subscriptions: '订阅',
     nNewServerImported: `导入了{count}个服务器。`,
     mark: '标记',
+    remark: '备注',
+    tag1: '标签1',
+    tag2: '标签2',
+    tag3: '标签3',
     scanQrCode: '扫描二维码',
     enable: '启用',
     update: '更新',
     updating: '更新中...',
     confirmRemoveSub: '删除订阅 [{name}]？',
+    alias: '别名',
+
 
     status: '状态',
     select: '选择',
@@ -63,6 +69,8 @@ export default {
     done: '完成',
 
     // settings
+    key: '键名',
+    value: '值',
     'maxConcurrentCore': '并发core数量',
     'enableUTlsfingerprint': '启用自定义uTLS指纹',
     'uTlsFingerprint': '自定义uTLS指纹',

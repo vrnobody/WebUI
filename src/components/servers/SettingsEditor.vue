@@ -61,7 +61,7 @@ onMounted(() => {
     <div class="dark:bg-slate-600 block grow w-full h-4/5 p-4 bg-neutral-200">
         <div v-for="key in servSettingKeys">
             <div class="flex items-center h-9">
-                <div class="py-0 px-4 w-24">{{ key }}</div>
+                <div class="py-0 px-4 w-24">{{ t(key) }}</div>
                 <div class="flex grow py-0 px-4">
                     <input type="text" v-model="servSettings[key]" class="dark:bg-slate-500 bg-neutral-100 grow" />
                 </div>

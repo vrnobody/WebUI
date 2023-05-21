@@ -15,11 +15,16 @@ function isDarkMode() {
 
 function reloadThemeMode() {
     const dark = isDarkMode()
+    const css = document.createElement('link')
+    css.rel = 'stylesheet'
     if (dark) {
+        css.href = '/css/swal-dark.css'
         document.documentElement.classList.add('dark')
     } else {
+        css.href = '/css/swal-light.css'
         document.documentElement.classList.remove('dark')
     }
+    document.head.appendChild(css)
 }
 
 function pop(msg, ps) {
