@@ -18,6 +18,7 @@ let logContainer = ref(null)
 let logUpdater = 0
 
 let lastScriptContent = ""
+let lastScriptName = ''
 
 function saveScript(quiet) {
   const name = scriptName.value
@@ -41,28 +42,27 @@ function saveScript(quiet) {
 function loadScript() {
   const name = scriptName.value
   const scripts = scriptDb.value
+  const load = function (s) {
+    scriptContent.value = s
+    lastScriptContent = s
+    lastScriptName = name
+  }
   for (const key in scripts) {
-    if (key === name) {
-      const script = scripts[name]
-      const cur = scriptContent.value
-      if (lastScriptContent === null || lastScriptContent.length < 1 || lastScriptContent === cur) {
-        scriptContent.value = script
-        lastScriptContent = script
-      } else {
-        Swal.fire({
-          title: t('replaceCurScript'),
-          showDenyButton: true,
-          confirmButtonText: t('yes'),
-          denyButtonText: t('no'),
-        }).then((result) => {
-          if (result.isConfirmed) {
-            scriptContent.value = script
-            lastScriptContent = script
-          }
-        })
-        return
-      }
+    if (key !== name) {
+      continue
     }
+    const script = scripts[name]
+    const cur = scriptContent.value
+    if (lastScriptContent === cur) {
+      load(script)
+    } else {
+      utils.confirm(t('replaceCurScript'), function () {
+        load(script)
+      }, function () {
+        scriptName.value = lastScriptName
+      })
+    }
+    return
   }
 }
 
@@ -139,12 +139,16 @@ function abortScript() {
 
 function newScript() {
   const cur = scriptContent.value
-  if (lastScriptContent === null || lastScriptContent.length < 1 || lastScriptContent === cur) {
+  const empty = function () {
     scriptContent.value = ''
     scriptName.value = ''
     lastScriptContent = ''
+    lastScriptName = ''
+  }
+  if (lastScriptContent === cur) {
+    empty()
   } else {
-    Swal.fire(t('scriptNoSavedYet'))
+    utils.confirm(t('emptyCurScript'), empty)
   }
 }
 

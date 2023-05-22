@@ -85,8 +85,7 @@ onMounted(() => {
   <!-- toolstrip -->
   <div class="md:left-56 left-8 top-0 h-12 py-0 px-4 flex grow justify-left items-center fixed z-20">
     <div class="m-0 text-2xl">
-      <button @click="saveSettings" class="my-0 mx-1"><i class="fas fa-save"></i> {{ t('save')
-      }}</button>
+      <button @click="saveSettings" class="my-0 mx-1"><i class="fas fa-save"></i> {{ t('save') }}</button>
     </div>
   </div>
 
@@ -102,7 +101,7 @@ onMounted(() => {
   <div class="dark:text-neutral-100">
     <div class="block w-full h-6"></div>
     <ul :key="isRequireRerender">
-      <li v-for="(value, key) in propsTable" class="dark:odd:bg-slate-600 odd:bg-neutral-200 items-center flex">
+      <li v-for="( value, key ) in  propsTable " class="dark:odd:bg-slate-600 odd:bg-neutral-200 items-center flex">
         <div class="inline-flex w-[18rem] shrink-0 px-1 py-1">{{ t(value) }}</div>
         <div class="inline-flex grow px-1 py-1">
           <input v-if="getElementType(key) === 'text'" type="text" v-model="settings[key]"

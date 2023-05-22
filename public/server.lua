@@ -209,6 +209,10 @@ function StopLuaCore(name)
     Sys:LuaServStop(name)
 end
 
+function AbortLuaCore(name)
+    Sys:LuaServAbort(name)
+end
+
 function RemoveLuaCore(name)
     return Sys:LuaServRemove(name)
 end

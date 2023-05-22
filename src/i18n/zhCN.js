@@ -4,10 +4,22 @@ export default {
     settings: '配置',
     about: '关于',
 
+    //theme
+    lightTheme: '亮主题',
+    darkTheme: '暗主题',
+    system: '跟随系统',
+
+    // server
+    selectAll: '全选',
+    inverseSelection: '反选',
+    viewLogs: '查看日志',
+    copied: '已复制',
+    copy: '复制',
+
     // luna
     name: '名字',
-    replaceCurScript: '替换当前脚本？',
-    scriptNoSavedYet: '当前脚本还没保存！',
+    replaceCurScript: '替换当前未保存的脚本？',
+    emptyCurScript: '清空当前未保存的脚本？',
     none: '无',
     confirmRemoveCore: '确定要删除 [{name}] 吗？',
     hidden: '隐藏',

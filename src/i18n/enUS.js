@@ -4,10 +4,22 @@ export default {
     settings: 'Settings',
     about: 'About',
 
+    //theme
+    lightTheme: 'Light theme',
+    darkTheme: 'Dark theme',
+    system: 'System',
+
+    // server
+    selectAll: 'Select all',
+    inverseSelection: 'Inverse selection',
+    viewLogs: 'View logs',
+    copied: 'Copied',
+    copy: 'Copy',
+
     // luna
     name: 'Name',
-    replaceCurScript: 'Replace current script?',
-    scriptNoSavedYet: 'Current script not saved yet!',
+    replaceCurScript: 'Replace current unsaved script?',
+    emptyCurScript: 'Empty current unsaved script?',
     none: 'None',
     confirmRemoveCore: 'Remove script [{name}]?',
     hidden: 'Hidden',

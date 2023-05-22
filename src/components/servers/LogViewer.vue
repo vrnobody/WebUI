@@ -22,6 +22,11 @@ const servTitle = computed({
     }
 })
 
+function copy() {
+    utils.copyToClipboard(logContent.value)
+    Swal.fire(t('copied'))
+}
+
 function close() {
     emit('onClose')
 }
@@ -66,6 +71,7 @@ onUnmounted(() => {
             ref="logContainer"></textarea>
     </div>
     <div class="flex w-full h-10 justify-center items-end">
+        <button @click="copy" class="my-0 mx-4">{{ t('copy') }}</button>
         <button @click="close" class="my-0 mx-4">{{ t('close') }}</button>
     </div>
 </template>

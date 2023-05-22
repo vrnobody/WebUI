@@ -2,6 +2,7 @@
 import { RouterLink } from 'vue-router'
 import { useI18n } from '@yangss/vue3-i18n'
 import { onMounted } from 'vue'
+import Tooltips from '@/components/widgets/Tooltips.vue'
 import utils from "../../misc/utils.js"
 import config from '../../config.js'
 import store from '../../misc/store.js'
@@ -80,15 +81,21 @@ onMounted(() => {
         t('about') }}</RouterLink>
   </nav>
   <div class="bottom-4 absolute w-full flex justify-center items-center text-xl h-6">
-    <button @click="changeThemeMode('light')">
-      <i class="fas fa-sun my-0 mx-1"></i>
-    </button>
-    <button @click="changeThemeMode('dark')">
-      <i class="fas fa-moon my-0 mx-1"></i>
-    </button>
-    <button @click="changeThemeMode('system')">
-      <i class="fas fa-desktop  my-0 mx-1"></i>
-    </button>
+    <Tooltips :css="'-mt-8'" :tip="t('lightTheme')">
+      <button @click="changeThemeMode('light')">
+        <i class="fas fa-sun my-0 mx-1"></i>
+      </button>
+    </Tooltips>
+    <Tooltips :css="'-mt-8'" :tip="t('darkTheme')">
+      <button @click="changeThemeMode('dark')">
+        <i class="fas fa-moon my-0 mx-1"></i>
+      </button>
+    </Tooltips>
+    <Tooltips :css="'-mt-8'" :tip="t('system')">
+      <button @click="changeThemeMode('system')">
+        <i class="fas fa-desktop  my-0 mx-1"></i>
+      </button>
+    </Tooltips>
   </div>
 </template>
 

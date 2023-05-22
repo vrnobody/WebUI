@@ -70,6 +70,10 @@ function post(callback, content) {
     httpRequest.send(content)
 }
 
+function copyToClipboard(v) {
+    navigator.clipboard.writeText(v)
+}
+
 function call(callback, fn, ps) {
     let req = {
         fn: fn,
@@ -137,6 +141,7 @@ function confirm(title, onYes, onNo) {
 }
 
 export default {
+    copyToClipboard,
     confirm,
     trim,
     getTranslator,

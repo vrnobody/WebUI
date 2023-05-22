@@ -7,6 +7,7 @@ import LogViewer from '../components/servers/LogViewer.vue'
 import SettingsEditor from '../components/servers/SettingsEditor.vue'
 import FadeTransition from '../components/transitions/FadeTransition.vue'
 import LoadingWidget from '../components/widgets/Loading.vue'
+import Tooltips from '@/components/widgets/Tooltips.vue'
 
 const VPagination = defineAsyncComponent(() => import("@hennge/vue3-pagination"))
 
@@ -187,8 +188,12 @@ onUnmounted(() => {
     </div>
     <div class="dark:bg-slate-500 bg-slate-200 h-3/4 w-0.5 m-1"></div>
     <div class="m-0 text-2xl">
-      <button @click="selectAll" class="my-0 mx-1"><i class="fas fa-check-circle"></i></button>
-      <button @click="invertSelection" class="my-0 mx-1"><i class="fas fa-adjust"></i></button>
+      <Tooltips :css="'mt-8'" :tip="t('selectAll')">
+        <button @click="selectAll" class="my-0 mx-1"><i class="fas fa-check-circle"></i></button>
+      </Tooltips>
+      <Tooltips :css="'mt-8'" :tip="t('inverseSelection')">
+        <button @click="invertSelection" class="my-0 mx-1"><i class="fas fa-adjust"></i></button>
+      </Tooltips>
     </div>
     <div class="dark:bg-slate-500 bg-slate-200 h-3/4 w-0.5 m-1"></div>
     <div class="m-0 text-2xl">
@@ -197,7 +202,9 @@ onUnmounted(() => {
     </div>
     <div class="dark:bg-slate-500 bg-slate-200 h-3/4 w-0.5 m-1"></div>
     <div class="m-0 text-2xl">
-      <button @click="openWindow(hWnds.logViwer, null)" class="my-0 mx-1"><i class="fas fa-file-alt"></i></button>
+      <Tooltips :css="'mt-8 w-24'" :tip="t('viewLogs')">
+        <button @click="openWindow(hWnds.logViwer, null)" class="my-0 mx-1"><i class="fas fa-file-alt"></i></button>
+      </Tooltips>
     </div>
   </div>
 
