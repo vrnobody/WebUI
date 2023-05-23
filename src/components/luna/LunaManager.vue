@@ -70,6 +70,10 @@ function startCore(name) {
   utils.call(refresh, 'StartLuaCore', [name])
 }
 
+function restartCore(name) {
+  utils.call(refresh, 'RestartLuaCore', [name])
+}
+
 function abortCore(name) {
   utils.call(refresh, 'AbortLuaCore', [name])
 }
@@ -133,7 +137,7 @@ onUnmounted(() => {
       <div class="table-cell py-0 px-1 align-middle text-center w-16">{{ t('index') }}</div>
       <div class="table-cell py-0 px-1 align-middle text-center">{{ t('name') }}</div>
       <div class="table-cell py-0 px-1 align-middle text-center w-16">{{ t('tags') }}</div>
-      <div class="table-cell py-0 px-1 align-middle text-center w-24">{{ t('controls') }}</div>
+      <div class="table-cell py-0 px-1 align-middle text-center w-28">{{ t('controls') }}</div>
     </div>
   </div>
 
@@ -162,11 +166,14 @@ onUnmounted(() => {
                 class="dark:bg-cyan-700 bg-cyan-600 dark:text-neutral-300 text-neutral-200 cursor-pointer rounded inline-block text-xs py-0.5 px-1 text-center w-12 text-ellipsis my-0.5 mx-0.5"
                 @click="editCoreSettings(coreInfo.name)">{{ coreInfoToTag(coreInfo) }}</div>
             </div>
-            <div class="table-cell py-0 px-1 align-middle text-center w-24 text-lg">
-              <button class="my-0 mx-1 dark:text-neutral-300 text-red-900" @click="startCore(coreInfo.name)">
+            <div class="table-cell py-0 px-1 align-middle text-center w-28 text-lg">
+              <button class="my-0 mx-1" @click="startCore(coreInfo.name)">
                 <i class="fa fa-play"></i>
               </button>
-              <button class="my-0 mx-1 dark:text-neutral-300 text-red-700" @click="abortCore(coreInfo.name)">
+              <button class="my-0 mx-1" @click="restartCore(coreInfo.name)">
+                <i class="fas fa-sync"></i>
+              </button>
+              <button class="my-0 mx-1" @click="abortCore(coreInfo.name)">
                 <i class="fas fa-stop-circle"></i>
               </button>
               <button class="my-0 mx-1" @click="removeCore(coreInfo.name)">

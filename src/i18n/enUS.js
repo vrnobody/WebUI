@@ -24,6 +24,7 @@ export default {
     inbMode: 'Inbound mode',
     inbIp: 'Inbound IP',
     inbPort: 'Inbound port',
+    newConfig: 'new config',
 
     sortSelectedByLatency: 'Sort by latency',
     sortSelectedByModifyTime: 'Sort by last modify time',
@@ -42,6 +43,11 @@ export default {
     manager: 'Manager',
     vars: 'Vars',
     funcs: 'Funcs',
+    newScript: 'New script',
+    loadFile: 'Load file',
+    saveAs: 'Save as',
+    load: 'Load',
+
 
     shareLinks: 'Share links',
     subscriptions: 'Subscriptions',

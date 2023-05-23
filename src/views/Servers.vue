@@ -258,7 +258,7 @@ onUnmounted(() => {
           <button class="my-0 mx-1"><i class="fas fa-check-circle"></i></button>
         </template>
         <template #body>
-          <ul class="dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-sm p-2">
+          <ul class="dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-base p-2">
             <li>
               <span class="text-sm dark:text-neutral-400 text-neutral-500">{{ t('curPage') }}</span>
             </li>
@@ -283,7 +283,7 @@ onUnmounted(() => {
           <button class="my-0 mx-1"><i class="fas fa-adjust"></i></button>
         </template>
         <template #body>
-          <ul class="dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-sm p-2">
+          <ul class="dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-base p-2">
             <li><button @click="invertSelection(true)" dropdown-closer>{{ t('invertSelection') }} ({{ t('curPage')
             }})</button></li>
             <li><button @click="invertSelection(false)" dropdown-closer>{{ t('invertSelection') }} ({{ t('global')
@@ -294,7 +294,7 @@ onUnmounted(() => {
     </div>
     <div class="dark:bg-slate-500 bg-slate-200 h-3/4 w-0.5 m-1"></div>
     <div class="m-0 text-2xl">
-      <button @click="openWindow(hWnds.configEditor, null)" class="my-0 mx-1"><i class="fas fa-plus"></i></button>
+
       <DropdownMenu withDropdownCloser>
         <template #trigger>
           <button class="my-0 mx-1"><i class="fas fa-sort-alpha-down"></i></button>
@@ -307,6 +307,9 @@ onUnmounted(() => {
           </ul>
         </template>
       </DropdownMenu>
+      <Tooltips :css="'mt-8'" :tip="t('newConfig')">
+        <button @click="openWindow(hWnds.configEditor, null)" class="my-0 mx-1"><i class="fas fa-plus"></i></button>
+      </Tooltips>
       <button @click="deleteSelected" class="my-0 mx-1"><i class="fas fa-trash-alt"></i></button>
     </div>
     <div class="dark:bg-slate-500 bg-slate-200 h-3/4 w-0.5 m-1"></div>

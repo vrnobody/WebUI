@@ -27,6 +27,7 @@ export default {
     sortSelectedByLatency: '按测速排序',
     sortSelectedByModifyTime: '按最近修改时间排序',
     sortSelectedBySummary: '按摘要排序',
+    newConfig: '添加Config',
 
     // luna
     name: '名字',
@@ -41,6 +42,10 @@ export default {
     manager: '管理器',
     vars: '变量',
     funcs: '函数',
+    newScript: '新脚本',
+    loadFile: '从文件加载',
+    saveAs: '另存为文件',
+    load: '加载',
 
     shareLinks: '分享链接',
     subscriptions: '订阅',

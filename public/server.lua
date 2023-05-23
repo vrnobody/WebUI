@@ -170,6 +170,10 @@ local function CountSelectedServs(servs)
     return r
 end
 
+function Ls(path, exts)
+    return Sys:Ls(path, exts)
+end
+
 function ChangeSelection(selections)
     local s = json.decode(selections)
     local servs = Server:GetAllServers()
@@ -264,6 +268,10 @@ end
 
 function StartLuaCore(name)
     Sys:LuaServStart(name)
+end
+
+function RestartLuaCore(name)
+    Sys:LuaServRestart(name)
 end
 
 function StopLuaCore(name)
