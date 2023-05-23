@@ -2,12 +2,17 @@
 import utils from '../misc/utils.js'
 import { onMounted, onUnmounted, ref, defineAsyncComponent } from 'vue'
 import { VueDraggableNext } from 'vue-draggable-next'
+
 import ConfigEditor from '../components/servers/ConfigEditor.vue'
 import LogViewer from '../components/servers/LogViewer.vue'
 import SettingsEditor from '../components/servers/SettingsEditor.vue'
 import FadeTransition from '../components/transitions/FadeTransition.vue'
 import LoadingWidget from '../components/widgets/Loading.vue'
+
 import Tooltips from '@/components/widgets/Tooltips.vue'
+
+import DropdownMenu from 'v-dropdown-menu'
+import '@/assets/v-dropdown-menu.css'
 
 const VPagination = defineAsyncComponent(() => import("@hennge/vue3-pagination"))
 
@@ -24,6 +29,9 @@ const curServUid = ref('')
 const curServTitle = ref('')
 
 let servsInfo = ref([])
+const servsCount = ref(0)
+const servsSelected = ref(0)
+let curSelection = '{}'
 
 const hWnds = {
   logViwer: ref(false),
@@ -31,41 +39,91 @@ const hWnds = {
   settingsEditor: ref(false),
 }
 
-function selectAll() {
-  for (const serv of servsInfo.value) {
-    serv.selected = true
+function saveSelectionLater() {
+  const servs = servsInfo.value
+  const selection = {}
+  for (let index = 0; index < servs.length; index++) {
+    const serv = servs[index]
+    selection[serv.uid] = serv.selected
   }
+
+  const cs = JSON.stringify(selection)
+  curSelection = cs
+  setTimeout(() => {
+    if (curSelection !== cs) {
+      // pass
+      return
+    }
+    utils.call(refresh, 'ChangeSelection', [cs])
+  }, 1000);
 }
 
-function invertSelection() {
-  for (const serv of servsInfo.value) {
-    serv.selected = !serv.selected
+function selectAll(isCurPage) {
+  if (isCurPage) {
+    for (const serv of servsInfo.value) {
+      serv.selected = true
+    }
+    saveSelectionLater()
+    return
   }
+  utils.call(refresh, 'SelectAllServers')
 }
 
-function deleteSelected() {
-  const uids = servsInfo.value.filter(el => el.selected).map(el => el.uid)
-  if (uids.length < 1) {
+function selectTimeoutGlobal() {
+  utils.call(refresh, 'SelectAllTimeoutedServers')
+}
+
+function invertSelection(isCurPage) {
+  if (isCurPage) {
+    for (const serv of servsInfo.value) {
+      serv.selected = !serv.selected
+    }
+    saveSelectionLater()
+    return
+  }
+  utils.call(refresh, 'InvertSelectionGlobal')
+}
+
+function sortSelectedBy(condition) {
+  const count = servsSelected.value
+  if (count < 1) {
     Swal.fire(t('noServerSelected'))
     return
   }
 
-  const title = t('confirmDeleteNServers', { count: uids.length })
-  const next = function (success) {
-    const msg = success ? t('serversDeleted') : t('deleteFailed')
+  let fn = 'SortSelectedByLatency'
+  switch (condition) {
+    case 'time':
+      fn = 'SortSelectedByModifyTime'
+      break;
+    case 'summary':
+      fn = 'SortSelectedBySummary'
+      break;
+    case 'latency':
+      break;
+    default:
+      break;
+  }
+  utils.call(refresh, fn)
+}
+
+function deleteSelected() {
+  const count = servsSelected.value
+
+  if (count < 1) {
+    Swal.fire(t('noServerSelected'))
+    return
+  }
+
+  const next = function () {
+    const msg = t('serversDeleted')
     Swal.fire(msg)
     refresh()
   }
 
-  Swal.fire({
-    title: title,
-    showDenyButton: true,
-    confirmButtonText: t('yes'),
-    denyButtonText: t('no'),
-  }).then((result) => {
-    if (result.isConfirmed) {
-      utils.call(next, "DeleteServersByUids", [uids])
-    }
+  const title = t('confirmDeleteNServers', { count: count })
+  utils.confirm(title, function () {
+    utils.call(next, 'DeleteSelectedServers')
   })
 }
 
@@ -74,7 +132,11 @@ function stopServ(uid) {
 }
 
 function restartServ(uid) {
-  utils.call(refresh, "RestartServ", [uid])
+  utils.call(refresh, "RestartServ", [uid, true])
+}
+
+function restartOneServ(uid) {
+  utils.call(refresh, "RestartServ", [uid, false])
 }
 
 function search() {
@@ -87,6 +149,8 @@ function refresh() {
     curPageNumText.value = curPageNum.value.toString()
     pages.value = r.pages
     servsInfo.value = r.data
+    servsCount.value = r.count
+    servsSelected.value = r.selected
     isLoading.value = false
   }
 
@@ -188,16 +252,61 @@ onUnmounted(() => {
     </div>
     <div class="dark:bg-slate-500 bg-slate-200 h-3/4 w-0.5 m-1"></div>
     <div class="m-0 text-2xl">
-      <Tooltips :css="'mt-8'" :tip="t('selectAll')">
-        <button @click="selectAll" class="my-0 mx-1"><i class="fas fa-check-circle"></i></button>
-      </Tooltips>
-      <Tooltips :css="'mt-8'" :tip="t('inverseSelection')">
-        <button @click="invertSelection" class="my-0 mx-1"><i class="fas fa-adjust"></i></button>
-      </Tooltips>
+      <!-- <Tooltips :css="'mt-8'" :tip="t('selectAll')"> -->
+      <DropdownMenu withDropdownCloser>
+        <template #trigger>
+          <button class="my-0 mx-1"><i class="fas fa-check-circle"></i></button>
+        </template>
+        <template #body>
+          <ul class="dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-sm p-2">
+            <li>
+              <span class="text-sm dark:text-neutral-400 text-neutral-500">{{ t('curPage') }}</span>
+            </li>
+            <li>
+              <hr>
+            </li>
+            <li><button @click="selectAll(true)" dropdown-closer>{{ t('selectAll') }}</button></li>
+            <li class="h-2"></li>
+            <li>
+              <span class="text-sm dark:text-neutral-400 text-neutral-500">{{ t('global') }}</span>
+            </li>
+            <li>
+              <hr>
+            </li>
+            <li><button @click="selectAll(false)" dropdown-closer>{{ t('selectAll') }}</button></li>
+            <li><button @click="selectTimeoutGlobal()" dropdown-closer>{{ t('selectTimeout') }}</button></li>
+          </ul>
+        </template>
+      </DropdownMenu>
+      <DropdownMenu withDropdownCloser>
+        <template #trigger>
+          <button class="my-0 mx-1"><i class="fas fa-adjust"></i></button>
+        </template>
+        <template #body>
+          <ul class="dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-sm p-2">
+            <li><button @click="invertSelection(true)" dropdown-closer>{{ t('invertSelection') }} ({{ t('curPage')
+            }})</button></li>
+            <li><button @click="invertSelection(false)" dropdown-closer>{{ t('invertSelection') }} ({{ t('global')
+            }})</button></li>
+          </ul>
+        </template>
+      </DropdownMenu>
     </div>
     <div class="dark:bg-slate-500 bg-slate-200 h-3/4 w-0.5 m-1"></div>
     <div class="m-0 text-2xl">
       <button @click="openWindow(hWnds.configEditor, null)" class="my-0 mx-1"><i class="fas fa-plus"></i></button>
+      <DropdownMenu withDropdownCloser>
+        <template #trigger>
+          <button class="my-0 mx-1"><i class="fas fa-sort-alpha-down"></i></button>
+        </template>
+        <template #body>
+          <ul class="dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-sm p-2">
+            <li><button @click="sortSelectedBy('latency')" dropdown-closer>{{ t('sortSelectedByLatency') }}</button></li>
+            <li><button @click="sortSelectedBy('time')" dropdown-closer>{{ t('sortSelectedByModifyTime') }}</button></li>
+            <li><button @click="sortSelectedBy('summary')" dropdown-closer>{{ t('sortSelectedBySummary') }}</button></li>
+          </ul>
+        </template>
+      </DropdownMenu>
       <button @click="deleteSelected" class="my-0 mx-1"><i class="fas fa-trash-alt"></i></button>
     </div>
     <div class="dark:bg-slate-500 bg-slate-200 h-3/4 w-0.5 m-1"></div>
@@ -218,7 +327,7 @@ onUnmounted(() => {
       <div class="hidden sm:table-cell  py-0 px-1 align-middle text-center w-60 lg:w-[28%]">{{ t('summary') }}
       </div>
       <div class="hidden lg:table-cell py-0 px-1 align-middle text-center w-56">{{ t('tags') }}</div>
-      <div class="table-cell py-0 px-1 align-middle text-center w-24">{{ t('controls') }}</div>
+      <div class="table-cell py-0 px-1 align-middle text-center w-32">{{ t('controls') }}</div>
     </div>
   </div>
 
@@ -243,7 +352,7 @@ onUnmounted(() => {
                 @click="stopServ(serv.uid)">ON</div>
             </div>
             <div class="table-cell py-0 px-1 align-middle text-center w-12">
-              <input type="checkbox" v-model="serv.selected" class="w-4 h-4" />
+              <input type="checkbox" v-model="serv.selected" class="w-4 h-4" @change="saveSelectionLater" />
             </div>
             <div class="table-cell py-0 px-1 align-middle text-center w-16">{{ serv['index'] }}</div>
             <div class="table-cell py-1 px-2 align-middle text-left break-all">
@@ -264,9 +373,12 @@ onUnmounted(() => {
                   v-for="tag in serv.tags" @click="openWindow(hWnds.settingsEditor, serv.uid)">{{ tag }}</div>
               </div>
             </div>
-            <div class="table-cell py-0 px-1 align-middle text-center w-24">
+            <div class="table-cell py-0 px-1 align-middle text-center w-32">
               <button class="text-xl my-0 mx-1 text-red-700" @click="restartServ(serv.uid)">
                 <i class="fa fa-play"></i>
+              </button>
+              <button class="text-xl my-0 mx-1" @click="restartOneServ(serv.uid)">
+                <i class="fas fa-play-circle"></i>
               </button>
               <button class="text-xl my-0 mx-1" @click="openWindow(hWnds.configEditor, serv.uid)">
                 <i class="fas fa-edit"></i>
@@ -279,18 +391,25 @@ onUnmounted(() => {
         </li>
       </VueDraggableNext>
     </ul>
-    <div class="block grow h-10"></div>
+    <div class="block grow h-14"></div>
   </div>
 
-  <!-- pager -->
   <div
-    class="dark:bg-slate-800 pagh-8 py-0 px-5 flex grow justify-left items-center fixed z-10 right-0 bottom-0 bg-neutral-200"
-    v-if="pages > 1">
-    <VPagination v-model="curPageNum" :pages="pages" :range-size="2" class="dark:bg-slate-800" active-color="#DCEDFF"
-      @update:modelValue="refresh" />
-    <input v-model="curPageNumText" class="dark:bg-slate-600 text-center text-sm my-1 mx-2 w-12"
-      @keyup.enter="jumpToPage" />
-    <button @click="jumpToPage" class="text-sm">{{ t('jump') }}</button>
+    class="dark:bg-slate-500 bg-slate-400 leading-7 align-middle block z-10 md:left-56 left-0 dark:text-neutral-800 text-neutral-600 text-sm fixed bottom-0 right-0 px-2">
+    <!-- counter -->
+    <div class="float-left">
+      {{ t('count') }}: {{ servsCount }} &nbsp; {{ t('selected') }}: {{ servsSelected }}
+    </div>
+
+    <!-- pager -->
+    <div class="float-right inline-flex" v-if="pages > 1">
+      <VPagination v-model="curPageNum" :pages="pages" :range-size="2" active-color="#DCEDFF"
+        @update:modelValue="refresh" />
+      <input v-model="curPageNumText"
+        class="inline-block dark:bg-slate-200 bg-slate-200 text-center text-sm my-1 mx-2 w-12"
+        @keyup.enter="jumpToPage" />
+      <button @click="jumpToPage" class="inline-block text-sm">{{ t('jump') }}</button>
+    </div>
   </div>
 
   <!-- popup window -->

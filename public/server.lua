@@ -81,7 +81,7 @@ local function GetterCoreServInfo(coreServ)
     t["summary"] = coreState:GetSummary()
     t["uid"] = coreState:GetUid()
     t["on"] = coreCtrl:IsCoreRunning()
-    t["selected"] = false
+    t["selected"] = coreState:IsSelected()
     t["tags"] = GetterTags(coreState)
     return t
 end
@@ -158,6 +158,67 @@ local function CalcTotalPageNumber(total)
         pages = 1
     end
     return pages
+end
+
+local function CountSelectedServs(servs)
+    local r = 0
+    for coreServ in Each(servs) do
+        local coreState = coreServ:GetCoreStates()
+        local isSelected = coreState:IsSelected()
+        r = r + (isSelected and 1 or 0)
+    end
+    return r
+end
+
+function ChangeSelection(selections)
+    local s = json.decode(selections)
+    local servs = Server:GetAllServers()
+    for coreServ in Each(servs) do
+        local coreState = coreServ:GetCoreStates()
+        local uid = coreState:GetUid()
+        if s[uid] ~= nil then
+            coreState:SetIsSelected(s[uid])
+        end
+    end
+end
+
+function SelectAllTimeoutedServers()
+    local servs = Server:GetAllServers()
+    for coreServ in Each(servs) do
+        local coreState = coreServ:GetCoreStates()
+        local latency = coreState:GetSpeedTestResult()
+        local isTimeout = latency == utils.Timeout
+        coreState:SetIsSelected(isTimeout)
+    end
+end
+
+function SelectAllServers()
+    local servs = Server:GetAllServers()
+    for coreServ in Each(servs) do
+        local coreState = coreServ:GetCoreStates()
+        coreState:SetIsSelected(true)
+    end
+end
+
+function InvertSelectionGlobal()
+    local servs = Server:GetAllServers()
+    for coreServ in Each(servs) do
+        local coreState = coreServ:GetCoreStates()
+        local selected = not coreState:IsSelected()
+        coreState:SetIsSelected(selected)
+    end
+end
+
+function SortSelectedByLatency()
+    Server:SortSelectedServersBySpeedTest()
+end
+
+function SortSelectedBySummary()
+    Server:SortSelectedServersBySummary()
+end
+
+function SortSelectedByModifyTime()
+    Server:SortSelectedServersByLastModifiedDate()
 end
 
 function UpdateSubscriptions()
@@ -279,6 +340,9 @@ function GetServSettings(uid)
     r["name"] =coreState:GetName()
     r["mark"] = coreState:GetMark()
     r["remark"] = coreState:GetRemark()
+    r["inbMode"] = coreState:GetInboundType()
+    r["inbIp"] = coreState:GetInboundIp()
+    r["inbPort"] = coreState:GetInboundPort()
     r["tag1"] = coreState:GetTag1()
     r["tag2"] = coreState:GetTag2()
     r["tag3"] = coreState:GetTag3()
@@ -304,6 +368,9 @@ function SaveServSettings(uid, s)
     coreState:SetTag3(s["tag3"])
     
     coreState:SetIndex(tonumber(s["index"]) or 1)
+    
+    coreState:SetInboundType(tonumber(s["inbMode"]))
+    coreState:SetInboundAddr(s["inbIp"], tonumber(s["inbPort"]))
     Server:ResetIndexes()
     
     return true
@@ -333,6 +400,8 @@ function GetSerializedServers(pageNum, searchType, keyword)
     local r = {
         ["pages"] = 1,
         ["data"] = {},
+        ["selected"] = CountSelectedServs(servs),
+        ["count"] = servs.Count,
     }
     
     if servs.Count < 1 then
@@ -353,16 +422,19 @@ function GetSerializedServers(pageNum, searchType, keyword)
     if searchType == "index" then
         local idx = math.floor((tonumber(keyword) or 0) - 1)
         if idx < 0 or idx >= servs.Count then
+            r["count"] = 0
             return r
         end
         r["pages"] = 1
         r["data"] = { GetterCoreServInfo(servs[idx]) }
+        r["count"] = 1
         return r
     end
     
     local filtered = FilterServs(servs, searchType, keyword)
     local max = #filtered
     r["pages"] = CalcTotalPageNumber(#filtered)
+    r["count"] = max
     local d = {}
     for i = first + 1, last + 1 do
         if i <= max then
@@ -375,12 +447,14 @@ function GetSerializedServers(pageNum, searchType, keyword)
     return r
 end 
 
-function RestartServ(uid)
+function RestartServ(uid, stopOthers)
     uid = uid or ""
     local coreServ = utils.GetFirstServerWithUid(uid)
     if coreServ ~= nil then
         local coreCtrl = coreServ:GetCoreCtrl()
-        Server:StopAllServers()
+        if stopOthers == true then
+            Server:StopAllServers()
+        end
         coreCtrl:RestartCore()
         return true
     end
@@ -449,12 +523,17 @@ function GetServerConfig(uid)
     return nil
 end
 
-function DeleteServersByUids(uids)
-    if type(uids) ~= "table" then
-        return false
+function DeleteSelectedServers()
+    local uids = {}
+    local servs = Server:GetAllServers()
+    for coreServ in Each(servs) do
+        local coreState = coreServ:GetCoreStates()
+        if coreState:IsSelected() then
+            local uid = coreState:GetUid()
+            table.insert(uids, uid)
+        end
     end
     Server:DeleteServerByUids(uids)
-    return true
 end
 
 function ImportShareLinks(ps)

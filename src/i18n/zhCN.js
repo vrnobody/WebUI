@@ -11,10 +11,22 @@ export default {
 
     // server
     selectAll: '全选',
-    inverseSelection: '反选',
+    selectTimeout: '选中超时',
+    invertSelection: '反选',
+    curPage: '当前页',
+    global: '全局',
     viewLogs: '查看日志',
     copied: '已复制',
     copy: '复制',
+    count: '计数',
+    selected: '选中',
+    custom: '自定义',
+    inbMode: 'Inbound模式',
+    inbIp: 'Inbound IP',
+    inbPort: 'Inbound端口',
+    sortSelectedByLatency: '按测速排序',
+    sortSelectedByModifyTime: '按最近修改时间排序',
+    sortSelectedBySummary: '按摘要排序',
 
     // luna
     name: '名字',

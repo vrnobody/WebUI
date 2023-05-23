@@ -14,6 +14,7 @@
     "@hennge/vue3-pagination": "^1.0.17",
     "@yangss/vue3-i18n": "^1.1.4",
     "pinia": "^2.0.32",
+    "v-dropdown-menu": "^2.0.2",
     "vue": "^3.2.47",
     "vue-draggable-next": "^2.1.1",
     "vue-router": "^4.1.6"

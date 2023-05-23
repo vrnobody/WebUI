@@ -67,7 +67,7 @@ function saveServConfig() {
     }
 
     try {
-        const uid = servUid.value
+        const uid = servUid.value || ''
         const config = servConfig.value
         utils.call(next, "SaveServerConfig", [uid, config])
     } catch (err) {

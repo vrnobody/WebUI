@@ -21,7 +21,7 @@ const servTitle = computed({
     }
 })
 
-const servSettingKeys = ["index", "name", "mark", "remark", "tag1", "tag2", "tag3"]
+const servSettingKeys = ["index", "name", "inbMode", "inbIp", "inbPort", "mark", "remark", "tag1", "tag2", "tag3"]
 
 function loadSettings() {
     const next = function (tags) {
@@ -61,9 +61,17 @@ onMounted(() => {
     <div class="dark:bg-slate-600 block grow w-full h-4/5 p-4 bg-neutral-200">
         <div v-for="key in servSettingKeys">
             <div class="flex items-center h-9">
-                <div class="py-0 px-4 w-24">{{ t(key) }}</div>
-                <div class="flex grow py-0 px-4">
-                    <input type="text" v-model="servSettings[key]" class="dark:bg-slate-500 bg-neutral-100 grow" />
+                <div class="p-0 w-32 mr-4">{{ t(key) }}</div>
+                <div class="flex grow p-0">
+                    <select v-if="key === 'inbMode'" v-model="servSettings[key]"
+                        class="dark:bg-slate-500 bg-neutral-100 grow">
+                        <option value="0">Config</option>
+                        <option value="1">HTTP</option>
+                        <option value="2">SOCKS</option>
+                        <option value="3">{{ t('custom') }}</option>
+                    </select>
+                    <input v-else type="text" v-model="servSettings[key]"
+                        class="dark:bg-slate-500 bg-neutral-100 grow px-1" />
                 </div>
             </div>
         </div>

@@ -11,10 +11,23 @@ export default {
 
     // server
     selectAll: 'Select all',
-    inverseSelection: 'Inverse selection',
+    selectTimeout: 'Select timeouted',
+    invertSelection: 'Invert selection',
+    curPage: 'Current page',
+    global: 'Global',
     viewLogs: 'View logs',
     copied: 'Copied',
     copy: 'Copy',
+    count: 'Count',
+    selected: 'Selected',
+    custom: 'Custom',
+    inbMode: 'Inbound mode',
+    inbIp: 'Inbound IP',
+    inbPort: 'Inbound port',
+
+    sortSelectedByLatency: 'Sort by latency',
+    sortSelectedByModifyTime: 'Sort by last modify time',
+    sortSelectedBySummary: 'Sort by summary',
 
     // luna
     name: 'Name',

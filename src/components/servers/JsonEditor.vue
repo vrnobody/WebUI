@@ -25,7 +25,6 @@ async function createJsonConfigV4LintSvcProvider() {
   const localLinterUrl = window.location.origin + "/ace/linters/"
   const provider = LanguageProvider.fromCdn(localLinterUrl);
 
-  // const schema = await import('../assets/v4-config-schema.json')
   const r = await fetch('/ace/linters/v4-config-schema.json')
   const schema = await r.text()
 
