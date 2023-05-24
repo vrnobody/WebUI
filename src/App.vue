@@ -3,13 +3,20 @@ import { RouterView } from 'vue-router'
 import CompHeader from './components/app/Header.vue'
 import CompSidebar from './components/app/Sidebar.vue'
 import { useI18n } from '@yangss/vue3-i18n'
-import { onBeforeMount } from 'vue'
-import utils from './misc/utils'
+import { onBeforeMount, onMounted } from 'vue'
+import utils from '@/misc/utils.js'
+import config from '@/config.js'
 
 onBeforeMount(() => {
   const { _, t } = useI18n()
   utils.init(t)
   utils.reloadThemeMode()
+})
+
+onMounted(() => {
+  if (config.isDevMode) {
+    document.title = "WebUI - DEV"
+  }
 })
 </script>
 

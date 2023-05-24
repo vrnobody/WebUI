@@ -118,12 +118,14 @@ onUnmounted(() => {
                 </button>
             </li>
             <li v-for="d in dirInfo.folders" class="flex">
-                <button @click="append(d)"><i class="fas fa-folder whitespace-nowrap overflow-hidden text-ellipsis"></i> {{
-                    d }}</button>
+                <button @click="append(d)" class=" whitespace-nowrap overflow-hidden text-ellipsis">
+                    <i class="fas fa-folder"></i> {{ d }}
+                </button>
             </li>
-            <li v-for="f in dirInfo.files">
-                <button @click="append(f)"><i class="fas fa-file whitespace-nowrap overflow-hidden text-ellipsis"></i> {{ f
-                }}</button>
+            <li v-for="f in dirInfo.files" class="flex">
+                <button @click="append(f)" class=" whitespace-nowrap overflow-hidden text-ellipsis">
+                    <i class="fas fa-file"></i> {{ f }}
+                </button>
             </li>
         </ul>
     </div>

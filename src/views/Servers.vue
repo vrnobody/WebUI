@@ -1,6 +1,6 @@
 <script setup>
 import utils from '../misc/utils.js'
-import { onMounted, onUnmounted, ref, defineAsyncComponent } from 'vue'
+import { onMounted, onUnmounted, ref, defineAsyncComponent, nextTick } from 'vue'
 import { VueDraggableNext } from 'vue-draggable-next'
 
 import ConfigEditor from '../components/servers/ConfigEditor.vue'
@@ -161,6 +161,11 @@ function refresh() {
   ])
 }
 
+function clearSearchKeyword() {
+  searchKeyword.value = ''
+  nextTick(refresh)
+}
+
 function servOrderChanged(evt) {
   const servs = servsInfo.value
   const maxIndex = servs.length - 1
@@ -246,7 +251,7 @@ onUnmounted(() => {
         <input v-model="searchKeyword" @keyup.enter="search" type="text"
           class="dark:bg-slate-500 bg-neutral-50 w-40 md:w-48 my-0 mx-4" :placeholder="t('search')" />
         <div class="dark:text-neutral-700 absolute m-0 right-6 top-0 text-neutral-300">
-          <i class="fas fa-search"></i>
+          <button @click="clearSearchKeyword"><i class="fas fa-search"></i></button>
         </div>
       </div>
     </div>
