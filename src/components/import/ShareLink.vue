@@ -20,8 +20,8 @@ function scanQrCode() {
 }
 
 function importShareLinks() {
-  const links = content.value
-  const mk = mark.value
+  const links = content.value || ''
+  const mk = mark.value || ''
   utils.call(report, "ImportShareLinks", [links, mk])
 }
 

@@ -132,11 +132,11 @@ function stopServ(uid) {
 }
 
 function restartServ(uid) {
-  utils.call(refresh, "RestartServ", [uid, true])
+  utils.call(refresh, "RestartServ", [uid || '', true])
 }
 
 function restartOneServ(uid) {
-  utils.call(refresh, "RestartServ", [uid, false])
+  utils.call(refresh, "RestartServ", [uid || '', false])
 }
 
 function search() {
@@ -156,7 +156,7 @@ function refresh() {
 
   utils.call(next, "GetSerializedServers", [
     curPageNum.value,
-    searchType.value,
+    searchType.value || '',
     searchKeyword.value,
   ])
 }
@@ -188,7 +188,8 @@ function servOrderChanged(evt) {
     refresh()
   }
 
-  utils.call(next, "ChangeServIndex", [curServ.uid, idx])
+  const uid = curServ.uid || ''
+  utils.call(next, "ChangeServIndex", [uid, idx])
 }
 
 function getServTitleByUid(uid) {
@@ -289,9 +290,9 @@ onUnmounted(() => {
         <template #body>
           <ul class="dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-base p-2">
             <li><button @click="invertSelection(true)" dropdown-closer>{{ t('invertSelection') }} ({{ t('curPage')
-            }})</button></li>
+                            }})</button></li>
             <li><button @click="invertSelection(false)" dropdown-closer>{{ t('invertSelection') }} ({{ t('global')
-            }})</button></li>
+                            }})</button></li>
           </ul>
         </template>
       </DropdownMenu>
@@ -365,8 +366,8 @@ onUnmounted(() => {
               <p class="whitespace-pre-wrap">{{ serv['name'] }}</p>
             </div>
             <div class="hidden sm:table-cell lg:w-[28%] py-1 px-2 align-middle text-left break-all w-60">{{
-              serv['summary']
-            }}
+                          serv['summary']
+                          }}
             </div>
             <div class="hidden lg:table-cell py-1 px-2 align-middle text-left break-all w-56">
               <div class="flex flex-wrap justify-start">

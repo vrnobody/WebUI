@@ -162,16 +162,6 @@ local function CalcTotalPageNumber(total)
     return pages
 end
 
-local function CountSelectedServs(servs)
-    local r = 0
-    for coreServ in Each(servs) do
-        local coreState = coreServ:GetCoreStates()
-        local isSelected = coreState:IsSelected()
-        r = r + (isSelected and 1 or 0)
-    end
-    return r
-end
-
 function WrtieFile(filename, content)
     local w = writer.new(filename)
     w:WriteAllText(content)
@@ -420,7 +410,7 @@ function GetSerializedServers(pageNum, searchType, keyword)
     local r = {
         ["pages"] = 1,
         ["data"] = {},
-        ["selected"] = CountSelectedServs(servs),
+        ["selected"] = Server:CountSelected(),
         ["count"] = servs.Count,
     }
     

@@ -47,7 +47,8 @@ function coreOrderChanged(evt) {
     refresh()
   }
 
-  utils.call(next, "ChangeLuaCoreIndex", [curServ.name, idx])
+  const name = curServ.name || ''
+  utils.call(next, "ChangeLuaCoreIndex", [name, idx])
 }
 
 function refresh() {
@@ -91,7 +92,7 @@ function closeCoreSettingsEditor() {
 }
 
 function saveCoreSettings() {
-  const name = curCoreName
+  const name = curCoreName || ''
   let info = curCoreSettings.value
   info.index = parseFloat(info.index)
   const settings = JSON.stringify(info)

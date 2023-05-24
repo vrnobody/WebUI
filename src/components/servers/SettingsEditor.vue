@@ -42,7 +42,8 @@ function save() {
         }
         Swal.fire(t('failed'))
     }
-    utils.call(next, "SaveServSettings", [servUid.value, servSettings.value])
+    const uid = servUid.value || ''
+    utils.call(next, "SaveServSettings", [uid, servSettings.value])
 }
 
 function close() {

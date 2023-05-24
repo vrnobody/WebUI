@@ -58,7 +58,7 @@ function loadScriptFromFile() {
 }
 
 function saveScriptToFile(quiet) {
-  const fn = filename.value
+  const fn = filename.value || ''
   const content = scriptContent.value
 
   const next = function () {
@@ -95,8 +95,8 @@ function saveScript(quiet) {
     saveScriptToFile(quiet)
     return
   }
-  const name = scriptName.value
-  const script = scriptContent.value
+  const name = scriptName.value || ''
+  const script = scriptContent.value || ''
   const showResult = function (ok) {
     if (ok) {
       scriptDb[name] = script
@@ -191,9 +191,9 @@ function removeLuaVm() {
 
 function runScript() {
 
-  const script = scriptContent.value
-  const name = scriptName.value
-
+  const name = scriptName.value || ''
+  const script = scriptContent.value || ''
+  
   removeLuaVm()
   clearInterval(logUpdater)
   const next = function (handle) {
@@ -292,7 +292,7 @@ onUnmounted(() => {
       <label class="mx-1 shrink-0">{{ t('name') }}</label>
       <div class="grow flex mx-1 overflow-hidden">
         <span v-if="isEditingLocalFile" class="w-full px-2 whitespace-nowrap overflow-hidden text-ellipsis">{{ filename
-        }}</span>
+                  }}</span>
         <input v-else type="text" class="w-full px-2 dark:bg-slate-600 bg-neutral-100" list="scriptname-datalist"
           v-model="scriptName" @change="loadScriptFromCache" />
         <datalist id="scriptname-datalist" class="dark:bg-slate-600">

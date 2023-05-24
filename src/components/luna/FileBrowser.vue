@@ -22,7 +22,7 @@ const filename = computed({
 const dirInfo = ref({})
 
 function refresh() {
-    let path = filename.value
+    let path = filename.value || ''
     if (path && path.length > 0) {
         path += '\\'
     }
