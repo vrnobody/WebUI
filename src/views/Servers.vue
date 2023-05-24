@@ -252,7 +252,6 @@ onUnmounted(() => {
     </div>
     <div class="dark:bg-slate-500 bg-slate-200 h-3/4 w-0.5 m-1"></div>
     <div class="m-0 text-2xl">
-      <!-- <Tooltips :css="'mt-8'" :tip="t('selectAll')"> -->
       <DropdownMenu withDropdownCloser>
         <template #trigger>
           <button class="my-0 mx-1"><i class="fas fa-check-circle"></i></button>
@@ -294,13 +293,12 @@ onUnmounted(() => {
     </div>
     <div class="dark:bg-slate-500 bg-slate-200 h-3/4 w-0.5 m-1"></div>
     <div class="m-0 text-2xl">
-
       <DropdownMenu withDropdownCloser>
         <template #trigger>
           <button class="my-0 mx-1"><i class="fas fa-sort-alpha-down"></i></button>
         </template>
         <template #body>
-          <ul class="dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-sm p-2">
+          <ul class="dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-base p-2">
             <li><button @click="sortSelectedBy('latency')" dropdown-closer>{{ t('sortSelectedByLatency') }}</button></li>
             <li><button @click="sortSelectedBy('time')" dropdown-closer>{{ t('sortSelectedByModifyTime') }}</button></li>
             <li><button @click="sortSelectedBy('summary')" dropdown-closer>{{ t('sortSelectedBySummary') }}</button></li>

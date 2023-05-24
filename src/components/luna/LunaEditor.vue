@@ -1,8 +1,8 @@
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick, defineAsyncComponent } from 'vue'
 import { useI18n } from '@yangss/vue3-i18n'
-import utils from '../../misc/utils.js'
-import config from '@/config.js'
+import utils from '@/misc/utils.js'
+
 import DropdownMenu from 'v-dropdown-menu'
 import '@/assets/v-dropdown-menu.css'
 import FileBrowser from '@/components/luna/FileBrowser.vue'
@@ -33,8 +33,45 @@ let lastScriptContent = ""
 let lastScriptName = ''
 
 function showFileBrowser(op) {
-  curOp.value = op
-  isFileBrowserVisiable.value = true
+  const cur = scriptContent.value
+  const next = function () {
+    curOp.value = op
+    isFileBrowserVisiable.value = true
+  }
+  if (lastScriptContent !== cur && op !== 'save') {
+    utils.confirm(t('emptyCurScript'), next)
+  } else {
+    next()
+  }
+}
+
+function loadScriptFromFile() {
+  const fn = filename.value
+  const next = function (script) {
+    isEditingLocalFile.value = true
+    scriptName.value = ''
+    scriptContent.value = script
+    lastScriptName = ''
+    lastScriptContent = script
+  }
+  utils.call(next, 'ReadFile', [fn])
+}
+
+function saveScriptToFile(quiet) {
+  const fn = filename.value
+  const content = scriptContent.value
+
+  const next = function () {
+    isEditingLocalFile.value = true
+    scriptName.value = ''
+    lastScriptName = ''
+    lastScriptContent = content
+
+    if (!quiet) {
+      Swal.fire(t('success'))
+    }
+  }
+  utils.call(next, 'WrtieFile', [fn, content])
 }
 
 function closeFileBrowser(isExecCurOp) {
@@ -46,14 +83,18 @@ function closeFileBrowser(isExecCurOp) {
   }
   switch (op) {
     case 'load':
-      console.log('load from file:', filename.value)
+      loadScriptFromFile()
       break;
     case 'save':
-      console.log('save to file:', filename.value)
+      saveScriptToFile()
   }
 }
 
 function saveScript(quiet) {
+  if (isEditingLocalFile.value) {
+    saveScriptToFile(quiet)
+    return
+  }
   const name = scriptName.value
   const script = scriptContent.value
   const showResult = function (ok) {
@@ -174,6 +215,7 @@ function abortScript() {
 function newScript() {
   const cur = scriptContent.value
   const empty = function () {
+    isEditingLocalFile.value = false
     scriptContent.value = ''
     scriptName.value = ''
     lastScriptContent = ''
@@ -195,6 +237,7 @@ function onKeyDown(e) {
         saveScript(true)
         break
       case 'n':
+        // this keyboard shortcut will not work
         e.preventDefault()
         newScript()
         break
@@ -226,10 +269,9 @@ function onFullScreenHandler(fullScreen) {
   isFullScreen.value = fullScreen
 }
 
-const fileBrowserHistoryKey = 'FileBrowserHistoryPath'
+
 
 onMounted(() => {
-  filename.value = config.get(fileBrowserHistoryKey) || ''
   document.addEventListener('keydown', onKeyDown)
   loadScriptsFromServer()
 })
@@ -238,19 +280,19 @@ onUnmounted(() => {
   document.removeEventListener('keydown', onKeyDown)
   clearInterval(logUpdater)
   removeLuaVm()
-  config.set(fileBrowserHistoryKey, filename.value)
 })
 </script>
 
 <template>
   <div class="dark:bg-slate-800 bg-slate-300 p-2 fixed flex flex-col right-0 bottom-0"
-    :class="{ 'z-50 left-0 right-0 top-0': isFullScreen, 'z-20 top-12 pt-0 left-0 md:left-56': !isFullScreen }">
+    :class="{ 'z-50 left-0 right-0 top-0': isFullScreen || isFileBrowserVisiable, 'z-20 top-12 pt-0 left-0 md:left-56': !isFullScreen && !isFileBrowserVisiable }">
 
     <!-- toolstrip -->
     <div class="flex w-full dark:bg-slate-500 bg-slate-400 h-10 items-center text-base px-2">
-      <label class="mx-1">{{ t('name') }}</label>
-      <div class="grow mx-1">
-        <input type="text" class="w-full px-2 dark:bg-slate-600 bg-neutral-100" list="scriptname-datalist"
+      <label class="mx-1 shrink-0">{{ t('name') }}</label>
+      <div class="grow flex mx-1 min-w-[5rem]">
+        <span v-if="isEditingLocalFile" class="w-full px-2 overflow-hidden text-ellipsis">{{ filename }}</span>
+        <input v-else type="text" class="w-full px-2 dark:bg-slate-600 bg-neutral-100" list="scriptname-datalist"
           v-model="scriptName" @change="loadScriptFromCache" />
         <datalist id="scriptname-datalist" class="dark:bg-slate-600">
           <option v-for="(_, key) in scriptDb" :value="key" class="dark:bg-slate-600"></option>
@@ -261,7 +303,7 @@ onUnmounted(() => {
           <button class="mx-1"><i class="fas fa-file-code"></i></button>
         </template>
         <template #body>
-          <ul class="dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text p-2">
+          <ul class="dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 p-2">
             <li><button @click="newScript" dropdown-closer>{{ t('newScript') }}</button></li>
             <li><button @click="showFileBrowser('load')" dropdown-closer>{{ t('loadFile') }}</button></li>
             <li><button @click="showFileBrowser('save')" dropdown-closer>{{ t('saveAs') }}</button></li>
@@ -289,7 +331,7 @@ onUnmounted(() => {
 
     <!-- file browser -->
     <div v-if="isFileBrowserVisiable"
-      class="bg-slate-300 text-neutral-800 fixed flex flex-col p-4 z-50 left-0 right-0 top-0 bottom-0">
+      class="dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 fixed flex flex-col p-4 z-50 left-0 right-0 top-0 bottom-0">
       <FileBrowser v-model:filename="filename" v-model:op="curOp" @onSave="closeFileBrowser(true)"
         @onClose="closeFileBrowser(false)" />
     </div>

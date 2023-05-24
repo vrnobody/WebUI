@@ -47,7 +47,8 @@ export default {
     loadFile: 'Load file',
     saveAs: 'Save as',
     load: 'Load',
-
+    file: 'File',
+    extensions: 'Extensions',
 
     shareLinks: 'Share links',
     subscriptions: 'Subscriptions',

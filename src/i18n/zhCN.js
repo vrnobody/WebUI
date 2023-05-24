@@ -46,6 +46,8 @@ export default {
     loadFile: '从文件加载',
     saveAs: '另存为文件',
     load: '加载',
+    file: '文件',
+    extensions: '扩展名',
 
     shareLinks: '分享链接',
     subscriptions: '订阅',

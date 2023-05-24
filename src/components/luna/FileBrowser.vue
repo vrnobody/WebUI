@@ -1,17 +1,14 @@
 <script setup>
-import utils from '@/misc/utils.js'
 import { computed, ref, onMounted, onUnmounted, nextTick } from 'vue'
+import utils from '@/misc/utils.js'
+import config from '@/config.js'
 
 const props = defineProps(['filename', 'op'])
 const emit = defineEmits(['update:filename', 'onClose', 'onSave'])
 
 const t = utils.getTranslator()
 
-const op = computed({
-    get() {
-        return props.op
-    }
-})
+const exts = ref('')
 
 const filename = computed({
     get() {
@@ -31,13 +28,12 @@ function refresh() {
     }
     const next = function (info) {
         try {
-            // console.log(info)
             dirInfo.value = JSON.parse(info)
         } catch (err) {
             Swal.fire(err.toString())
         }
     }
-    utils.call(next, 'Ls', [path])
+    utils.call(next, 'Ls', [path, exts.value])
 }
 
 function joinPath(parts) {
@@ -82,16 +78,39 @@ function close() {
     emit('onClose')
 }
 
+const fileBrowserHistoryKey = 'FileBrowserHistoryPath'
+const fileBrowserExtsKey = 'FileBrowserExts'
+
 onMounted(() => {
-    refresh()
+    filename.value = config.get(fileBrowserHistoryKey) || ''
+    exts.value = config.get(fileBrowserExtsKey) || 'lua|json|txt'
+    nextTick(refresh)
+})
+
+onUnmounted(() => {
+    config.set(fileBrowserHistoryKey, filename.value)
+    config.set(fileBrowserExtsKey, exts.value)
 })
 
 </script>
 <template>
-    <div class="text-base p-0 mb-2">
-        <input type="text" v-model="filename" class="w-full px-2" @change="refresh" />
+    <!-- inputs -->
+    <div class="text-base p-0 flex">
+        <ul class="grow">
+            <li class="flex mb-2">
+                <div class="shrink-0 w-24">{{ t('file') }}</div>
+                <input type="text" v-model="filename" class="dark:bg-slate-500  bg-neutral-100 grow px-2"
+                    @change="refresh" />
+            </li>
+            <li class="flex mb-2">
+                <div class="shrink-0 w-24">{{ t('extensions') }}</div>
+                <input type="text" v-model="exts" class="dark:bg-slate-500  bg-neutral-100 grow px-2" @change="refresh" />
+            </li>
+        </ul>
     </div>
-    <div class="dark:bg-slate-600 block grow w-full h-4/5 p-4 bg-neutral-200 overflow-y-auto">
+
+    <!-- directory content -->
+    <div class="dark:bg-slate-500  bg-neutral-200 block grow w-full h-4/5 p-4 overflow-y-auto">
         <ul>
             <li>
                 <button @click="goback">
@@ -107,8 +126,9 @@ onMounted(() => {
         </ul>
     </div>
 
+    <!-- controls -->
     <div class="flex w-full h-10 justify-center items-end">
-        <button @click="save" class="my-0 mx-4">{{ t(op) }}</button>
+        <button @click="save" class="my-0 mx-4">{{ t(props.op) }}</button>
         <button @click="close" class="my-0 mx-4">{{ t('close') }}</button>
     </div>
 </template>

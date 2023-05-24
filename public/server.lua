@@ -17,6 +17,8 @@ local logLevel = #args > 1 and args[2] or Logger.logLevels.Debug
 local haServ = require('lua.modules.httpServ').new()
 local json = require('lua.libs.json')
 local utils = require('lua.libs.utils')
+local reader = require('lua.modules.reader')
+local writer = require('lua.modules.writer')
 
 local sLog = Logger.new(nil, logLevel)
 
@@ -168,6 +170,16 @@ local function CountSelectedServs(servs)
         r = r + (isSelected and 1 or 0)
     end
     return r
+end
+
+function WrtieFile(filename, content)
+    local w = writer.new(filename)
+    w:WriteAllText(content)
+end
+
+function ReadFile(filename)
+    local r = reader.new(filename)
+    return r:ReadAllText()
 end
 
 function Ls(path, exts)
