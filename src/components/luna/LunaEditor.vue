@@ -290,8 +290,9 @@ onUnmounted(() => {
     <!-- toolstrip -->
     <div class="flex w-full dark:bg-slate-500 bg-slate-400 h-10 items-center text-base px-2">
       <label class="mx-1 shrink-0">{{ t('name') }}</label>
-      <div class="grow flex mx-1 min-w-[5rem]">
-        <span v-if="isEditingLocalFile" class="w-full px-2 overflow-hidden text-ellipsis">{{ filename }}</span>
+      <div class="grow flex mx-1">
+        <span v-if="isEditingLocalFile" class="w-full px-2 whitespace-nowrap overflow-hidden text-ellipsis">{{ filename
+        }}</span>
         <input v-else type="text" class="w-full px-2 dark:bg-slate-600 bg-neutral-100" list="scriptname-datalist"
           v-model="scriptName" @change="loadScriptFromCache" />
         <datalist id="scriptname-datalist" class="dark:bg-slate-600">

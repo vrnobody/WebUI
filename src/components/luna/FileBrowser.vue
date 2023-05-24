@@ -117,11 +117,13 @@ onUnmounted(() => {
                     <i class="fas fa-backward"></i> ..
                 </button>
             </li>
-            <li v-for="d in dirInfo.folders">
-                <button @click="append(d)"><i class="fas fa-folder"></i> {{ d }}</button>
+            <li v-for="d in dirInfo.folders" class="flex">
+                <button @click="append(d)"><i class="fas fa-folder whitespace-nowrap overflow-hidden text-ellipsis"></i> {{
+                    d }}</button>
             </li>
             <li v-for="f in dirInfo.files">
-                <button @click="append(f)"><i class="fas fa-file"></i> {{ f }}</button>
+                <button @click="append(f)"><i class="fas fa-file whitespace-nowrap overflow-hidden text-ellipsis"></i> {{ f
+                }}</button>
             </li>
         </ul>
     </div>
