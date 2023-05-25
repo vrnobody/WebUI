@@ -8,6 +8,7 @@ import LogViewer from '../components/servers/LogViewer.vue'
 import SettingsEditor from '../components/servers/SettingsEditor.vue'
 import FadeTransition from '../components/transitions/FadeTransition.vue'
 import LoadingWidget from '../components/widgets/Loading.vue'
+import ShareLinkViewer from '@/components/servers/ShareLinkViewer.vue'
 
 import Tooltips from '@/components/widgets/Tooltips.vue'
 
@@ -37,6 +38,7 @@ const hWnds = {
   logViwer: ref(false),
   configEditor: ref(false),
   settingsEditor: ref(false),
+  shareLinkViwer: ref(false),
 }
 
 function saveSelectionLater() {
@@ -67,6 +69,17 @@ function selectAll(isCurPage) {
     return
   }
   utils.call(refresh, 'SelectAllServers')
+}
+
+function selectNone(isCurPage) {
+  if (isCurPage) {
+    for (const serv of servsInfo.value) {
+      serv.selected = false
+    }
+    saveSelectionLater()
+    return
+  }
+  utils.call(refresh, 'SelectNoServer')
 }
 
 function selectTimeoutGlobal() {
@@ -107,6 +120,26 @@ function sortSelectedBy(condition) {
   utils.call(refresh, fn)
 }
 
+function copyShareLinkOfSelectedServers() {
+  const count = servsSelected.value
+
+  if (count < 1) {
+    Swal.fire(t('noServerSelected'))
+    return
+  }
+
+  const next = function (links) {
+    if (!links) {
+      Swal.fire(t('failed'))
+      return
+    }
+    utils.copyToClipboard(links)
+    Swal.fire(t('success'))
+  }
+
+  utils.call(next, 'CopyShareLinkOfSelectedServers')
+}
+
 function deleteSelected() {
   const count = servsSelected.value
 
@@ -135,7 +168,7 @@ function restartServ(uid) {
   utils.call(refresh, "RestartServ", [uid || '', true])
 }
 
-function restarOnetServ(uid) {
+function restartOneServ(uid) {
   utils.call(refresh, "RestartServ", [uid || '', false])
 }
 
@@ -258,13 +291,13 @@ onUnmounted(() => {
       </div>
     </div>
     <div class="dark:bg-slate-500 bg-slate-200 h-3/4 w-0.5 m-1"></div>
-    <div class="m-0 text-2xl">
+    <div class="m-0 text-2xl shrink-0">
       <DropdownMenu withDropdownCloser>
         <template #trigger>
           <button class="my-0 mx-1"><i class="fas fa-check-circle"></i></button>
         </template>
         <template #body>
-          <ul class="dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-base p-2">
+          <ul class="min-w-[10rem] dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-base p-2">
             <li>
               <span class="text-sm dark:text-neutral-400 text-neutral-500">{{ t('curPage') }}</span>
             </li>
@@ -272,6 +305,7 @@ onUnmounted(() => {
               <hr>
             </li>
             <li><button @click="selectAll(true)" dropdown-closer>{{ t('selectAll') }}</button></li>
+            <li><button @click="selectNone(true)" dropdown-closer>{{ t('selectNone') }}</button></li>
             <li class="h-2"></li>
             <li>
               <span class="text-sm dark:text-neutral-400 text-neutral-500">{{ t('global') }}</span>
@@ -280,6 +314,7 @@ onUnmounted(() => {
               <hr>
             </li>
             <li><button @click="selectAll(false)" dropdown-closer>{{ t('selectAll') }}</button></li>
+            <li><button @click="selectNone(false)" dropdown-closer>{{ t('selectNone') }}</button></li>
             <li><button @click="selectTimeoutGlobal()" dropdown-closer>{{ t('selectTimeout') }}</button></li>
           </ul>
         </template>
@@ -289,37 +324,55 @@ onUnmounted(() => {
           <button class="my-0 mx-1"><i class="fas fa-adjust"></i></button>
         </template>
         <template #body>
-          <ul class="dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-base p-2">
-            <li><button @click="invertSelection(true)" dropdown-closer>{{ t('invertSelection') }} ({{ t('curPage')
-            }})</button></li>
-            <li><button @click="invertSelection(false)" dropdown-closer>{{ t('invertSelection') }} ({{ t('global')
-            }})</button></li>
+          <ul class="min-w-[10rem] dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-base p-2">
+            <li>
+              <span class="text-sm dark:text-neutral-400 text-neutral-500">{{ t('curPage') }}</span>
+            </li>
+            <li>
+              <hr>
+            </li>
+            <li>
+              <button @click="invertSelection(true)" dropdown-closer>{{ t('invertSelection') }}</button>
+            </li>
+            <li class="h-2"></li>
+            <li>
+              <span class="text-sm dark:text-neutral-400 text-neutral-500">{{ t('global') }}</span>
+            </li>
+            <li>
+              <hr>
+            </li>
+            <li>
+              <button @click="invertSelection(false)" dropdown-closer>{{ t('invertSelection') }}</button>
+            </li>
           </ul>
         </template>
       </DropdownMenu>
     </div>
     <div class="dark:bg-slate-500 bg-slate-200 h-3/4 w-0.5 m-1"></div>
-    <div class="m-0 text-2xl">
-      <DropdownMenu withDropdownCloser>
-        <template #trigger>
-          <button class="my-0 mx-1"><i class="fas fa-sort-alpha-down"></i></button>
-        </template>
-        <template #body>
-          <ul class="dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-base p-2">
-            <li><button @click="sortSelectedBy('latency')" dropdown-closer>{{ t('sortSelectedByLatency') }}</button></li>
-            <li><button @click="sortSelectedBy('time')" dropdown-closer>{{ t('sortSelectedByModifyTime') }}</button></li>
-            <li><button @click="sortSelectedBy('summary')" dropdown-closer>{{ t('sortSelectedBySummary') }}</button></li>
-          </ul>
-        </template>
-      </DropdownMenu>
+    <div class="m-0 text-2xl shrink-0">
       <Tooltips :css="'mt-8'" :tip="t('newConfig')">
         <button @click="openWindow(hWnds.configEditor, null)" class="my-0 mx-1"><i class="fas fa-plus"></i></button>
       </Tooltips>
       <button @click="deleteSelected" class="my-0 mx-1"><i class="fas fa-trash-alt"></i></button>
     </div>
     <div class="dark:bg-slate-500 bg-slate-200 h-3/4 w-0.5 m-1"></div>
-    <div class="m-0 text-2xl">
-      <Tooltips :css="'mt-8 w-24'" :tip="t('viewLogs')">
+    <div class="m-0 text-2xl shrink-0">
+      <DropdownMenu withDropdownCloser>
+        <template #trigger>
+          <button class="my-0 mx-1"><i class="fas fa-sort-alpha-down"></i></button>
+        </template>
+        <template #body>
+          <ul class="min-w-[10rem] dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-base p-2">
+            <li><button @click="sortSelectedBy('latency')" dropdown-closer>{{ t('sortSelectedByLatency') }}</button></li>
+            <li><button @click="sortSelectedBy('time')" dropdown-closer>{{ t('sortSelectedByModifyTime') }}</button></li>
+            <li><button @click="sortSelectedBy('summary')" dropdown-closer>{{ t('sortSelectedBySummary') }}</button></li>
+          </ul>
+        </template>
+      </DropdownMenu>
+      <Tooltips :css="'mt-8'" :tip="t('copyShareLinks')">
+        <button @click="copyShareLinkOfSelectedServers()" class="my-0 mx-1"><i class="fas fa-share-alt"></i></button>
+      </Tooltips>
+      <Tooltips :css="'mt-8'" :tip="t('viewLogs')">
         <button @click="openWindow(hWnds.logViwer, null)" class="my-0 mx-1"><i class="fas fa-file-alt"></i></button>
       </Tooltips>
     </div>
@@ -335,7 +388,7 @@ onUnmounted(() => {
       <div class="hidden sm:table-cell  py-0 px-1 align-middle text-center w-60 lg:w-[28%]">{{ t('summary') }}
       </div>
       <div class="hidden lg:table-cell py-0 px-1 align-middle text-center w-56">{{ t('tags') }}</div>
-      <div class="table-cell py-0 px-1 align-middle text-center w-32">{{ t('controls') }}</div>
+      <div class="table-cell py-0 px-1 align-middle text-center w-24">{{ t('controls') }}</div>
     </div>
   </div>
 
@@ -383,25 +436,49 @@ onUnmounted(() => {
                   v-for="tag in serv.tags" @click="openWindow(hWnds.settingsEditor, serv.uid)">{{ tag }}</div>
               </div>
             </div>
-            <div class="table-cell py-0 px-1 align-middle text-center w-32">
+            <div class="table-cell py-0 px-1 align-middle text-center w-24">
               <Tooltips :css="'mt-8'" :tip="t('single')">
                 <button class="text-xl my-0 mx-1" @click="restartServ(serv.uid)">
                   <i class="fas fa-angle-right"></i>
                 </button>
               </Tooltips>
-              <Tooltips :css="'mt-8'" :tip="t('parallel')">
+              <Tooltips :css="'mt-8 right-2'" :tip="t('parallel')">
                 <button class="text-xl my-0 mx-1" @click="restartOneServ(serv.uid)">
                   <i class="fas fa-angle-double-right"></i>
                 </button>
               </Tooltips>
-              <button class="text-xl my-0 mx-1" @click="openWindow(hWnds.configEditor, serv.uid)">
-                <i class="fas fa-edit"></i>
-              </button>
-              <Tooltips :css="'mt-8 w-24 right-2'" :tip="t('viewLogs')">
-                <button class="text-xl my-0 mx-1" @click="openWindow(hWnds.logViwer, serv.uid)">
-                  <i class="fas fa-file-alt"></i>
-                </button>
-              </Tooltips>
+              <DropdownMenu :direction="'right'" withDropdownCloser>
+                <template #trigger>
+                  <button class="text-xl my-0 mx-1">
+                    <i class="fas fa-bars"></i>
+                  </button>
+                </template>
+                <template #body>
+                  <ul
+                    class="min-w-[7rem] dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-sm text-left p-2 right-4">
+                    <li>
+                      <button class="my-0 mx-1" @click="openWindow(hWnds.configEditor, serv.uid)" dropdown-closer>
+                        {{ t('editConfig') }}
+                      </button>
+                    </li>
+                    <li>
+                      <button class="my-0 mx-1" @click="openWindow(hWnds.settingsEditor, serv.uid)" dropdown-closer>
+                        {{ t('changeSettings') }}
+                      </button>
+                    </li>
+                    <li>
+                      <button class="my-0 mx-1" @click="openWindow(hWnds.shareLinkViwer, serv.uid)" dropdown-closer>
+                        {{ t('shareLink') }}
+                      </button>
+                    </li>
+                    <li>
+                      <button class="my-0 mx-1" @click="openWindow(hWnds.logViwer, serv.uid)" dropdown-closer>
+                        {{ t('viewLogs') }}
+                      </button>
+                    </li>
+                  </ul>
+                </template>
+              </DropdownMenu>
             </div>
           </div>
         </li>
@@ -434,6 +511,8 @@ onUnmounted(() => {
         v-model:title="curServTitle" />
       <LogViewer v-if="hWnds.logViwer.value" @onClose="closeWindow(hWnds.logViwer)" v-model:uid="curServUid"
         v-model:title="curServTitle" />
+      <ShareLinkViewer v-if="hWnds.shareLinkViwer.value" v-model:title="curServTitle" v-model:uid="curServUid"
+        @onClose="closeWindow(hWnds.shareLinkViwer)" />
     </div>
   </FadeTransition>
 </template>

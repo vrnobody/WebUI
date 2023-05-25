@@ -11,6 +11,7 @@ export default {
 
     // server
     selectAll: '全选',
+    selectNone: '清空选择',
     selectTimeout: '选中超时',
     invertSelection: '反选',
     curPage: '当前页',
@@ -30,6 +31,10 @@ export default {
     sortSelectedByModifyTime: '按最近修改时间排序',
     sortSelectedBySummary: '按摘要排序',
     newConfig: '添加Config',
+    editConfig: '编辑Config',
+    shareLink: '分享链接',
+    copyShareLinks: '复制分享链接',
+    changeSettings: '修改设置',
 
     // luna
     name: '名字',

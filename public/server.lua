@@ -162,6 +162,31 @@ local function CalcTotalPageNumber(total)
     return pages
 end
 
+function CopyShareLinkOfSelectedServers()
+    local links = {}
+    local servs = Server:GetAllServers()
+    for coreServ in Each(servs) do
+        local coreState = coreServ:GetCoreStates()
+        if coreState:IsSelected() then
+            local coreConfiger = coreServ:GetConfiger()
+            local link = coreConfiger:GetShareLink()
+            if not string.isempty(link) then
+                table.insert(links, link)
+            end
+        end
+    end
+    return table.concat(links, '\n')
+end
+
+function GetShareLink(uid)
+    local coreServ = utils.GetFirstServerWithUid(uid)
+    if coreServ ~= nil then
+        local coreConfiger = coreServ:GetConfiger()
+        return coreConfiger:GetShareLink()
+    end
+    return ''
+end
+
 function WrtieFile(filename, content)
     local w = writer.new(filename)
     w:WriteAllText(content)
@@ -195,6 +220,14 @@ function SelectAllTimeoutedServers()
         local latency = coreState:GetSpeedTestResult()
         local isTimeout = latency == utils.Timeout
         coreState:SetIsSelected(isTimeout)
+    end
+end
+
+function SelectNoServer()
+    local servs = Server:GetAllServers()
+    for coreServ in Each(servs) do
+        local coreState = coreServ:GetCoreStates()
+        coreState:SetIsSelected(false)
     end
 end
 

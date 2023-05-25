@@ -98,6 +98,10 @@ function hideScrollbarY() {
     document.body.style.overflowY = 'hidden'
 }
 
+function hideScrollbarX() {
+    document.body.style.overflowX = 'hidden'
+}
+
 function updateEditorTheme(editor) {
     if (editor === null) {
         return
@@ -149,6 +153,7 @@ export default {
     destroyEditor,
     showScrollbarY,
     hideScrollbarY,
+    hideScrollbarX,
     call,
     init,
     reloadThemeMode,

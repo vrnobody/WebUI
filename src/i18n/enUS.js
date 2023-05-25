@@ -11,6 +11,7 @@ export default {
 
     // server
     selectAll: 'Select all',
+    selectNone: 'Select none',
     selectTimeout: 'Select timeouted',
     invertSelection: 'Invert selection',
     curPage: 'Current page',
@@ -27,10 +28,13 @@ export default {
     inbIp: 'Inbound IP',
     inbPort: 'Inbound port',
     newConfig: 'new config',
-
     sortSelectedByLatency: 'Sort by latency',
     sortSelectedByModifyTime: 'Sort by last modify time',
     sortSelectedBySummary: 'Sort by summary',
+    editConfig: 'Edit config',
+    shareLink: 'Share link',
+    copyShareLinks: 'Copy share links',
+    changeSettings: 'Change settings',
 
     // luna
     name: 'Name',

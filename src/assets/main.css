@@ -21,3 +21,7 @@ body {
 .Control {
   fill: #333 !important;
 }
+
+.v-dropdown-menu__container {
+  min-width: max-content !important;
+}

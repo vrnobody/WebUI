@@ -17,6 +17,8 @@ onMounted(() => {
   if (config.isDevMode) {
     document.title = "WebUI - DEV"
   }
+  // do not do this
+  // utils.hideScrollbarX()
 })
 </script>
 
