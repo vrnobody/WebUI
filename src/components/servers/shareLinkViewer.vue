@@ -57,7 +57,7 @@ onMounted(() => {
     <div class="mb-1 text-base">
         {{ servTitle }}
     </div>
-    <div class="dark:bg-slate-600 block grow w-full h-4/5 p-4 bg-neutral-200">
+    <div class="dark:bg-slate-600 bg-slate-400 block grow w-full h-4/5 p-4 ">
         <div class="flex w-full mb-1 items-center">
             <span class="inline-block w-24 text-left shrink-0">{{ t('shareLink') }}</span>
             <input class="dark:bg-slate-500 bg-neutral-100 px-2 py-1 inline-flex grow" type="text" v-model="shareLink"

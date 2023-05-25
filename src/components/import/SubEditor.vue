@@ -29,7 +29,7 @@ onMounted(() => {
 
 </script>
 <template>
-    <div class="dark:bg-slate-600 block grow w-full h-4/5 p-4 bg-neutral-200">
+    <div class="dark:bg-slate-600 block grow w-full h-4/5 p-4 bg-slate-400">
         <div class="flex items-center h-9">
             <div class="py-0 px-4 w-24">{{ t('alias') }}</div>
             <div class="flex grow py-0 px-4">

@@ -110,7 +110,7 @@ onUnmounted(() => {
     </div>
 
     <!-- directory content -->
-    <div class="dark:bg-slate-500  bg-neutral-200 block grow w-full h-4/5 p-4 overflow-y-auto">
+    <div class="dark:bg-slate-500  bg-slate-400 block grow w-full h-4/5 p-4 overflow-y-auto">
         <ul>
             <li>
                 <button @click="goback">
@@ -119,12 +119,12 @@ onUnmounted(() => {
             </li>
             <li v-for="d in dirInfo.folders" class="flex">
                 <button @click="append(d)" class=" whitespace-nowrap overflow-hidden text-ellipsis">
-                    <i class="fas fa-folder"></i> {{ d }}
+                    <span class="text-amber-400"><i class="fas fa-folder"></i></span> {{ d }}
                 </button>
             </li>
             <li v-for="f in dirInfo.files" class="flex">
                 <button @click="append(f)" class=" whitespace-nowrap overflow-hidden text-ellipsis">
-                    <i class="fas fa-file"></i> {{ f }}
+                    <span class="text-neutral-200"><i class="fas fa-file"></i></span> {{ f }}
                 </button>
             </li>
         </ul>

@@ -59,13 +59,13 @@ onMounted(() => {
     <div class="mb-1 text-base">
         {{ servTitle }}
     </div>
-    <div class="dark:bg-slate-600 block grow w-full h-4/5 p-4 bg-neutral-200">
+    <div class="dark:bg-slate-600 bg-slate-400 block grow w-full h-4/5 p-4">
         <div v-for="key in servSettingKeys">
             <div class="flex items-center h-9">
                 <div class="p-0 w-32 mr-4">{{ t(key) }}</div>
                 <div class="flex grow p-0">
                     <select v-if="key === 'inbMode'" v-model="servSettings[key]"
-                        class="dark:bg-slate-500 bg-neutral-300 border-neutral-400 border grow">
+                        class="dark:bg-slate-600 bg-neutral-300 border-neutral-400 border grow">
                         <option value="0">Config</option>
                         <option value="1">HTTP</option>
                         <option value="2">SOCKS</option>
