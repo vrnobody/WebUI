@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import utils from '../../misc/utils.js'
 import { useI18n } from '@yangss/vue3-i18n'
 import { VueDraggableNext } from 'vue-draggable-next'
+import Tooltips from '@/components/widgets/Tooltips.vue'
 
 const { _, t } = useI18n()
 
@@ -153,30 +154,34 @@ onUnmounted(() => {
       <VueDraggableNext ghost-class="ghost" :list="coreInfos" @change="coreOrderChanged">
         <li v-for="coreInfo in coreInfos" :key="coreInfo.index" class="dark:odd:bg-slate-600 odd:bg-neutral-200">
           <div class="cursor-grab grow text-base table w-full h-8">
-            <div class="table-cell py-0 px-1 align-middle text-center w-12">
-              <div v-if="coreInfo.isRunning"
-                class="dark:bg-lime-700 dark:text-neutral-200 bg-lime-500 inline-block text-neutral-100 text-xs py-0.5 px-1 rounded cursor-pointer"
-                @click="stopCore(coreInfo.name)">ON</div>
+            <div class="leading-[0] table-cell py-0 px-1 align-middle text-center w-12">
+              <button v-if="coreInfo.isRunning"
+                class="dark:bg-lime-700 dark:text-neutral-200 bg-lime-500 text-neutral-100 text-xs py-0.5 px-1 rounded cursor-pointer"
+                @click="stopCore(coreInfo.name)">ON</button>
             </div>
             <div class="table-cell py-0 px-1 align-middle text-center w-16">{{ coreInfo.index }}</div>
             <div class="table-cell py-1 px-2 align-middle text-left break-all">
-              <p class="whitespace-pre-wrap">{{ coreInfo.name }}</p>
+              <button class="whitespace-pre-wrap text-left" @click="startCore(coreInfo.name)">
+                {{ coreInfo.name }}
+              </button>
             </div>
-            <div class="table-cell align-middle text-center w-16">
+            <div class="leading-[0] table-cell align-middle text-center w-16">
               <div
                 class="dark:bg-cyan-700 bg-cyan-600 dark:text-neutral-300 text-neutral-200 cursor-pointer rounded inline-block text-xs py-0.5 px-1 text-center w-12 text-ellipsis my-0.5 mx-0.5"
                 @click="editCoreSettings(coreInfo.name)">{{ coreInfoToTag(coreInfo) }}</div>
             </div>
             <div class="table-cell py-0 px-1 align-middle text-center w-28 text-lg">
               <button class="my-0 mx-1" @click="startCore(coreInfo.name)">
-                <i class="fa fa-play"></i>
+                <i class="fas fa-chevron-right"></i>
               </button>
               <button class="my-0 mx-1" @click="restartCore(coreInfo.name)">
                 <i class="fas fa-sync"></i>
               </button>
-              <button class="my-0 mx-1" @click="abortCore(coreInfo.name)">
-                <i class="fas fa-stop-circle"></i>
-              </button>
+              <Tooltips :css="'mt-6 w-24 right-2'" :tip="t('terminate')">
+                <button class="my-0 mx-1" @click="abortCore(coreInfo.name)">
+                  <i class="fas fa-stop-circle"></i>
+                </button>
+              </Tooltips>
               <button class="my-0 mx-1" @click="removeCore(coreInfo.name)">
                 <i class="fas fa-trash-alt"></i>
               </button>

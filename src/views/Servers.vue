@@ -135,7 +135,7 @@ function restartServ(uid) {
   utils.call(refresh, "RestartServ", [uid || '', true])
 }
 
-function restartOneServ(uid) {
+function restarOnetServ(uid) {
   utils.call(refresh, "RestartServ", [uid || '', false])
 }
 
@@ -242,15 +242,16 @@ onUnmounted(() => {
   <!-- toolstrip -->
   <div class="md:left-56 left-8 top-0 h-12 py-0 px-4 flex grow justify-left items-center fixed z-20">
     <div class="hidden sm:flex">
-      <select v-model="searchType" class="dark:bg-slate-500 bg-neutral-50 w-20 md:w-24 inline-block">
+      <select v-model="searchType"
+        class="dark:bg-slate-500 dark:text-neutral-300 bg-neutral-200 w-20 md:w-24 inline-block">
         <option value="summary" selected>{{ t('summary') }}</option>
         <option value="title">{{ t('title') }}</option>
         <option value="tags">{{ t('tags') }}</option>
         <option value="index">{{ t('index') }}</option>
       </select>
       <div class="relative">
-        <input v-model="searchKeyword" @keyup.enter="search" type="text"
-          class="dark:bg-slate-500 bg-neutral-50 w-40 md:w-48 my-0 mx-4" :placeholder="t('search')" />
+        <input v-model="searchKeyword" @click="$event.target.select()" @keyup.enter="search" type="text"
+          class="dark:bg-slate-500 bg-neutral-50 w-40 md:w-48 my-0 mx-4 px-1" :placeholder="t('search')" />
         <div class="dark:text-neutral-700 absolute m-0 right-6 top-0 text-neutral-300">
           <button @click="clearSearchKeyword"><i class="fas fa-search"></i></button>
         </div>
@@ -290,9 +291,9 @@ onUnmounted(() => {
         <template #body>
           <ul class="dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-base p-2">
             <li><button @click="invertSelection(true)" dropdown-closer>{{ t('invertSelection') }} ({{ t('curPage')
-                            }})</button></li>
+            }})</button></li>
             <li><button @click="invertSelection(false)" dropdown-closer>{{ t('invertSelection') }} ({{ t('global')
-                            }})</button></li>
+            }})</button></li>
           </ul>
         </template>
       </DropdownMenu>
@@ -353,21 +354,23 @@ onUnmounted(() => {
       <VueDraggableNext ghost-class="ghost" :list="servsInfo" @change="servOrderChanged">
         <li v-for="serv in servsInfo" :key="serv.uid" class="dark:odd:bg-slate-600 odd:bg-neutral-200">
           <div class="cursor-grab grow text-base table w-full h-8">
-            <div class="table-cell py-0 px-1 align-middle text-center w-12">
-              <div v-if="serv.on"
-                class="dark:bg-lime-700 dark:text-neutral-200 bg-lime-500 inline-block text-neutral-100 text-xs py-0.5 px-1 rounded cursor-pointer"
-                @click="stopServ(serv.uid)">ON</div>
+            <div class="leading-[0] table-cell py-0 px-1 align-middle text-center w-12">
+              <button v-if="serv.on"
+                class="dark:bg-lime-700 dark:text-neutral-200 bg-lime-500 text-neutral-100 text-xs py-0.5 px-1 rounded cursor-pointer"
+                @click="stopServ(serv.uid)">ON</button>
             </div>
-            <div class="table-cell py-0 px-1 align-middle text-center w-12">
-              <input type="checkbox" v-model="serv.selected" class="w-4 h-4" @change="saveSelectionLater" />
+            <div class="leading-[0] table-cell py-0 px-1 align-middle text-center w-12">
+              <input type="checkbox" v-model="serv.selected" class="inline-block w-4 h-4" @change="saveSelectionLater" />
             </div>
             <div class="table-cell py-0 px-1 align-middle text-center w-16">{{ serv['index'] }}</div>
             <div class="table-cell py-1 px-2 align-middle text-left break-all">
-              <p class="whitespace-pre-wrap">{{ serv['name'] }}</p>
+              <button @click="restartServ(serv.uid)" class="whitespace-pre-wrap text-left">
+                {{ serv['name'] }}
+              </button>
             </div>
             <div class="hidden sm:table-cell lg:w-[28%] py-1 px-2 align-middle text-left break-all w-60">{{
-                          serv['summary']
-                          }}
+              serv['summary']
+            }}
             </div>
             <div class="hidden lg:table-cell py-1 px-2 align-middle text-left break-all w-56">
               <div class="flex flex-wrap justify-start">
@@ -381,18 +384,24 @@ onUnmounted(() => {
               </div>
             </div>
             <div class="table-cell py-0 px-1 align-middle text-center w-32">
-              <button class="text-xl my-0 mx-1 text-red-700" @click="restartServ(serv.uid)">
-                <i class="fa fa-play"></i>
-              </button>
-              <button class="text-xl my-0 mx-1" @click="restartOneServ(serv.uid)">
-                <i class="fas fa-play-circle"></i>
-              </button>
+              <Tooltips :css="'mt-8'" :tip="t('single')">
+                <button class="text-xl my-0 mx-1" @click="restartServ(serv.uid)">
+                  <i class="fas fa-angle-right"></i>
+                </button>
+              </Tooltips>
+              <Tooltips :css="'mt-8'" :tip="t('parallel')">
+                <button class="text-xl my-0 mx-1" @click="restartOneServ(serv.uid)">
+                  <i class="fas fa-angle-double-right"></i>
+                </button>
+              </Tooltips>
               <button class="text-xl my-0 mx-1" @click="openWindow(hWnds.configEditor, serv.uid)">
                 <i class="fas fa-edit"></i>
               </button>
-              <button class="text-xl my-0 mx-1" @click="openWindow(hWnds.logViwer, serv.uid)">
-                <i class="fas fa-file-alt"></i>
-              </button>
+              <Tooltips :css="'mt-8 w-24 right-2'" :tip="t('viewLogs')">
+                <button class="text-xl my-0 mx-1" @click="openWindow(hWnds.logViwer, serv.uid)">
+                  <i class="fas fa-file-alt"></i>
+                </button>
+              </Tooltips>
             </div>
           </div>
         </li>
@@ -401,21 +410,17 @@ onUnmounted(() => {
     <div class="block grow h-14"></div>
   </div>
 
-  <div
-    class="dark:bg-slate-500 bg-slate-400 leading-7 align-middle block z-10 md:left-56 left-0 dark:text-neutral-800 text-neutral-600 text-sm fixed bottom-0 right-0 px-2">
-    <!-- counter -->
-    <div class="float-left">
-      {{ t('count') }}: {{ servsCount }} &nbsp; {{ t('selected') }}: {{ servsSelected }}
-    </div>
-
+  <div class="dark:bg-slate-500 bg-slate-400 flex items-center z-10 text-neutral-800 text-sm fixed bottom-0 right-0 px-2">
     <!-- pager -->
-    <div class="float-right inline-flex" v-if="pages > 1">
-      <VPagination v-model="curPageNum" :pages="pages" :range-size="2" active-color="#DCEDFF"
-        @update:modelValue="refresh" />
+    <div class="inline-flex" v-if="pages > 1">
+      <VPagination v-model="curPageNum" :pages="pages" active-color="#DCEDFF" @update:modelValue="refresh" />
       <input v-model="curPageNumText"
         class="inline-block dark:bg-slate-200 bg-slate-200 text-center text-sm my-1 mx-2 w-12"
-        @keyup.enter="jumpToPage" />
-      <button @click="jumpToPage" class="inline-block text-sm">{{ t('jump') }}</button>
+        @click="$event.target.select()" @keyup.enter="jumpToPage" />
+    </div>
+    <!-- counter -->
+    <div class="inline-flex">
+      <span class="px-2">{{ t('count') }}: {{ servsCount }} &nbsp; {{ t('selected') }}: {{ servsSelected }}</span>
     </div>
   </div>
 

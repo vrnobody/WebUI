@@ -240,19 +240,33 @@ function initEditor(editor) {
 
 let cursorHistoryIndex = -1
 let cursorHistoryCache = []
+
+function isDupCursorPosition(row) {
+  const idx = cursorHistoryIndex
+  const cache = cursorHistoryCache
+  if (idx < cache.length && cache.length > 0 && idx >= 0 && cache[idx] === row) {
+    return true
+  }
+  return false
+}
+
 function pushCursorPosition() {
-  const pos = editor.getCursorPosition()
-  cursorHistoryIndex++
+  const row = editor.getCursorPosition().row
+  if (isDupCursorPosition(row)) {
+    return
+  }
+
+  if (cursorHistoryIndex < cursorHistoryCache.length) {
+    cursorHistoryIndex++
+  }
   if (cursorHistoryIndex >= cursorHistoryCache.length) {
-    cursorHistoryCache.push(pos)
+    cursorHistoryCache.push(row)
     cursorHistoryIndex = cursorHistoryCache.length - 1
   } else {
-    cursorHistoryCache[cursorHistoryIndex] = pos
+    cursorHistoryCache[cursorHistoryIndex] = row
     cursorHistoryCache = cursorHistoryCache.slice(0, cursorHistoryIndex + 1)
   }
 }
-
-
 
 function bindEventHandler(editor) {
   editor.on('click', function () {
@@ -292,8 +306,8 @@ function moveCursor(isForward) {
     cursorHistoryIndex = 0
     return
   }
-  const pos = cursorHistoryCache[cursorHistoryIndex]
-  gotoLine(pos.row + 1)
+  const row = cursorHistoryCache[cursorHistoryIndex]
+  gotoLine(row + 1)
 }
 
 function getWordAtCursor(editor) {

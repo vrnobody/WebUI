@@ -21,7 +21,7 @@ const tip = computed({
 <template>
     <div class="group inline-flex">
         <slot></slot>
-        <div class="dark:bg-slate-600 bg-slate-200 border border-slate-400 inline-flex justify-center items-center shrink-0 opacity-0 px-2 py-0.5 rounded z-50 text-base duration-500 absolute group-hover:opacity-100"
+        <div class="dark:bg-slate-600 bg-slate-200 border border-slate-400 inline-flex justify-center items-center shrink-0 px-2 py-0.5 rounded z-50 text-sm duration-100 absolute invisible group-hover:visible"
             :class="css">
             {{ tip }}
         </div>

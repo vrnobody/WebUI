@@ -16,6 +16,8 @@ export default {
     curPage: '当前页',
     global: '全局',
     viewLogs: '查看日志',
+    single: '单开',
+    parallel: '多开',
     copied: '已复制',
     copy: '复制',
     count: '计数',
@@ -48,6 +50,7 @@ export default {
     load: '加载',
     file: '文件',
     extensions: '扩展名',
+    terminate: '强制终止',
 
     shareLinks: '分享链接',
     subscriptions: '订阅',
@@ -64,7 +67,6 @@ export default {
     confirmRemoveSub: '删除订阅 [{name}]？',
     alias: '别名',
 
-
     status: '状态',
     select: '选择',
     index: '序号',
@@ -73,8 +75,6 @@ export default {
     tags: '标签',
     controls: '控制',
     loading: '加载中...',
-
-    jump: '跳转',
 
     search: '搜索',
 
@@ -115,7 +115,7 @@ export default {
     'quickSwitchLantency': '快速切换延迟(ms)',
     'importTrojan': '导入trojan://...',
     'importShadowsocks': '导入ss://...',
-    'importMode': '导入模式(1.HTTP, 2.SOCKS)',
+    'importMode': '导入模式',
     'importIp': '默认导入IP',
     'importPort': '默认导入端口',
 

@@ -16,6 +16,8 @@ export default {
     curPage: 'Current page',
     global: 'Global',
     viewLogs: 'View logs',
+    single: 'Single',
+    parallel: 'Parallel',
     copied: 'Copied',
     copy: 'Copy',
     count: 'Count',
@@ -49,6 +51,7 @@ export default {
     load: 'Load',
     file: 'File',
     extensions: 'Extensions',
+    terminate: 'Terminate',
 
     shareLinks: 'Share links',
     subscriptions: 'Subscriptions',
@@ -75,7 +78,6 @@ export default {
     loading: 'Loading...',
 
     search: 'Search',
-    jump: 'Jump',
     server_ver_not_supported: `server.lua v{curVer} is not supported!\nPlease update to v{expectedVer}.`,
     please_update_app: `Please update V2RayGCon v{curVer} to v{expectedVer}+`,
 
@@ -113,7 +115,7 @@ export default {
     'quickSwitchLantency': 'Quick switch Lantency (ms)',
     'importTrojan': 'Import trojan://...',
     'importShadowsocks': 'Import ss://...',
-    'importMode': 'Import mode (1.HTTP, 2.SOCKS)',
+    'importMode': 'Import mode',
     'importIp': 'Import IP',
     'importPort': 'Import port',
 

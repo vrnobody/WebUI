@@ -26,6 +26,15 @@ const propsTable = {
   'CustomDefImportPort': 'importPort',
 }
 
+const optionsTable = {
+  'CustomDefImportMode': [
+    'Config',
+    'HTTP',
+    'SOCKS',
+    t('custom'),
+  ]
+}
+
 function saveSettings() {
   const props = settings.value
   const next = function (ok) {
@@ -62,6 +71,10 @@ function getElementType(key) {
     case 'boolean':
       return 'checkbox'
     case 'number':
+      if (optionsTable.hasOwnProperty(key)) {
+        return 'select'
+      }
+      return 'text'
     case 'string':
       return 'text'
     default:
@@ -107,6 +120,11 @@ onMounted(() => {
           <input v-if="getElementType(key) === 'text'" type="text" v-model="settings[key]"
             class="dark:bg-slate-500 bg-neutral-100 grow px-1 border border-neutral-400 dark:border-0" />
           <input v-if="getElementType(key) === 'checkbox'" type="checkbox" v-model="settings[key]" class="w-4 h-4" />
+          <select v-if="getElementType(key) === 'select'" v-model="settings[key]"
+            class="dark:bg-slate-600 bg-neutral-200 grow px-1 border border-neutral-400 dark:border-0">
+            <option v-for="(ov, idx) in optionsTable[key]" :value="idx">{{ ov }}</option>
+          </select>
+          <span v-if="getElementType(key) === 'span'">{{ settings[key] }}</span>
         </div>
       </li>
     </ul>
