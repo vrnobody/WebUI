@@ -57,6 +57,17 @@ export default {
     extensions: 'Extensions',
     terminate: 'Terminate',
 
+    openAttacher: 'Open attacher',
+    attach: 'Attach',
+    cleanup: 'Cleanup',
+    remove: 'Remove',
+    confirmRemoveLuaVm: 'Remove [{name}]?',
+    confirmRemoveAllStoppedLuaVm: 'Remove all stopped LuaVMs?',
+    on: 'ON',
+    off: 'OFF',
+    refresh: 'Refresh',
+    uuid: 'UUID',
+
     shareLinks: 'Share links',
     subscriptions: 'Subscriptions',
     nNewServerImported: `Import {count} new server(s).`,

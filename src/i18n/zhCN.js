@@ -57,6 +57,17 @@ export default {
     extensions: '扩展名',
     terminate: '强制终止',
 
+    openAttacher: '打开附加器',
+    attach: '附加',
+    cleanup: '清理',
+    remove: '删除',
+    confirmRemoveLuaVm: '确定要删除 [{name}]？',
+    confirmRemoveAllStoppedLuaVm: '确定要删除全部已停止的LuaVM？',
+    on: 'ON',
+    off: 'OFF',
+    refresh: '刷新',
+    uuid: 'UUID',
+
     shareLinks: '分享链接',
     subscriptions: '订阅',
     nNewServerImported: `导入了{count}个服务器。`,

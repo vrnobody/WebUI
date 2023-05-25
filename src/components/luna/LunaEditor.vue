@@ -1,11 +1,12 @@
 <script setup>
-import { ref, onMounted, onUnmounted, nextTick, defineAsyncComponent } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, computed, defineAsyncComponent } from 'vue'
 import { useI18n } from '@yangss/vue3-i18n'
 import utils from '@/misc/utils.js'
 
 import DropdownMenu from 'v-dropdown-menu'
 import '@/assets/v-dropdown-menu.css'
 import FileBrowser from '@/components/luna/FileBrowser.vue'
+import Attacher from '@/components/luna/Attacher.vue'
 
 const LuaEditor = defineAsyncComponent(() => import("./LuaEditor.vue"))
 
@@ -15,6 +16,7 @@ const scriptContent = ref('')
 const isEditingLocalFile = ref(false)
 const filename = ref('')
 const isFileBrowserVisiable = ref(false)
+const isAttacherVisiable = ref(false)
 const curOp = ref('')
 
 const logContent = ref('')
@@ -31,6 +33,12 @@ let logUpdater = 0
 
 let lastScriptContent = ""
 let lastScriptName = ''
+
+const isTopLevel = computed({
+  get() {
+    return isFullScreen.value || isFileBrowserVisiable.value || isAttacherVisiable.value
+  }
+})
 
 function showFileBrowser(op) {
   const cur = scriptContent.value
@@ -189,17 +197,23 @@ function removeLuaVm() {
   utils.call(null, 'RemoveLuaVm', [luavm])
 }
 
+function startLogUpdater() {
+  clearInterval(logUpdater)
+  logContent.value = ''
+  isLogPanelVisible.value = true
+  logUpdater = setInterval(updateLog, 1000)
+}
+
 function runScript() {
 
-  const name = scriptName.value || ''
+  const name = (isEditingLocalFile.value ? filename.value : scriptName.value) || ''
   const script = scriptContent.value || ''
-  
+
   removeLuaVm()
   clearInterval(logUpdater)
   const next = function (handle) {
     luavm = handle
-    isLogPanelVisible.value = true
-    logUpdater = setInterval(updateLog, 1000)
+    startLogUpdater()
   }
   utils.call(next, 'RunLuaScript', [name, script])
 }
@@ -265,11 +279,35 @@ function onKeyDown(e) {
   }
 }
 
+function openAttacher() {
+  isAttacherVisiable.value = true
+}
+function closeAttacher() {
+  isAttacherVisiable.value = false
+}
+
+function attachTo(uid, name) {
+  const id = uid || ''
+  const n = name || ''
+  const next = function (script) {
+    isEditingLocalFile.value = false
+    luavm = id
+
+    scriptName.value = n
+    lastScriptName = n
+
+    scriptContent.value = script
+    lastScriptContent = script
+
+    closeAttacher()
+    startLogUpdater()
+  }
+  utils.call(next, 'GetScriptFromLuaVm', [id])
+}
+
 function onFullScreenHandler(fullScreen) {
   isFullScreen.value = fullScreen
 }
-
-
 
 onMounted(() => {
   document.addEventListener('keydown', onKeyDown)
@@ -285,14 +323,14 @@ onUnmounted(() => {
 
 <template>
   <div class="dark:bg-slate-800 bg-slate-300 p-2 fixed flex flex-col right-0 bottom-0"
-    :class="{ 'z-50 left-0 right-0 top-0': isFullScreen || isFileBrowserVisiable, 'z-20 top-12 pt-0 left-0 md:left-56': !isFullScreen && !isFileBrowserVisiable }">
+    :class="{ 'z-50 left-0 right-0 top-0': isTopLevel, 'z-20 top-12 pt-0 left-0 md:left-56': !isTopLevel }">
 
     <!-- toolstrip -->
     <div class="flex w-full dark:bg-slate-500 bg-slate-400 h-10 items-center text-base px-2">
       <label class="mx-1 shrink-0">{{ t('name') }}</label>
       <div class="grow flex mx-1 overflow-hidden">
         <span v-if="isEditingLocalFile" class="w-full px-2 whitespace-nowrap overflow-hidden text-ellipsis">{{ filename
-                  }}</span>
+        }}</span>
         <input v-else type="text" class="w-full px-2 dark:bg-slate-600 bg-neutral-100" list="scriptname-datalist"
           v-model="scriptName" @change="loadScriptFromCache" />
         <datalist id="scriptname-datalist" class="dark:bg-slate-600">
@@ -301,13 +339,14 @@ onUnmounted(() => {
       </div>
       <DropdownMenu withDropdownCloser>
         <template #trigger>
-          <button class="mx-1"><i class="fas fa-file-code"></i></button>
+          <button class="mx-1"><i class="fas fa-tools"></i></button>
         </template>
         <template #body>
           <ul class="dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 p-2">
             <li><button @click="newScript" dropdown-closer>{{ t('newScript') }}</button></li>
             <li><button @click="showFileBrowser('load')" dropdown-closer>{{ t('loadFile') }}</button></li>
             <li><button @click="showFileBrowser('save')" dropdown-closer>{{ t('saveAs') }}</button></li>
+            <li><button @click="openAttacher" dropdown-closer>{{ t('openAttacher') }}</button></li>
           </ul>
         </template>
       </DropdownMenu>
@@ -328,6 +367,12 @@ onUnmounted(() => {
         <textarea readonly class="dark:bg-slate-600 bg-neutral-200 grow p-1 resize-none" v-model="logContent"
           ref="logContainer"></textarea>
       </div>
+    </div>
+
+    <!-- attacher -->
+    <div v-if="isAttacherVisiable"
+      class="dark:bg-slate-700 bg-slate-300 dark:text-neutral-300 text-neutral-700 fixed flex flex-col p-4 z-50 left-0 right-0 top-0 bottom-0">
+      <Attacher @onAttach="attachTo" @onClose="closeAttacher" />
     </div>
 
     <!-- file browser -->

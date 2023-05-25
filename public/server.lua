@@ -162,6 +162,18 @@ local function CalcTotalPageNumber(total)
     return pages
 end
 
+function GetAllLuaVmsInfo()
+    return Sys:LuaVmGetAllVmsInfo()
+end
+
+function RemoveAllStoppedLuaVms()
+    Sys:LuaVmRemoveStopped()
+end
+
+function GetScriptFromLuaVm(luavm)
+    return Sys:LuaVmGetScript(luavm)
+end
+
 function CopyShareLinkOfSelectedServers()
     local links = {}
     local servs = Server:GetAllServers()
@@ -625,3 +637,4 @@ local function Main()
 end
 
 Main()
+print('done')
