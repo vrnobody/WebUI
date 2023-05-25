@@ -65,7 +65,7 @@ onMounted(() => {
             <button class="shrink-0 w-16" @click="copyShareLink">{{ t('copy') }}</button>
         </div>
         <div class="grow w-full flex justify-center p-4">
-            <div id="share-link-qrcode" class="flex justify-center w-64 h-64"></div>
+            <div id="share-link-qrcode" class="flex justify-center"></div>
         </div>
     </div>
     <div class="flex w-full h-10 justify-center items-end">
