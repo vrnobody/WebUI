@@ -8,7 +8,7 @@ local public = "./lua/webui"
 -- confings
 local Logger = require('lua.modules.logger')
 
-local version = "0.0.1.4"
+local version = "0.0.2.0"
 local pageSize = 50
 
 local logLevel = #args > 1 and args[2] or Logger.logLevels.Debug
@@ -376,12 +376,6 @@ end
 
 function AbortLuaVm(luavm)
     Sys:LuaVmAbort(luavm)
-end
-
-function ScanQrCode(mark)
-    mark = string.isempty(mark) and "" or mark
-    local link = Misc:ScanQrcode()
-    return Misc:ImportLinks(link, mark)
 end
 
 function GetServSettings(uid)

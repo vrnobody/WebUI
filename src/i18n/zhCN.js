@@ -76,7 +76,6 @@ export default {
     tag1: '标签1',
     tag2: '标签2',
     tag3: '标签3',
-    scanQrCode: '扫描二维码',
     enable: '启用',
     update: '更新',
     updating: '更新中...',

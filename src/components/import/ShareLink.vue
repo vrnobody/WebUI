@@ -14,11 +14,6 @@ function report(count) {
   Swal.fire(msg)
 }
 
-function scanQrCode() {
-  const mk = mark.value
-  utils.call(report, "ScanQrCode", [mk])
-}
-
 function importShareLinks() {
   const links = content.value || ''
   const mk = mark.value || ''
@@ -45,7 +40,6 @@ function importShareLinks() {
     </div>
     <div class="flex justify-center items-end h-8 w-full">
       <button @click="importShareLinks" class="mx-2">{{ t('import') }}</button>
-      <button @click="scanQrCode" class="mx-2">{{ t('scanQrCode') }}</button>
     </div>
 
   </div>

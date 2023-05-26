@@ -71,7 +71,6 @@ export default {
     shareLinks: 'Share links',
     subscriptions: 'Subscriptions',
     nNewServerImported: `Import {count} new server(s).`,
-    scanQrCode: 'Scan QR code',
     mark: 'Mark',
     remark: 'Remark',
     tag1: 'Tag1',
