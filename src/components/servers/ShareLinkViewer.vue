@@ -1,5 +1,5 @@
 <script setup>
-import utils from '../../misc/utils.js'
+import utils from '@/misc/utils.js'
 import { onMounted, ref, computed, nextTick } from 'vue'
 
 const props = defineProps(['uid', 'title'])
