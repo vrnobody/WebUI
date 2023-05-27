@@ -174,10 +174,12 @@ onUnmounted(() => {
               <button class="my-0 mx-1" @click="startCore(coreInfo.name)">
                 <i class="fas fa-chevron-right"></i>
               </button>
-              <button class="my-0 mx-1" @click="restartCore(coreInfo.name)">
-                <i class="fas fa-sync"></i>
-              </button>
-              <Tooltips :css="'mt-6 w-24 right-2'" :tip="t('terminate')">
+              <Tooltips :css="'mt-6'" :tip="t('restart')">
+                <button class="my-0 mx-1" @click="restartCore(coreInfo.name)">
+                  <i class="fas fa-sync"></i>
+                </button>
+              </Tooltips>
+              <Tooltips :css="'mt-6 right-2'" :tip="t('terminate')">
                 <button class="my-0 mx-1" @click="abortCore(coreInfo.name)">
                   <i class="fas fa-stop-circle"></i>
                 </button>

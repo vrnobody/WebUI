@@ -40,11 +40,18 @@ function copyShareLink() {
 
 let qrCode = null
 function updateQrCode() {
+    const link = shareLink.value
     if (qrCode) {
-        qrCode.clear()
-        qrCode.makeCode(shareLink.value)
+        qrCode.set({
+            value: link,
+        })
+        qrCode.update()
     } else {
-        qrCode = new QRCode(document.getElementById('share-link-qrcode'), shareLink.value)
+        qrCode = new QRious({
+            element: document.getElementById('share-link-qrcode'),
+            size: 300,
+            value: link,
+        })
     }
 }
 
@@ -65,7 +72,7 @@ onMounted(() => {
             <button class="shrink-0 w-16" @click="copyShareLink">{{ t('copy') }}</button>
         </div>
         <div class="grow w-full flex justify-center p-4">
-            <div id="share-link-qrcode" class="flex justify-center"></div>
+            <canvas id="share-link-qrcode" class="min-w-[28rem] min-h-[28rem]"></canvas>
         </div>
     </div>
     <div class="flex w-full h-10 justify-center items-end">

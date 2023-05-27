@@ -305,6 +305,12 @@ function attachTo(uid, name) {
   utils.call(next, 'GetScriptFromLuaVm', [id])
 }
 
+function switchEditorMode() {
+  lastScriptName = ''
+  scriptName.value = ''
+  isEditingLocalFile.value = false
+}
+
 function onFullScreenHandler(fullScreen) {
   isFullScreen.value = fullScreen
 }
@@ -327,7 +333,7 @@ onUnmounted(() => {
 
     <!-- toolstrip -->
     <div class="flex w-full dark:bg-slate-500 bg-slate-400 h-10 items-center text-base px-2">
-      <label class="mx-1 shrink-0">{{ t('name') }}</label>
+      <label class="mx-1 shrink-0">{{ t(isEditingLocalFile ? 'file' : 'name') }}</label>
       <div class="grow flex mx-1 overflow-hidden">
         <span v-if="isEditingLocalFile" class="w-full px-2 whitespace-nowrap overflow-hidden text-ellipsis">{{ filename
         }}</span>
@@ -344,6 +350,8 @@ onUnmounted(() => {
         <template #body>
           <ul class="dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 p-2">
             <li><button @click="newScript" dropdown-closer>{{ t('newScript') }}</button></li>
+            <li v-if="isEditingLocalFile"><button @click="switchEditorMode" dropdown-closer>{{ t('switchEditorMode')
+            }}</button></li>
             <li><button @click="showFileBrowser('load')" dropdown-closer>{{ t('loadFile') }}</button></li>
             <li><button @click="showFileBrowser('save')" dropdown-closer>{{ t('saveAs') }}</button></li>
             <li><button @click="openAttacher" dropdown-closer>{{ t('openAttacher') }}</button></li>

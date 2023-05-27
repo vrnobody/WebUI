@@ -572,6 +572,10 @@ function GetServerConfig(uid)
     return nil
 end
 
+function DeleteServByUid(uid)
+    Server:DeleteServerByUids({uid})
+end
+
 function DeleteSelectedServers()
     local uids = {}
     local servs = Server:GetAllServers()
@@ -585,9 +589,7 @@ function DeleteSelectedServers()
     Server:DeleteServerByUids(uids)
 end
 
-function ImportShareLinks(ps)
-    local links = #ps > 0 and ps[1] or ""
-    local mark = #ps > 1 and ps[2] or ""
+function ImportShareLinks(links, mark)
     local c = Misc:ImportLinks(links, mark)
     Misc:RefreshFormMain()
     return c

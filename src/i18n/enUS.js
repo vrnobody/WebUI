@@ -33,6 +33,9 @@ export default {
     sortSelectedBySummary: 'Sort by summary',
     editConfig: 'Edit config',
     shareLink: 'Share link',
+    shareLinkTooLong: 'Share link is too long.',
+    showQrCode: 'Show QRCode',
+    copyShareLink: 'Copy share link',
     copyShareLinks: 'Copy share links',
     changeSettings: 'Change settings',
 
@@ -43,6 +46,7 @@ export default {
     none: 'None',
     confirmRemoveCore: 'Remove script [{name}]?',
     hidden: 'Hidden',
+    switchEditorMode: 'Switch editor mode',
     autorun: 'Autorun',
     loadClr: 'LoadCLR',
     editor: 'Editor',
@@ -56,6 +60,7 @@ export default {
     file: 'File',
     extensions: 'Extensions',
     terminate: 'Terminate',
+    restart: 'Restart',
 
     openAttacher: 'Open attacher',
     attach: 'Attach',
@@ -100,6 +105,8 @@ export default {
     close: 'Close',
 
     listIsEmpty: 'List is empty.',
+    deleteServer: 'Delete server',
+    confirmDelete: `Delete [{name}]?`,
     confirmDeleteNServers: `Delete {count} server(s)?`,
     yes: 'Yes',
     no: 'No',

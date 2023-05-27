@@ -8,7 +8,7 @@ import LogViewer from '../components/servers/LogViewer.vue'
 import SettingsEditor from '../components/servers/SettingsEditor.vue'
 import FadeTransition from '../components/transitions/FadeTransition.vue'
 import LoadingWidget from '../components/widgets/Loading.vue'
-import ShareLinkViewer from '@/components/servers/ShareLinkViewer.vue'
+import QrcodeViewer from '@/components/servers/QrcodeViewer.vue'
 
 import Tooltips from '@/components/widgets/Tooltips.vue'
 
@@ -38,7 +38,7 @@ const hWnds = {
   logViwer: ref(false),
   configEditor: ref(false),
   settingsEditor: ref(false),
-  shareLinkViwer: ref(false),
+  qrCodeViwer: ref(false),
 }
 
 function saveSelectionLater() {
@@ -160,6 +160,19 @@ function deleteSelected() {
   })
 }
 
+function deleteServer(uid, name) {
+  const next = function () {
+    refresh()
+  }
+
+  const onYes = function () {
+    utils.call(next, 'DeleteServByUid', [uid])
+  }
+
+  const msg = t('confirmDelete', { name: name })
+  utils.confirm(msg, onYes)
+}
+
 function stopServ(uid) {
   utils.call(refresh, "StopServ", [uid])
 }
@@ -261,6 +274,18 @@ function jumpToPage() {
   const pn = Math.floor(parseFloat(curPageNumText.value)) || 1
   curPageNum.value = pn
   refresh()
+}
+
+function copyShareLink(uid) {
+  const next = function (link) {
+    if (!link) {
+      Swal.fire(t('failed'))
+      return
+    }
+    utils.copyToClipboard(link)
+    Swal.fire(t('copied'))
+  }
+  utils.call(next, "GetShareLink", [uid])
 }
 
 onMounted(() => {
@@ -436,8 +461,19 @@ onUnmounted(() => {
                       </button>
                     </li>
                     <li>
-                      <button class="my-0 mx-1" @click="openWindow(hWnds.shareLinkViwer, serv.uid)" dropdown-closer>
-                        {{ t('shareLink') }}
+                      <button class="my-0 mx-1" @click="copyShareLink(serv.uid)" dropdown-closer>
+                        {{ t('copyShareLink') }}
+                      </button>
+                    </li>
+
+                    <li>
+                      <button class="my-0 mx-1" @click="openWindow(hWnds.qrCodeViwer, serv.uid)" dropdown-closer>
+                        {{ t('showQrCode') }}
+                      </button>
+                    </li>
+                    <li>
+                      <button class="my-0 mx-1" @click="deleteServer(serv.uid, serv.name)" dropdown-closer>
+                        {{ t('deleteServer') }}
                       </button>
                     </li>
                     <li>
@@ -480,8 +516,8 @@ onUnmounted(() => {
         v-model:title="curServTitle" />
       <LogViewer v-if="hWnds.logViwer.value" @onClose="closeWindow(hWnds.logViwer)" v-model:uid="curServUid"
         v-model:title="curServTitle" />
-      <ShareLinkViewer v-if="hWnds.shareLinkViwer.value" v-model:title="curServTitle" v-model:uid="curServUid"
-        @onClose="closeWindow(hWnds.shareLinkViwer)" />
+      <QrcodeViewer v-if="hWnds.qrCodeViwer.value" v-model:title="curServTitle" v-model:uid="curServUid"
+        @onClose="closeWindow(hWnds.qrCodeViwer)" />
     </div>
   </FadeTransition>
 </template>

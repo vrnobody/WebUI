@@ -23,13 +23,6 @@ const servTitle = computed({
     }
 })
 
-function genSaveButtonText() {
-    if (servUid.value) {
-        return t('save')
-    }
-    return t('add')
-}
-
 function close() {
     emit('onClose')
 }
@@ -57,17 +50,21 @@ function parseServConfig(config) {
     }
 }
 
-function saveServConfig() {
+function addNewServ() {
+    saveServConfig('')
+}
+
+function saveServConfig(uid) {
     const next = function (err) {
         if (err) {
             Swal.fire(t(err))
             return
         }
-        close()
+        close(false)
     }
 
     try {
-        const uid = servUid.value || ''
+        uid = uid || ''
         const config = servConfig.value
         utils.call(next, "SaveServerConfig", [uid, config])
     } catch (err) {
@@ -91,7 +88,8 @@ onUnmounted(() => {
     <JsonEditor v-if="isShowJsonEditor" v-model="servConfig" />
     <LoadingWidget v-else />
     <div class="flex w-full h-10 justify-center items-end">
-        <button @click="saveServConfig" class="my-0 mx-4">{{ genSaveButtonText() }}</button>
+        <button @click="addNewServ" class="my-0 mx-4">{{ t('add') }}</button>
+        <button v-if="servUid" @click="saveServConfig(servUid)" class="my-0 mx-4">{{ t('save') }}</button>
         <button @click="close" class="my-0 mx-4">{{ t('close') }}</button>
     </div>
 </template>
