@@ -67,12 +67,12 @@ onMounted(() => {
     <div class="dark:bg-slate-600 bg-slate-400 block grow w-full h-4/5 p-4 ">
         <div class="flex w-full mb-1 items-center">
             <span class="inline-block w-24 text-left shrink-0">{{ t('shareLink') }}</span>
-            <input class="dark:bg-slate-500 bg-neutral-100 px-2 py-1 inline-flex grow" type="text" v-model="shareLink"
-                @change="updateQrCode" />
+            <input class="dark:bg-slate-500 bg-neutral-100 w-[4rem] px-2 py-1 inline-flex grow" type="text"
+                v-model="shareLink" @change="updateQrCode" />
             <button class="shrink-0 w-16" @click="copyShareLink">{{ t('copy') }}</button>
         </div>
         <div class="grow w-full flex justify-center p-4">
-            <canvas id="share-link-qrcode" class="min-w-[28rem] min-h-[28rem]"></canvas>
+            <canvas id="share-link-qrcode" class="min-w-[16rem] min-h-[16rem]"></canvas>
         </div>
     </div>
     <div class="flex w-full h-10 justify-center items-end">
