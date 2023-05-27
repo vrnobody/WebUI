@@ -27,7 +27,7 @@ export default {
     inbMode: 'Inbound mode',
     inbIp: 'Inbound IP',
     inbPort: 'Inbound port',
-    newConfig: 'new config',
+    newConfig: 'New config',
     sortSelectedByLatency: 'Sort by latency',
     sortSelectedByModifyTime: 'Sort by last modify time',
     sortSelectedBySummary: 'Sort by summary',

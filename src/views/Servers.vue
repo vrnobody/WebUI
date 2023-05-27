@@ -305,51 +305,20 @@ onUnmounted(() => {
               <hr>
             </li>
             <li><button @click="selectAll(true)" dropdown-closer>{{ t('selectAll') }}</button></li>
+            <li><button @click="invertSelection(true)" dropdown-closer>{{ t('invertSelection') }}</button></li>
             <li><button @click="selectNone(true)" dropdown-closer>{{ t('selectNone') }}</button></li>
             <li class="h-2"></li>
-            <li>
-              <span class="text-sm dark:text-neutral-400 text-neutral-500">{{ t('global') }}</span>
-            </li>
+            <li> <span class="text-sm dark:text-neutral-400 text-neutral-500">{{ t('global') }}</span> </li>
             <li>
               <hr>
             </li>
             <li><button @click="selectAll(false)" dropdown-closer>{{ t('selectAll') }}</button></li>
+            <li><button @click="invertSelection(false)" dropdown-closer>{{ t('invertSelection') }}</button></li>
             <li><button @click="selectNone(false)" dropdown-closer>{{ t('selectNone') }}</button></li>
             <li><button @click="selectTimeoutGlobal()" dropdown-closer>{{ t('selectTimeout') }}</button></li>
           </ul>
         </template>
       </DropdownMenu>
-      <DropdownMenu withDropdownCloser>
-        <template #trigger>
-          <button class="my-0 mx-1"><i class="fas fa-adjust"></i></button>
-        </template>
-        <template #body>
-          <ul class="min-w-[10rem] dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-base p-2">
-            <li>
-              <span class="text-sm dark:text-neutral-400 text-neutral-500">{{ t('curPage') }}</span>
-            </li>
-            <li>
-              <hr>
-            </li>
-            <li>
-              <button @click="invertSelection(true)" dropdown-closer>{{ t('invertSelection') }}</button>
-            </li>
-            <li class="h-2"></li>
-            <li>
-              <span class="text-sm dark:text-neutral-400 text-neutral-500">{{ t('global') }}</span>
-            </li>
-            <li>
-              <hr>
-            </li>
-            <li>
-              <button @click="invertSelection(false)" dropdown-closer>{{ t('invertSelection') }}</button>
-            </li>
-          </ul>
-        </template>
-      </DropdownMenu>
-    </div>
-    <div class="dark:bg-slate-500 bg-slate-200 h-3/4 w-0.5 m-1"></div>
-    <div class="m-0 text-2xl shrink-0">
       <Tooltips :css="'mt-8'" :tip="t('newConfig')">
         <button @click="openWindow(hWnds.configEditor, null)" class="my-0 mx-1"><i class="fas fa-plus"></i></button>
       </Tooltips>

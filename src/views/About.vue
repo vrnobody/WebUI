@@ -4,13 +4,13 @@
 
 <template>
   <pre class="dark:text-neutral-100 m-4">
-<b>WebUI v0.0.1 2023-05</b>
+<b>WebUI v0.0.2 2023-05</b>
 <a href="https://github.com/vrnobody/WebUI">https://github.com/vrnobody/WebUI</a>
 
 <b>Servers panel and Luna manager:</b>
 click "ON" label to stop
 click name to restart
-click tag to edit settings
+click tag to change settings
 drag & drop to rearrange order
 
 <b>Luna editor keyboard shortcuts:</b>
