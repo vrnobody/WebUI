@@ -138,7 +138,7 @@ function copyShareLinkOfSelectedServers() {
   utils.call(next, 'CopyShareLinkOfSelectedServers')
 }
 
-function runLatencyTest() {
+function runLatencyTestOnSelectedServers() {
   if (!isSelectAnyServer()) {
     return
   }
@@ -152,6 +152,10 @@ function runLatencyTest() {
   }
 
   utils.call(next, 'RunLatencyTestOnSelectedServers')
+}
+
+function runLatencyTest(uid) {
+  utils.call(refresh, 'RunLatencyTestByUid', [uid])
 }
 
 function isSelectAnyServer() {
@@ -424,9 +428,9 @@ onUnmounted(() => {
         </template>
         <template #body>
           <ul class="min-w-[10rem] dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-base p-2">
-            <li><button @click="runLatencyTest" dropdown-closer>{{ t('runLatencyTest') }}</button></li>
-            <li><button @click="stopLatencyTest" dropdown-closer>{{ t('stopLatencyTest') }}</button></li>
             <li><button @click="copyShareLinkOfSelectedServers" dropdown-closer>{{ t('copyShareLinks') }}</button></li>
+            <li><button @click="runLatencyTestOnSelectedServers" dropdown-closer>{{ t('runLatencyTest') }}</button></li>
+            <li><button @click="stopLatencyTest" dropdown-closer>{{ t('stopLatencyTest') }}</button></li>
             <li><button @click="deleteSelected" dropdown-closer>{{ t('deleteSelectedServers') }}</button></li>
           </ul>
         </template>
@@ -482,7 +486,7 @@ onUnmounted(() => {
             </div>
             <div class="table-cell py-0 px-1 align-middle text-center w-16">{{ serv['index'] }}</div>
             <div class="table-cell py-1 px-2 align-middle text-left break-all">
-              <Tooltips :css="'mt-8'" :tip="getInboundAndModifiedInfo(serv)">
+              <Tooltips :css="'ml-[3rem] mt-8'" :tip="getInboundAndModifiedInfo(serv)">
                 <button @click="restartServ(serv.uid)" class="whitespace-pre-wrap text-left">
                   {{ serv['name'] }}
                 </button>
@@ -527,33 +531,37 @@ onUnmounted(() => {
                   <ul
                     class="min-w-[7rem] dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-sm text-left p-2 right-4">
                     <li>
-                      <button class="my-0 mx-1" @click="openWindow(hWnds.configEditor, serv.uid)" dropdown-closer>
+                      <button @click="openWindow(hWnds.configEditor, serv.uid)" dropdown-closer>
                         {{ t('editConfig') }}
                       </button>
                     </li>
                     <li>
-                      <button class="my-0 mx-1" @click="openWindow(hWnds.settingsEditor, serv.uid)" dropdown-closer>
+                      <button @click="openWindow(hWnds.settingsEditor, serv.uid)" dropdown-closer>
                         {{ t('changeSettings') }}
                       </button>
                     </li>
                     <li>
-                      <button class="my-0 mx-1" @click="copyShareLink(serv.uid)" dropdown-closer>
+                      <button @click="copyShareLink(serv.uid)" dropdown-closer>
                         {{ t('copyShareLink') }}
                       </button>
                     </li>
-
                     <li>
-                      <button class="my-0 mx-1" @click="openWindow(hWnds.qrCodeViwer, serv.uid)" dropdown-closer>
+                      <button @click="openWindow(hWnds.qrCodeViwer, serv.uid)" dropdown-closer>
                         {{ t('showQrCode') }}
                       </button>
                     </li>
                     <li>
-                      <button class="my-0 mx-1" @click="deleteServer(serv.uid, serv.name)" dropdown-closer>
+                      <button @click="deleteServer(serv.uid, serv.name)" dropdown-closer>
                         {{ t('deleteServer') }}
                       </button>
                     </li>
                     <li>
-                      <button class="my-0 mx-1" @click="openWindow(hWnds.logViwer, serv.uid)" dropdown-closer>
+                      <button @click="runLatencyTest(serv.uid)" dropdown-closer>
+                        {{ t('runLatencyTest') }}
+                      </button>
+                    </li>
+                    <li>
+                      <button @click="openWindow(hWnds.logViwer, serv.uid)" dropdown-closer>
                         {{ t('viewLogs') }}
                       </button>
                     </li>
@@ -577,7 +585,7 @@ onUnmounted(() => {
         @click="$event.target.select()" @keyup.enter="jumpToPage" />
     </div>
     <!-- counter -->
-    <div class="inline-flex">
+    <div class="inline-flex py-1">
       <span class="px-1">{{ t('count') }}: {{ servsCount }} </span>
       <span class="px-1"> {{ t('selected') }}: {{ servsSelected }}</span>
       <span v-if="isTesting" class="px-1"> {{ t('testing') }}</span>

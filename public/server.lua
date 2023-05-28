@@ -174,6 +174,10 @@ local function CalcTotalPageNumber(total)
     return pages
 end
 
+function RunLatencyTestByUid(uid)
+    return Server:RunSpeedTestByUids({uid})
+end
+
 function RunLatencyTestOnSelectedServers()
     return Server:RunSpeedTestOnSelectedServersBgQuiet()
 end
