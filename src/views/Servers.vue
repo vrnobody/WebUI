@@ -32,7 +32,10 @@ const curServTitle = ref('')
 let servsInfo = ref([])
 const servsCount = ref(0)
 const servsSelected = ref(0)
+const isTesting = ref(false)
 let curSelection = '{}'
+
+const tagNames = ['status', 'mark', 'remark', 'tag1', 'tag2', 'tag3']
 
 const hWnds = {
   logViwer: ref(false),
@@ -98,9 +101,7 @@ function invertSelection(isCurPage) {
 }
 
 function sortSelectedBy(condition) {
-  const count = servsSelected.value
-  if (count < 1) {
-    Swal.fire(t('noServerSelected'))
+  if (!isSelectAnyServer()) {
     return
   }
 
@@ -121,10 +122,7 @@ function sortSelectedBy(condition) {
 }
 
 function copyShareLinkOfSelectedServers() {
-  const count = servsSelected.value
-
-  if (count < 1) {
-    Swal.fire(t('noServerSelected'))
+  if (!isSelectAnyServer()) {
     return
   }
 
@@ -140,14 +138,44 @@ function copyShareLinkOfSelectedServers() {
   utils.call(next, 'CopyShareLinkOfSelectedServers')
 }
 
-function deleteSelected() {
-  const count = servsSelected.value
-
-  if (count < 1) {
-    Swal.fire(t('noServerSelected'))
+function runLatencyTest() {
+  if (!isSelectAnyServer()) {
     return
   }
 
+  const next = function (ok) {
+    if (ok) {
+      refresh()
+      return
+    }
+    Swal.fire(t('failed'))
+  }
+
+  utils.call(next, 'RunLatencyTestOnSelectedServers')
+}
+
+function isSelectAnyServer() {
+  const count = servsSelected.value
+  if (count < 1) {
+    Swal.fire(t('noServerSelected'))
+    return false
+  }
+  return true
+}
+
+function stopLatencyTest() {
+  const next = function () {
+    Swal.fire(t('ok'))
+  }
+  utils.call(next, 'StopLatencyTest')
+}
+
+function deleteSelected() {
+  if (!isSelectAnyServer()) {
+    return
+  }
+
+  const count = servsSelected.value
   const next = function () {
     const msg = t('serversDeleted')
     Swal.fire(msg)
@@ -190,6 +218,7 @@ function search() {
   refresh()
 }
 
+let lastRefreshTimestamp = -1
 function refresh() {
   const next = function (r) {
     curPageNumText.value = curPageNum.value.toString()
@@ -197,7 +226,20 @@ function refresh() {
     servsInfo.value = r.data
     servsCount.value = r.count
     servsSelected.value = r.selected
+    isTesting.value = r.isTesting
     isLoading.value = false
+
+    if (!isTesting.value) {
+      return
+    }
+
+    const now = new Date().getTime()
+    lastRefreshTimestamp = now
+    setTimeout(() => {
+      if (lastRefreshTimestamp == now) {
+        refresh()
+      }
+    }, 2000);
   }
 
   utils.call(next, "GetSerializedServers", [
@@ -288,6 +330,26 @@ function copyShareLink(uid) {
   utils.call(next, "GetShareLink", [uid])
 }
 
+function getInboundAndModifiedInfo(serv) {
+  const inbAddr = serv['inbound']
+  const tick = serv['modified'] * 1000
+  const date = new Date(tick)
+  return inbAddr + '\n' + date.toLocaleString()
+}
+
+function countTags(tags) {
+  if (!tags) {
+    return 0
+  }
+  let count = 0
+  for (var key in tags) {
+    if (tags[key]) {
+      count++
+    }
+  }
+  return count
+}
+
 onMounted(() => {
   refresh()
 })
@@ -344,13 +406,6 @@ onUnmounted(() => {
           </ul>
         </template>
       </DropdownMenu>
-      <Tooltips :css="'mt-8'" :tip="t('newConfig')">
-        <button @click="openWindow(hWnds.configEditor, null)" class="my-0 mx-1"><i class="fas fa-plus"></i></button>
-      </Tooltips>
-      <button @click="deleteSelected" class="my-0 mx-1"><i class="fas fa-trash-alt"></i></button>
-    </div>
-    <div class="dark:bg-slate-500 bg-slate-200 h-3/4 w-0.5 m-1"></div>
-    <div class="m-0 text-2xl shrink-0">
       <DropdownMenu withDropdownCloser>
         <template #trigger>
           <button class="my-0 mx-1"><i class="fas fa-sort-alpha-down"></i></button>
@@ -363,8 +418,24 @@ onUnmounted(() => {
           </ul>
         </template>
       </DropdownMenu>
-      <Tooltips :css="'mt-8'" :tip="t('copyShareLinks')">
-        <button @click="copyShareLinkOfSelectedServers()" class="my-0 mx-1"><i class="fas fa-share-alt"></i></button>
+      <DropdownMenu withDropdownCloser>
+        <template #trigger>
+          <button class="my-0 mx-1"><i class="fas fa-angle-double-down"></i></button>
+        </template>
+        <template #body>
+          <ul class="min-w-[10rem] dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-base p-2">
+            <li><button @click="runLatencyTest" dropdown-closer>{{ t('runLatencyTest') }}</button></li>
+            <li><button @click="stopLatencyTest" dropdown-closer>{{ t('stopLatencyTest') }}</button></li>
+            <li><button @click="copyShareLinkOfSelectedServers" dropdown-closer>{{ t('copyShareLinks') }}</button></li>
+            <li><button @click="deleteSelected" dropdown-closer>{{ t('deleteSelectedServers') }}</button></li>
+          </ul>
+        </template>
+      </DropdownMenu>
+    </div>
+    <div class="dark:bg-slate-500 bg-slate-200 h-3/4 w-0.5 m-1"></div>
+    <div class="m-0 text-2xl shrink-0">
+      <Tooltips :css="'mt-8'" :tip="t('newConfig')">
+        <button @click="openWindow(hWnds.configEditor, null)" class="my-0 mx-1"><i class="fas fa-plus"></i></button>
       </Tooltips>
       <Tooltips :css="'mt-8'" :tip="t('viewLogs')">
         <button @click="openWindow(hWnds.logViwer, null)" class="my-0 mx-1"><i class="fas fa-file-alt"></i></button>
@@ -411,9 +482,11 @@ onUnmounted(() => {
             </div>
             <div class="table-cell py-0 px-1 align-middle text-center w-16">{{ serv['index'] }}</div>
             <div class="table-cell py-1 px-2 align-middle text-left break-all">
-              <button @click="restartServ(serv.uid)" class="whitespace-pre-wrap text-left">
-                {{ serv['name'] }}
-              </button>
+              <Tooltips :css="'mt-8'" :tip="getInboundAndModifiedInfo(serv)">
+                <button @click="restartServ(serv.uid)" class="whitespace-pre-wrap text-left">
+                  {{ serv['name'] }}
+                </button>
+              </Tooltips>
             </div>
             <div class="hidden sm:table-cell lg:w-[28%] py-1 px-2 align-middle text-left break-all w-60">{{
               serv['summary']
@@ -421,13 +494,16 @@ onUnmounted(() => {
             </div>
             <div class="hidden lg:table-cell py-1 px-2 align-middle text-left break-all w-56">
               <div class="flex flex-wrap justify-start">
-                <div v-if="serv.tags && serv.tags.length < 1" class="text-base py-0 px-1 cursor-pointer text-blue-400"
+                <div v-if="countTags(serv.tags) < 1" class="text-base py-0 px-1 cursor-pointer text-blue-400"
                   @click="openWindow(hWnds.settingsEditor, serv.uid)">
                   <i class="fas fa-tags"></i>
                 </div>
-                <div
-                  class="dark:bg-cyan-700 bg-cyan-600 dark:text-neutral-300 text-neutral-200 cursor-pointer rounded inline-block text-xs py-0.5 px-1 max-w-[4.5rem] text-ellipsis overflow-hidden whitespace-nowrap my-0.5 mx-0.5"
-                  v-for="tag in serv.tags" @click="openWindow(hWnds.settingsEditor, serv.uid)">{{ tag }}</div>
+                <div v-for="tagName in tagNames" class="flex">
+                  <div v-if="serv.tags[tagName]"
+                    class="dark:bg-cyan-700 bg-cyan-600 dark:text-neutral-300 text-neutral-200 cursor-pointer rounded inline-block text-xs py-0.5 px-1 max-w-[4.5rem] text-ellipsis overflow-hidden whitespace-nowrap my-0.5 mx-0.5"
+                    @click="openWindow(hWnds.settingsEditor, serv.uid)">{{ serv.tags[tagName] }}
+                  </div>
+                </div>
               </div>
             </div>
             <div class="table-cell py-0 px-1 align-middle text-center w-24">
@@ -502,7 +578,9 @@ onUnmounted(() => {
     </div>
     <!-- counter -->
     <div class="inline-flex">
-      <span class="px-2">{{ t('count') }}: {{ servsCount }} &nbsp; {{ t('selected') }}: {{ servsSelected }}</span>
+      <span class="px-1">{{ t('count') }}: {{ servsCount }} </span>
+      <span class="px-1"> {{ t('selected') }}: {{ servsSelected }}</span>
+      <span v-if="isTesting" class="px-1"> {{ t('testing') }}</span>
     </div>
   </div>
 

@@ -10,6 +10,7 @@ export default {
     system: 'System',
 
     // server
+    testing: 'Testing',
     selectAll: 'Select all',
     selectNone: 'Select none',
     selectTimeout: 'Select timeouted',
@@ -106,6 +107,9 @@ export default {
 
     listIsEmpty: 'List is empty.',
     deleteServer: 'Delete server',
+    deleteSelectedServers: 'Delete selected servers',
+    runLatencyTest: 'Run latency test',
+    stopLatencyTest: 'Stop latency test',
     confirmDelete: `Delete [{name}]?`,
     confirmDeleteNServers: `Delete {count} server(s)?`,
     yes: 'Yes',

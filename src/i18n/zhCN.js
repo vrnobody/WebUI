@@ -10,6 +10,7 @@ export default {
     system: '跟随系统',
 
     // server
+    testing: '测试中',
     selectAll: '全选',
     selectNone: '清空选择',
     selectTimeout: '选中超时',
@@ -107,6 +108,9 @@ export default {
 
     listIsEmpty: '列表为空',
     deleteServer: '删除服务器',
+    runLatencyTest: '进行延迟测试',
+    stopLatencyTest: '停止延迟测试',
+    deleteSelectedServers: '删除选中的服务器',
     confirmDelete: `确定要删除 [{name}] 吗?`,
     confirmDeleteNServers: `确定要删除{count}个服务器吗？`,
     yes: '是',

@@ -8,7 +8,7 @@ local public = "./lua/webui"
 -- confings
 local Logger = require('lua.modules.logger')
 
-local version = "0.0.2.0"
+local version = "0.0.2.1"
 local pageSize = 50
 
 local logLevel = #args > 1 and args[2] or Logger.logLevels.Debug
@@ -54,21 +54,30 @@ local function Response(ok, result, ...)
     return json.encode(r)
 end
 
-local function GetterTags(coreState)
-    local t = {}
-    table.insert(t, coreState:GetStatus())
-    table.insert(t, coreState:GetMark())
-    table.insert(t, coreState:GetRemark())
-    table.insert(t, coreState:GetTag1())
-    table.insert(t, coreState:GetTag2())
-    table.insert(t, coreState:GetTag3())
+local function GetTags(coreState)
     local r = {}
-    for _, v in pairs(t) do
-        if not string.isempty(v) then
-            table.insert(r, v)
-        end
-    end
+    r["mark"] = coreState:GetMark()
+    r["remark"] = coreState:GetRemark()
+    r["tag1"] = coreState:GetTag1()
+    r["tag2"] = coreState:GetTag2()
+    r["tag3"] = coreState:GetTag3()
+    r["status"] = coreState:GetStatus()
     return r
+end
+
+local function GetInboundInfo(coreState)
+    local mode = coreState:GetInboundType()
+    if mode == 0 then
+        return "Config"
+    end
+    if mode == 3 then
+        return "Custom"
+    end
+    if mode == 1 or mode == 2 then
+        local prefix = (mode == 1 and "http" or "socks")
+        return prefix .. "://" .. coreState:GetInboundAddr()
+    end
+    return "Unknow"
 end
 
 local function GetterCoreServInfo(coreServ)
@@ -78,13 +87,16 @@ local function GetterCoreServInfo(coreServ)
     end
     local coreState = coreServ:GetCoreStates()
     local coreCtrl = coreServ:GetCoreCtrl()
+    t["tags"] = GetTags(coreState)
     t["index"] = coreState:GetIndex()
     t["name"] = coreState:GetName()
     t["summary"] = coreState:GetSummary()
     t["uid"] = coreState:GetUid()
     t["on"] = coreCtrl:IsCoreRunning()
     t["selected"] = coreState:IsSelected()
-    t["tags"] = GetterTags(coreState)
+    t["inbound"] = GetInboundInfo(coreState)
+    local cSharpTicks = coreState:GetLastModifiedUtcTicks()
+    t["modified"] = utils.ToLuaTicks(cSharpTicks)
     return t
 end
 
@@ -136,7 +148,7 @@ local function FilterServsByTags(servs, keyword)
     local r = {}
     for coreServ in Each(servs) do
         local coreState = coreServ:GetCoreStates()
-        local tags = GetterTags(coreState)
+        local tags = GetterCoreTags(coreState)
         if IsInTags(tags, keyword) then
             table.insert(r, coreServ)
         end
@@ -160,6 +172,14 @@ local function CalcTotalPageNumber(total)
         pages = 1
     end
     return pages
+end
+
+function RunLatencyTestOnSelectedServers()
+    return Server:RunSpeedTestOnSelectedServersBgQuiet()
+end
+
+function StopLatencyTest()
+    Server:StopSpeedTest()
 end
 
 function GetAllLuaVmsInfo()
@@ -384,17 +404,12 @@ function GetServSettings(uid)
         return nil
     end
     local coreState = coreServ:GetCoreStates()
-    local r = {}
+    local r = GetTags(coreState)
     r["index"] = coreState:GetIndex()
     r["name"] =coreState:GetName()
-    r["mark"] = coreState:GetMark()
-    r["remark"] = coreState:GetRemark()
     r["inbMode"] = coreState:GetInboundType()
     r["inbIp"] = coreState:GetInboundIp()
     r["inbPort"] = coreState:GetInboundPort()
-    r["tag1"] = coreState:GetTag1()
-    r["tag2"] = coreState:GetTag2()
-    r["tag3"] = coreState:GetTag3()
     return r
 end
 
@@ -450,6 +465,7 @@ function GetSerializedServers(pageNum, searchType, keyword)
         ["pages"] = 1,
         ["data"] = {},
         ["selected"] = Server:CountSelected(),
+        ["isTesting"] = Server:IsRunningSpeedTest(),
         ["count"] = servs.Count,
     }
     
