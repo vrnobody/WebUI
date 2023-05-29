@@ -1,11 +1,13 @@
 <script setup>
-import utils from '../misc/utils.js'
+import utils from '@/misc/utils.js'
+import config from '@/config.js'
 import { onMounted, onUnmounted, ref, defineAsyncComponent, nextTick } from 'vue'
 import { VueDraggableNext } from 'vue-draggable-next'
 
 import ConfigEditor from '../components/servers/ConfigEditor.vue'
 import LogViewer from '../components/servers/LogViewer.vue'
 import SettingsEditor from '../components/servers/SettingsEditor.vue'
+import BatchSettingsEditor from '@/components/servers/BatchSettingsEditor.vue'
 import FadeTransition from '../components/transitions/FadeTransition.vue'
 import LoadingWidget from '../components/widgets/Loading.vue'
 import QrcodeViewer from '@/components/servers/QrcodeViewer.vue'
@@ -35,13 +37,14 @@ const servsSelected = ref(0)
 const isTesting = ref(false)
 let curSelection = '{}'
 
-const tagNames = ['status', 'mark', 'remark', 'tag1', 'tag2', 'tag3']
+const tagNames = ['isAutoRun', 'status', 'mark', 'remark', 'tag1', 'tag2', 'tag3']
 
 const hWnds = {
   logViwer: ref(false),
   configEditor: ref(false),
   settingsEditor: ref(false),
   qrCodeViwer: ref(false),
+  batchSettingsEditor: ref(false),
 }
 
 function saveSelectionLater() {
@@ -119,6 +122,13 @@ function sortSelectedBy(condition) {
       break;
   }
   utils.call(refresh, fn)
+}
+
+function openBatchSettingsEditor() {
+  if (!isSelectAnyServer()) {
+    return
+  }
+  openWindow(hWnds.batchSettingsEditor, '')
 }
 
 function copyShareLinkOfSelectedServers() {
@@ -219,11 +229,12 @@ function restartOneServ(uid) {
 
 function search() {
   curPageNum.value = 1
-  refresh()
+  refresh(true)
 }
 
 let lastRefreshTimestamp = -1
-function refresh() {
+function refresh(isScrollToTop) {
+
   const next = function (r) {
     curPageNumText.value = curPageNum.value.toString()
     pages.value = r.pages
@@ -232,6 +243,10 @@ function refresh() {
     servsSelected.value = r.selected
     isTesting.value = r.isTesting
     isLoading.value = false
+
+    if (isScrollToTop === true) {
+      utils.scrollToPageTop()
+    }
 
     if (!isTesting.value) {
       return
@@ -319,7 +334,7 @@ function isShowPopWindow() {
 function jumpToPage() {
   const pn = Math.floor(parseFloat(curPageNumText.value)) || 1
   curPageNum.value = pn
-  refresh()
+  refresh(true)
 }
 
 function copyShareLink(uid) {
@@ -338,7 +353,8 @@ function getInboundAndModifiedInfo(serv) {
   const inbAddr = serv['inbound']
   const tick = serv['modified'] * 1000
   const date = new Date(tick)
-  return inbAddr + '\n' + date.toLocaleString()
+  const lang = config.get("lang") || navigator.language
+  return inbAddr + '\n' + date.toLocaleString(lang)
 }
 
 function countTags(tags) {
@@ -429,6 +445,7 @@ onUnmounted(() => {
         <template #body>
           <ul class="min-w-[10rem] dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-base p-2">
             <li><button @click="copyShareLinkOfSelectedServers" dropdown-closer>{{ t('copyShareLinks') }}</button></li>
+            <li><button @click="openBatchSettingsEditor" dropdown-closer>{{ t('modifySelected') }}</button></li>
             <li><button @click="runLatencyTestOnSelectedServers" dropdown-closer>{{ t('runLatencyTest') }}</button></li>
             <li><button @click="stopLatencyTest" dropdown-closer>{{ t('stopLatencyTest') }}</button></li>
             <li><button @click="deleteSelected" dropdown-closer>{{ t('deleteSelectedServers') }}</button></li>
@@ -505,7 +522,8 @@ onUnmounted(() => {
                 <div v-for="tagName in tagNames" class="flex">
                   <div v-if="serv.tags[tagName]"
                     class="dark:bg-cyan-700 bg-cyan-600 dark:text-neutral-300 text-neutral-200 cursor-pointer rounded inline-block text-xs py-0.5 px-1 max-w-[4.5rem] text-ellipsis overflow-hidden whitespace-nowrap my-0.5 mx-0.5"
-                    @click="openWindow(hWnds.settingsEditor, serv.uid)">{{ serv.tags[tagName] }}
+                    @click="openWindow(hWnds.settingsEditor, serv.uid)">{{ tagName == 'isAutoRun' ? 'A' :
+                      serv.tags[tagName] }}
                   </div>
                 </div>
               </div>
@@ -579,7 +597,7 @@ onUnmounted(() => {
   <div class="dark:bg-slate-500 bg-slate-400 flex items-center z-10 text-neutral-800 text-sm fixed bottom-0 right-0 px-2">
     <!-- pager -->
     <div class="inline-flex" v-if="pages > 1">
-      <VPagination v-model="curPageNum" :pages="pages" active-color="#DCEDFF" @update:modelValue="refresh" />
+      <VPagination v-model="curPageNum" :pages="pages" active-color="#DCEDFF" @update:modelValue="refresh(true)" />
       <input v-model="curPageNumText"
         class="inline-block dark:bg-slate-200 bg-slate-200 text-center text-sm my-1 mx-2 w-12"
         @click="$event.target.select()" @keyup.enter="jumpToPage" />
@@ -604,6 +622,7 @@ onUnmounted(() => {
         v-model:title="curServTitle" />
       <QrcodeViewer v-if="hWnds.qrCodeViwer.value" v-model:title="curServTitle" v-model:uid="curServUid"
         @onClose="closeWindow(hWnds.qrCodeViwer)" />
+      <BatchSettingsEditor v-if="hWnds.batchSettingsEditor.value" @onClose="closeWindow(hWnds.batchSettingsEditor)" />
     </div>
   </FadeTransition>
 </template>

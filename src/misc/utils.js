@@ -90,6 +90,10 @@ function getTranslator() {
     return t
 }
 
+function scrollToPageTop() {
+    window.scrollTo(0, 0);
+}
+
 function showScrollbarY() {
     document.body.style.overflowY = ''
 }
@@ -145,6 +149,7 @@ function confirm(title, onYes, onNo) {
 }
 
 export default {
+    scrollToPageTop,
     copyToClipboard,
     confirm,
     trim,

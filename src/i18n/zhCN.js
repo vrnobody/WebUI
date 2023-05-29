@@ -25,6 +25,7 @@ export default {
     count: '计数',
     selected: '选中',
     custom: '自定义',
+    isAutoRun: '自启动',
     inbMode: 'Inbound模式',
     inbIp: 'Inbound IP',
     inbPort: 'Inbound端口',
@@ -39,6 +40,7 @@ export default {
     copyShareLink: '复制分享链接',
     copyShareLinks: '复制分享链接',
     changeSettings: '修改设置',
+    modifySelected: '修改选中的服务器',
 
     // luna
     name: '名字',

@@ -25,6 +25,7 @@ export default {
     count: 'Count',
     selected: 'Selected',
     custom: 'Custom',
+    isAutoRun: 'Auto run',
     inbMode: 'Inbound mode',
     inbIp: 'Inbound IP',
     inbPort: 'Inbound port',
@@ -39,6 +40,7 @@ export default {
     copyShareLink: 'Copy share link',
     copyShareLinks: 'Copy share links',
     changeSettings: 'Change settings',
+    modifySelected: 'Modify selected servers',
 
     // luna
     name: 'Name',

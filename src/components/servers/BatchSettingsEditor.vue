@@ -1,27 +1,22 @@
 <script setup>
 import utils from '../../misc/utils.js'
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref } from 'vue'
 
-const props = defineProps(['uid', 'title'])
 const emit = defineEmits(['onClose'])
 
 const servSettings = ref({})
 
 const t = utils.getTranslator()
 
-const servUid = computed({
-    get() {
-        return props.uid
-    }
-})
+const servSettingKeys = ["inbMode", "inbIp", "inbPort", "isAutoRun", "mark", "remark", "tag1", "tag2", "tag3"]
 
-const servTitle = computed({
-    get() {
-        return props.title
-    }
-})
+const selection = {}
 
-const servSettingKeys = ["index", "name", "inbMode", "inbIp", "inbPort", "isAutoRun", "mark", "remark", "tag1", "tag2", "tag3"]
+function initSelection() {
+    for (const key of servSettingKeys) {
+        selection[key] = false
+    }
+}
 
 function getElementType(key) {
     switch (key) {
@@ -36,6 +31,8 @@ function getElementType(key) {
 }
 
 function loadSettings() {
+    initSelection()
+
     const next = function (tags) {
         if (tags) {
             servSettings.value = tags
@@ -43,10 +40,18 @@ function loadSettings() {
         }
         Swal.fire(err.toString())
     }
-    utils.call(next, "GetServSettings", [servUid.value])
+
+    utils.call(next, "GetFirstSelectedServerSettings")
 }
 
 function save() {
+    const s = {}
+    for (const key of servSettingKeys) {
+        if (selection[key]) {
+            s[key] = servSettings.value[key]
+        }
+    }
+
     const next = function (ok) {
         if (ok) {
             close()
@@ -54,8 +59,8 @@ function save() {
         }
         Swal.fire(t('failed'))
     }
-    const uid = servUid.value || ''
-    utils.call(next, "SaveServSettings", [uid, servSettings.value])
+
+    utils.call(next, "ChangeSelectedServersSetting", [s])
 }
 
 function close() {
@@ -68,14 +73,14 @@ onMounted(() => {
 
 </script>
 <template>
-    <div class="mb-1 text-base">
-        {{ servTitle }}
-    </div>
     <div class="dark:bg-slate-600 bg-slate-400 block grow w-full h-4/5 p-4">
         <div v-for="key in servSettingKeys">
             <div class="flex items-center h-9">
-                <div class="p-0 w-32 mr-4">{{ t(key) }}</div>
-                <div class="flex grow p-0">
+                <div class="p-0 w-12 mx-2">
+                    <input type="checkbox" v-model="selection[key]" class="w-4 h-4 px-1" />
+                </div>
+                <div class="p-0 w-32 mx-2">{{ t(key) }}</div>
+                <div class="flex grow p-0 mx-2">
                     <select v-if="getElementType(key) === 'select'" v-model="servSettings[key]"
                         class="dark:bg-slate-600 bg-neutral-300 border-neutral-400 border grow">
                         <option value="0">Config</option>

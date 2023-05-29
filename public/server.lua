@@ -62,6 +62,7 @@ local function GetTags(coreState)
     r["tag2"] = coreState:GetTag2()
     r["tag3"] = coreState:GetTag3()
     r["status"] = coreState:GetStatus()
+    r["isAutoRun"] = coreState:IsAutoRun()
     return r
 end
 
@@ -402,6 +403,60 @@ function AbortLuaVm(luavm)
     Sys:LuaVmAbort(luavm)
 end
 
+function ChangeSelectedServersSetting(s)
+    local keys = {"inbMode", "inbIp", "inbPort", "isAutoRun", "mark", "remark", "tag1", "tag2", "tag3"}
+    local servs = Server:GetAllServers()
+    for coreServ in Each(servs) do
+        local coreState = coreServ:GetCoreStates()
+        if coreState:IsSelected() then
+            for _, key in pairs(keys) do
+                local v = s[key]
+                if v ~= nil then
+                    if key == "inbMode" then
+                        coreState:SetInboundType(tonumber(v))
+                    elseif key == "inbIp" then
+                        local port = coreState:GetInboundPort()
+                        coreState:SetInboundAddr(v, port)
+                    elseif key == "inbPort" then
+                        local ip = coreState:GetInboundIp()
+                        coreState:SetInboundAddr(ip, tonumber(v))
+                    elseif key == "isAutoRun" then
+                        coreState:SetIsAutoRun(v)
+                    elseif key == "mark" then
+                        coreState:SetMark(v)
+                    elseif key == "remark" then
+                        coreState:SetRemark(v)
+                    elseif  key == "tag1" then
+                        coreState:SetTag1(v)
+                    elseif key == "tag2" then
+                        coreState:SetTag2(v)
+                    elseif  key == "tag3" then
+                        coreState:SetTag3(v)
+                    end
+                end
+            end
+        end
+    end 
+    return true
+end
+
+function GetFirstSelectedServerSettings()
+    local coreServ = nil
+    local servs = Server:GetAllServers()
+    for coreServ in Each(servs) do
+        local coreState = coreServ:GetCoreStates()
+        if coreState:IsSelected() then
+            local tags = GetTags(coreState)
+            tags["inbMode"] = coreState:GetInboundType()
+            tags["inbIp"] = coreState:GetInboundIp()
+            tags["inbPort"] = coreState:GetInboundPort()
+            tags["isAutoRun"] = coreState:IsAutoRun()
+            return tags
+        end
+    end
+    return {}
+end
+
 function GetServSettings(uid)
     local coreServ = utils.GetFirstServerWithUid(uid)
     if not coreServ then
@@ -439,6 +494,8 @@ function SaveServSettings(uid, s)
     
     coreState:SetInboundType(tonumber(s["inbMode"]))
     coreState:SetInboundAddr(s["inbIp"], tonumber(s["inbPort"]))
+    
+    coreState:SetIsAutoRun(s["isAutoRun"])
     Server:ResetIndexes()
     
     return true
@@ -653,4 +710,3 @@ local function Main()
 end
 
 Main()
-print('done')
