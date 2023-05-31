@@ -36,6 +36,7 @@ const servsCount = ref(0)
 const servsSelected = ref(0)
 const isTesting = ref(false)
 let curSelection = '{}'
+let isRefreshing = false
 
 const tagNames = ['isAutoRun', 'status', 'mark', 'remark', 'tag1', 'tag2', 'tag3']
 
@@ -57,12 +58,19 @@ function saveSelectionLater() {
 
   const cs = JSON.stringify(selection)
   curSelection = cs
+
+  const next = function () {
+    isRefreshing = false
+    refresh()
+  }
+
+  isRefreshing = true
   setTimeout(() => {
     if (curSelection !== cs) {
       // pass
       return
     }
-    utils.call(refresh, 'ChangeSelection', [cs])
+    utils.call(next, 'ChangeSelection', [cs])
   }, 1000);
 }
 
@@ -234,6 +242,13 @@ function search() {
 
 let lastRefreshTimestamp = -1
 function refresh(isScrollToTop) {
+
+  if (isRefreshing) {
+    setTimeout(() => {
+      refresh(isScrollToTop)
+    }, 2000)
+    return
+  }
 
   const next = function (r) {
     curPageNumText.value = curPageNum.value.toString()
