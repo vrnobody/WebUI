@@ -64,6 +64,7 @@ export default {
     extensions: '扩展名',
     terminate: '强制终止',
     restart: '重启',
+    allowImportClrLibs: '允许import CLR库',
 
     openAttacher: '打开附加器',
     attach: '附加',
@@ -140,12 +141,13 @@ export default {
     'speedtestTimeout': '测速超时(ms)',
     'speedtestSize': '测速大小(KiB)',
     'speettestCycles': '测速次数',
-    'quickSwitchLantency': '快速切换延迟(ms)',
+    'quickSwitchLatency': '快速切换延迟(ms)',
     'importTrojan': '导入trojan://...',
     'importShadowsocks': '导入ss://...',
     'importMode': '导入模式',
     'importIp': '默认导入IP',
     'importPort': '默认导入端口',
+    'customInbounds': '自定义Inbounds',
 
     // server errors
     configIsEmpty: 'config为空！',

@@ -1,16 +1,16 @@
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick, computed, defineAsyncComponent } from 'vue'
-import { useI18n } from '@yangss/vue3-i18n'
 import utils from '@/misc/utils.js'
 
 import DropdownMenu from 'v-dropdown-menu'
+import Tooltips from '@/components/widgets/Tooltips.vue'
 import '@/assets/v-dropdown-menu.css'
 import FileBrowser from '@/components/luna/FileBrowser.vue'
 import Attacher from '@/components/luna/Attacher.vue'
 
 const LuaEditor = defineAsyncComponent(() => import("./LuaEditor.vue"))
 
-const { _, t } = useI18n()
+const t = utils.getTranslator()
 const scriptName = ref('')
 const scriptContent = ref('')
 const isEditingLocalFile = ref(false)
@@ -24,6 +24,7 @@ const scriptDb = ref({})
 
 const isFullScreen = ref(false)
 const isLogPanelVisible = ref(false)
+const isLoadClr = ref(false)
 
 let luavm = ''
 
@@ -208,6 +209,7 @@ function runScript() {
 
   const name = (isEditingLocalFile.value ? filename.value : scriptName.value) || ''
   const script = scriptContent.value || ''
+  const loadClr = isLoadClr.value
 
   removeLuaVm()
   clearInterval(logUpdater)
@@ -215,7 +217,7 @@ function runScript() {
     luavm = handle
     startLogUpdater()
   }
-  utils.call(next, 'RunLuaScript', [name, script])
+  utils.call(next, 'RunLuaScript', [name, script, loadClr])
 }
 
 function stopScript() {
@@ -363,6 +365,12 @@ onUnmounted(() => {
       <button class="mx-1" @click="stopScript"><i class="fas fa-stop"></i></button>
       <button class="mx-1" @click="abortScript"><i class="fas fa-stop-circle"></i></button>
       <button class="mx-1" @click="clearLog"><i class="fas fa-broom"></i></button>
+      <Tooltips :tip="t('allowImportClrLibs')" :css="'right-4 mt-6'">
+        <div class="mx-1 inline-flex items-center">
+          <input type="checkbox" v-model="isLoadClr" name="is-load-clr" class="w-4 h-4 mr-1" />
+          <label for="is-load-clr">CLR</label>
+        </div>
+      </Tooltips>
     </div>
 
     <!-- edit area -->

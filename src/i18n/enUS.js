@@ -64,6 +64,7 @@ export default {
     extensions: 'Extensions',
     terminate: 'Terminate',
     restart: 'Restart',
+    allowImportClrLibs: 'Allow import CLR libs',
 
     openAttacher: 'Open attacher',
     attach: 'Attach',
@@ -139,12 +140,13 @@ export default {
     'speedtestTimeout': 'Speedtest timeout (ms)',
     'speedtestSize': 'Speedtest size (KiB)',
     'speettestCycles': 'Speedtest cycles',
-    'quickSwitchLantency': 'Quick switch Lantency (ms)',
+    'quickSwitchLatency': 'Quick switch Latency (ms)',
     'importTrojan': 'Import trojan://...',
     'importShadowsocks': 'Import ss://...',
     'importMode': 'Import mode',
     'importIp': 'Import IP',
     'importPort': 'Import port',
+    'customInbounds': 'Custom inbounds',
 
     // server errors
     configIsEmpty: 'Config is empty!',

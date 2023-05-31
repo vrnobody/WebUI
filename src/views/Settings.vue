@@ -18,12 +18,13 @@ const propsTable = {
   'CustomSpeedtestTimeout': 'speedtestTimeout',
   'CustomSpeedtestExpectedSizeInKib': 'speedtestSize',
   'CustomSpeedtestCycles': 'speettestCycles',
-  'QuickSwitchServerLantency': 'quickSwitchLantency',
+  'QuickSwitchServerLantency': 'quickSwitchLatency',
   'CustomDefImportTrojanShareLink': 'importTrojan',
   'CustomDefImportSsShareLink': 'importShadowsocks',
   'CustomDefImportMode': 'importMode',
   'CustomDefImportIp': 'importIp',
   'CustomDefImportPort': 'importPort',
+  'CustomDefInbounds': 'customInbounds',
 }
 
 const optionsTable = {
@@ -33,6 +34,10 @@ const optionsTable = {
     'SOCKS',
     t('custom'),
   ]
+}
+
+const areasTable = {
+  'CustomDefInbounds': 'h-[12rem]'
 }
 
 function saveSettings() {
@@ -61,6 +66,7 @@ function loadSettings() {
   utils.call(next, "GetUserSettings", [names])
 }
 
+
 function getElementType(key) {
   const s = settings.value
   if (!s.hasOwnProperty(key)) {
@@ -76,6 +82,9 @@ function getElementType(key) {
       }
       return 'text'
     case 'string':
+      if (areasTable.hasOwnProperty(key)) {
+        return 'textarea'
+      }
       return 'text'
     default:
       break;
@@ -114,16 +123,18 @@ onMounted(() => {
   <div class="dark:text-neutral-100">
     <div class="block w-full h-6"></div>
     <ul :key="isRequireRerender">
-      <li v-for="( value, key ) in  propsTable " class="dark:odd:bg-slate-600 odd:bg-neutral-200 items-center flex">
-        <div class="inline-flex w-[18rem] shrink-0 px-1 py-1">{{ t(value) }}</div>
-        <div class="inline-flex grow px-1 py-1">
+      <li v-for="( value, key ) in  propsTable " class="dark:odd:bg-slate-600 odd:bg-neutral-200 items-start flex py-1">
+        <div class="inline-flex w-[18rem] shrink-0 px-1">{{ t(value) }}</div>
+        <div class="inline-flex grow px-1">
           <input v-if="getElementType(key) === 'text'" type="text" v-model="settings[key]"
             class="dark:bg-slate-500 bg-neutral-100 grow px-1 border border-neutral-400 dark:border-0" />
-          <input v-if="getElementType(key) === 'checkbox'" type="checkbox" v-model="settings[key]" class="w-4 h-4" />
+          <input v-if="getElementType(key) === 'checkbox'" type="checkbox" v-model="settings[key]" class="w-4 h-4 mt-1" />
           <select v-if="getElementType(key) === 'select'" v-model="settings[key]"
             class="dark:bg-slate-600 bg-neutral-200 grow px-1 border border-neutral-400 dark:border-0">
             <option v-for="(ov, idx) in optionsTable[key]" :value="idx">{{ ov }}</option>
           </select>
+          <textarea v-if="getElementType(key) === 'textarea'" v-model="settings[key]" :class="{ [areasTable[key]]: true }"
+            class="dark:bg-slate-500 bg-neutral-100 grow px-1 border border-neutral-400 dark:border-0"></textarea>
           <span v-if="getElementType(key) === 'span'">{{ settings[key] }}</span>
         </div>
       </li>

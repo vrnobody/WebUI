@@ -8,7 +8,7 @@ local public = "./lua/webui"
 -- confings
 local Logger = require('lua.modules.logger')
 
-local version = "0.0.2.1"
+local version = "0.0.2.2"
 local pageSize = 50
 
 local logLevel = #args > 1 and args[2] or Logger.logLevels.Debug
@@ -386,12 +386,13 @@ function GetLuaVmLog(luavm)
     return Sys:LuaVmGetLog(luavm)
 end
 
-function RunLuaScript(name, script)
+function RunLuaScript(name, script, isLoadClr)
     local luavm = Sys:LuaVmCreate()
     if string.isempty(luavm) then
         return ""
     end
-    Sys:LuaVmRun(luavm, name, script)
+    isLoadClr = isLoadClr == true
+    Sys:LuaVmRun(luavm, name, script, isLoadClr)
     return luavm
 end
 
