@@ -10,6 +10,7 @@ local Logger = require('lua.modules.logger')
 
 local version = "0.0.2.2"
 local pageSize = 50
+local isAllowCors = #args < 1
 
 local logLevel = #args > 1 and args[2] or Logger.logLevels.Debug
 
@@ -705,7 +706,7 @@ end
 local function Main()
     local ver = GetServerVersion()
     print("server.lua v" .. ver)
-    haServ:Create(url, public, Handler, false)
+    haServ:Create(url, public, Handler, isAllowCors)
     print("请打开网址: ", url)
     haServ:Run()
 end
