@@ -1,27 +1,27 @@
 body {
-  padding: 0rem;
-  margin: 0rem;
-  font-size: 1rem;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    padding: 0rem;
+    margin: 0rem;
+    font-size: 1rem;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 #app {
-  width: 100%;
-  height: 100%;
-  padding: 0rem;
-  margin: 0rem;
+    width: 100%;
+    height: 100%;
+    padding: 0rem;
+    margin: 0rem;
 }
 
 .Page {
-  color: #333 !important;
+    color: #333 !important;
 }
 
 .Control {
-  fill: #333 !important;
+    fill: #333 !important;
 }
 
 .v-dropdown-menu__container {
-  min-width: max-content !important;
+    min-width: max-content !important;
 }

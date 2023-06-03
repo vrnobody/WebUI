@@ -6,10 +6,10 @@ import cfg from '@/config.js'
 const lang = cfg.get('lang') || navigator.language
 
 export default createI18n({
-  locale: lang,
-  fallbackLocale: 'en-US',
-  messages: {
-    'zh-CN': zhCN,
-    'en-US': enUS
-  }
+    locale: lang,
+    fallbackLocale: 'en-US',
+    messages: {
+        'zh-CN': zhCN,
+        'en-US': enUS
+    }
 })
