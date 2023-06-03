@@ -7393,7 +7393,7 @@ showdown.subParser('blockQuotes', function (text, options, globals) {
     bq = bq.replace(/(\s*<pre>[^\r]+?<\/pre>)/gm, function (wholeMatch, m1) {
       var pre = m1;
       // attacklab: hack around Konqueror 3.5.4 bug:
-      pre = pre.replace(/^ {2}/mg, '¨0');
+      pre = pre.replace(/^  /mg, '¨0');
       pre = pre.replace(/¨0/g, '');
       return pre;
     });
@@ -12877,7 +12877,7 @@ class AbstractMessageBuffer {
         row: while (chunkIndex < this._chunks.length) {
             const chunk = this._chunks[chunkIndex];
             offset = 0;
-            while (offset < chunk.length) {
+            column: while (offset < chunk.length) {
                 const value = chunk[offset];
                 switch (value) {
                     case CR:
