@@ -1,8 +1,8 @@
 <script setup>
 import { onMounted, onUnmounted, computed, watch, ref } from 'vue'
-import utils from '../../misc/utils.js'
-import store from '../../misc/store.js'
-import config from '../../config';
+import utils from '@/misc/utils.js'
+import store from '@/misc/store.js'
+import config from '@/config'
 
 const t = utils.getTranslator()
 const props = defineProps(['script', 'logPanelVisible'])
@@ -107,7 +107,7 @@ function measureSimilarity(target, snippet) {
       j++
     }
     if (j >= tlen) {
-      break;
+      break
     }
   }
   return score
@@ -129,7 +129,7 @@ function genBestMatchSnippets(prefix) {
 }
 
 const staticCompleter = {
-  identifierRegexps: [/[a-zA-Z_0-9:\.\(\",]/],
+  identifierRegexps: [/[a-zA-Z_0-9:.(",]/],
   getCompletions: function (source, session, pos, prefix, callback) {
     if (session !== editor.session) {
       console.log('staticCompleter: wrong session, pass!')
@@ -162,7 +162,7 @@ function updateStaticSnippets(snippets) {
     let lowers = []
     for (const snippet of staticSnippets) {
       lowers.push(snippet.value.toLowerCase().split(''))
-      if (snippet.meta === "keyword") {
+      if (snippet.meta === 'keyword') {
         snippet['score'] = 100
         keywords.push(snippet)
       }
@@ -200,13 +200,13 @@ function replaceModuleSnippets(snippets) {
   }
 }
 
-let curCode = ""
+let curCode = ''
 function updateModuleSnippets(code) {
   if (!code || code === curCode) {
     return
   }
   curCode = code
-  const cb = function () {
+  const cb = (function () {
     const capture = code
     return function () {
       if (capture !== curCode) {
@@ -215,13 +215,13 @@ function updateModuleSnippets(code) {
       utils.call(replaceModuleSnippets, 'GenLuaModuleSnippets', [capture])
       utils.call(replaceCurAst, 'LuaAnalyzeCode', [capture])
     }
-  }()
+  })()
   setTimeout(cb, 1500)
 }
 
 function initEditor(editor) {
   utils.updateEditorTheme(editor)
-  editor.session.setMode("ace/mode/lua")
+  editor.session.setMode('ace/mode/lua')
 
   updateEditorContent(script.value)
 
@@ -314,19 +314,19 @@ function getWordAtCursor(editor) {
   // https://stackoverflow.com/questions/5173316/finding-the-word-at-a-position-in-javascript
   const pos = editor.getCursorPosition()
   let str = editor.session.getDocument().getLine(pos.row)
-  const col = pos.column;
+  const col = pos.column
 
   // Search for the word's beginning and end.
   let left = str.slice(0, col + 1).search(/\w+$/)
-  let right = str.slice(col).search(/\W/);
+  let right = str.slice(col).search(/\W/)
 
   // The last word in the string is a special case.
   if (right < 0) {
-    return str.slice(left);
+    return str.slice(left)
   }
 
   // Return the word, using the located bounds to extract it from the string.
-  return str.slice(left, right + col);
+  return str.slice(left, right + col)
 }
 
 function getLineNumberFromAst(word) {
@@ -360,7 +360,7 @@ function addCustomCommands(editor) {
     exec: function () {
       gotoDefinition()
     },
-    readOnly: false,
+    readOnly: false
   })
 }
 
@@ -379,7 +379,6 @@ function selectFunction(evt) {
 }
 
 function onKeyDown(e) {
-
   if (!e.ctrlKey) {
     return
   }
@@ -388,17 +387,16 @@ function onKeyDown(e) {
     case '-':
       e.preventDefault()
       moveCursor(false)
-      break;
+      break
     case '=':
       e.preventDefault()
       moveCursor(true)
-      break;
+      break
   }
 }
 
 onMounted(async () => {
-
-  utils.call(updateStaticSnippets, "GetLuaStaticSnippets")
+  utils.call(updateStaticSnippets, 'GetLuaStaticSnippets')
 
   editor = ace.edit('lua-editor-container')
 
@@ -419,22 +417,27 @@ onUnmounted(() => {
   removeCompleter(moduleCompleter)
   utils.showScrollbarY()
 })
-
 </script>
 
 <template>
-  <div class="dark:bg-slate-500 bg-slate-400 mt-1 py-1 px-2 flex">
+  <div class="mt-1 flex bg-slate-400 px-2 py-1 dark:bg-slate-500">
     <label class="px-1">{{ t('vars') }}</label>
-    <select class="dark:bg-slate-600 bg-slate-300 grow h-6 min-w-0" @change="selectGlobalVar($event)"
-      onfocus="this.selectedIndex = -1;">
-      <option v-for="v in globalVarList" :value="v">{{ v }}</option>
+    <select
+      class="h-6 min-w-0 grow bg-slate-300 dark:bg-slate-600"
+      @change="selectGlobalVar($event)"
+      onfocus="this.selectedIndex = -1;"
+    >
+      <option v-for="v in globalVarList" :key="v" :value="v">{{ v }}</option>
     </select>
-    <label class="px-1 ml-2">{{ t('funcs') }}</label>
-    <select class="dark:bg-slate-600 bg-slate-300 grow h-6 min-w-0" @change="selectFunction($event)"
-      onfocus="this.selectedIndex = -1;">
-      <option v-for="v in functionList" :value="v">{{ v }}</option>
+    <label class="ml-2 px-1">{{ t('funcs') }}</label>
+    <select
+      class="h-6 min-w-0 grow bg-slate-300 dark:bg-slate-600"
+      @change="selectFunction($event)"
+      onfocus="this.selectedIndex = -1;"
+    >
+      <option v-for="v in functionList" :key="v" :value="v">{{ v }}</option>
     </select>
-    <button @click="toggleFullScreen" class="px-2 w-6 shrink-0">
+    <button @click="toggleFullScreen" class="w-6 shrink-0 px-2">
       <div v-if="isFullScreen">
         <i class="fas fa-compress-arrows-alt"></i>
       </div>
@@ -442,7 +445,7 @@ onUnmounted(() => {
         <i class="fas fa-expand-arrows-alt"></i>
       </div>
     </button>
-    <button @click="toggleLogPanel" class="px-2 w-6 shrink-0">
+    <button @click="toggleLogPanel" class="w-6 shrink-0 px-2">
       <div v-if="isLogPanelVisible">
         <i class="fas fa-arrow-right"></i>
       </div>
@@ -451,7 +454,7 @@ onUnmounted(() => {
       </div>
     </button>
   </div>
-  <div class="grow mt-1 text-base" id="lua-editor-container"></div>
+  <div class="mt-1 grow text-base" id="lua-editor-container"></div>
 </template>
 
 <style scoped></style>

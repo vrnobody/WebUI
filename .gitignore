@@ -1,6 +1,6 @@
 # edit by nobody
-public/ace-builds
-public/ace-linter
+# /public/ace-builds
+# /public/ace-linter
 
 # Logs
 logs

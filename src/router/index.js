@@ -1,5 +1,4 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-// import CompServers from '../views/Servers.vue'
 
 const router = createRouter({
   // history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,12 +7,12 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('../views/Servers.vue'),
+      component: () => import('@/views/Servers.vue')
     },
     {
       path: '/luna',
       name: 'luna',
-      component: () => import('../views/Luna.vue'),
+      component: () => import('@/views/Luna.vue')
     },
     {
       path: '/import',
@@ -21,7 +20,7 @@ const router = createRouter({
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('../views/Import.vue'),
+      component: () => import('@/views/Import.vue')
     },
     {
       path: '/about',
@@ -29,7 +28,7 @@ const router = createRouter({
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('../views/About.vue'),
+      component: () => import('@/views/About.vue')
     },
     {
       path: '/settings',
@@ -37,7 +36,7 @@ const router = createRouter({
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('../views/Settings.vue'),
+      component: () => import('@/views/Settings.vue')
     },
     {
       path: '/servers',
@@ -45,8 +44,8 @@ const router = createRouter({
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('../views/Servers.vue'),
-    },
+      component: () => import('@/views/Servers.vue')
+    }
   ]
 })
 

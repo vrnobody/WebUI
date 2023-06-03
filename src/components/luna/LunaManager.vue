@@ -1,28 +1,27 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import utils from '../../misc/utils.js'
-import { useI18n } from '@yangss/vue3-i18n'
 import { VueDraggableNext } from 'vue-draggable-next'
 import Tooltips from '@/components/widgets/Tooltips.vue'
+import utils from '@/misc/utils.js'
 
-const { _, t } = useI18n()
+const t = utils.getTranslator()
 
 const coreInfos = ref([])
 const isCoreSettingsEditorVisible = ref(false)
 let curCoreSettings = ref({})
-let curCoreName = ""
+let curCoreName = ''
 let refreshTimer = 0
 
 function coreInfoToTag(coreInfo) {
-  let r = ""
+  let r = ''
   if (coreInfo.isAutorun) {
-    r += "A"
+    r += 'A'
   }
   if (coreInfo.isLoadClr) {
-    r += "C"
+    r += 'C'
   }
   if (coreInfo.isHidden) {
-    r += "H"
+    r += 'H'
   }
   return r.length < 1 ? t('none') : r
 }
@@ -49,7 +48,7 @@ function coreOrderChanged(evt) {
   }
 
   const name = curServ.name || ''
-  utils.call(next, "ChangeLuaCoreIndex", [name, idx])
+  utils.call(next, 'ChangeLuaCoreIndex', [name, idx])
 }
 
 function refresh() {
@@ -133,58 +132,73 @@ onUnmounted(() => {
 
 <template>
   <!-- header -->
-  <div class="left-0 md:left-56 flex fixed top-12 right-0 grow z-10">
-    <div class="dark:bg-slate-500 dark:text-neutral-700 grow bg-slate-400 text-xs text-neutral-600 table h-6">
-      <div class="table-cell py-0 px-1 align-middle text-center w-12">{{ t('status') }}</div>
-      <div class="table-cell py-0 px-1 align-middle text-center w-16">{{ t('index') }}</div>
-      <div class="table-cell py-0 px-1 align-middle text-center">{{ t('name') }}</div>
-      <div class="table-cell py-0 px-1 align-middle text-center w-16">{{ t('tags') }}</div>
-      <div class="table-cell py-0 px-1 align-middle text-center w-28">{{ t('controls') }}</div>
+  <div class="fixed left-0 right-0 top-12 z-10 flex grow md:left-56">
+    <div
+      class="table h-6 grow bg-slate-400 text-xs text-neutral-600 dark:bg-slate-500 dark:text-neutral-700"
+    >
+      <div class="table-cell w-12 px-1 py-0 text-center align-middle">{{ t('status') }}</div>
+      <div class="table-cell w-16 px-1 py-0 text-center align-middle">{{ t('index') }}</div>
+      <div class="table-cell px-1 py-0 text-center align-middle">{{ t('name') }}</div>
+      <div class="table-cell w-16 px-1 py-0 text-center align-middle">{{ t('tags') }}</div>
+      <div class="table-cell w-28 px-1 py-0 text-center align-middle">{{ t('controls') }}</div>
     </div>
   </div>
 
   <!-- empty list -->
   <div v-if="coreInfos.length <= 0" class="flex justify-center">
-    <div class="text-lg mt-8">{{ t('listIsEmpty') }}</div>
+    <div class="mt-8 text-lg">{{ t('listIsEmpty') }}</div>
   </div>
   <!-- body -->
   <div class="flex flex-col">
-    <div class="block w-full h-6"></div>
+    <div class="block h-6 w-full"></div>
     <ul>
       <VueDraggableNext ghost-class="ghost" :list="coreInfos" @change="coreOrderChanged">
-        <li v-for="coreInfo in coreInfos" :key="coreInfo.index" class="dark:odd:bg-slate-600 odd:bg-neutral-200">
-          <div class="cursor-grab grow text-base table w-full h-8">
-            <div class="leading-[0] table-cell py-0 px-1 align-middle text-center w-12">
-              <button v-if="coreInfo.isRunning"
-                class="dark:bg-lime-700 dark:text-neutral-200 bg-lime-500 text-neutral-100 text-xs py-0.5 px-1 rounded cursor-pointer"
-                @click="stopCore(coreInfo.name)">ON</button>
+        <li
+          v-for="coreInfo in coreInfos"
+          :key="coreInfo.index"
+          class="odd:bg-neutral-200 dark:odd:bg-slate-600"
+        >
+          <div class="table h-8 w-full grow cursor-grab text-base">
+            <div class="table-cell w-12 px-1 py-0 text-center align-middle leading-[0]">
+              <button
+                v-if="coreInfo.isRunning"
+                class="cursor-pointer rounded bg-lime-500 px-1 py-0.5 text-xs text-neutral-100 dark:bg-lime-700 dark:text-neutral-200"
+                @click="stopCore(coreInfo.name)"
+              >
+                ON
+              </button>
             </div>
-            <div class="table-cell py-0 px-1 align-middle text-center w-16">{{ coreInfo.index }}</div>
-            <div class="table-cell py-1 px-2 align-middle text-left break-all">
+            <div class="table-cell w-16 px-1 py-0 text-center align-middle">
+              {{ coreInfo.index }}
+            </div>
+            <div class="table-cell break-all px-2 py-1 text-left align-middle">
               <button class="whitespace-pre-wrap text-left" @click="startCore(coreInfo.name)">
                 {{ coreInfo.name }}
               </button>
             </div>
-            <div class="leading-[0] table-cell align-middle text-center w-16">
+            <div class="table-cell w-16 text-center align-middle leading-[0]">
               <div
-                class="dark:bg-cyan-700 bg-cyan-600 dark:text-neutral-300 text-neutral-200 cursor-pointer rounded inline-block text-xs py-0.5 px-1 text-center w-12 text-ellipsis my-0.5 mx-0.5"
-                @click="editCoreSettings(coreInfo.name)">{{ coreInfoToTag(coreInfo) }}</div>
+                class="mx-0.5 my-0.5 inline-block w-12 cursor-pointer text-ellipsis rounded bg-cyan-600 px-1 py-0.5 text-center text-xs text-neutral-200 dark:bg-cyan-700 dark:text-neutral-300"
+                @click="editCoreSettings(coreInfo.name)"
+              >
+                {{ coreInfoToTag(coreInfo) }}
+              </div>
             </div>
-            <div class="table-cell py-0 px-1 align-middle text-center w-28 text-lg">
-              <button class="my-0 mx-1" @click="startCore(coreInfo.name)">
+            <div class="table-cell w-28 px-1 py-0 text-center align-middle text-lg">
+              <button class="mx-1 my-0" @click="startCore(coreInfo.name)">
                 <i class="fas fa-chevron-right"></i>
               </button>
               <Tooltips :css="'mt-6'" :tip="t('restart')">
-                <button class="my-0 mx-1" @click="restartCore(coreInfo.name)">
+                <button class="mx-1 my-0" @click="restartCore(coreInfo.name)">
                   <i class="fas fa-sync"></i>
                 </button>
               </Tooltips>
               <Tooltips :css="'mt-6 right-2'" :tip="t('terminate')">
-                <button class="my-0 mx-1" @click="abortCore(coreInfo.name)">
+                <button class="mx-1 my-0" @click="abortCore(coreInfo.name)">
                   <i class="fas fa-stop-circle"></i>
                 </button>
               </Tooltips>
-              <button class="my-0 mx-1" @click="removeCore(coreInfo.name)">
+              <button class="mx-1 my-0" @click="removeCore(coreInfo.name)">
                 <i class="fas fa-trash-alt"></i>
               </button>
             </div>
@@ -192,47 +206,57 @@ onUnmounted(() => {
         </li>
       </VueDraggableNext>
     </ul>
-    <div class="block grow h-10"></div>
+    <div class="block h-10 grow"></div>
   </div>
 
   <!-- core settings -->
-  <div v-if="isCoreSettingsEditorVisible"
-    class="dark:bg-slate-700 bg-slate-300 left-0 md:left-56 opacity-95 fixed z-50 flex flex-col right-0 bottom-0 p-4 top-0">
-    <div class="dark:bg-slate-600 block grow w-full h-4/5 p-4 bg-neutral-200">
-      <div class="flex items-center h-9">
-        <div class="py-0 px-4 w-24">{{ t('index') }}</div>
-        <div class="flex grow py-0 px-4">
-          <input type="text" v-model="curCoreSettings.index" class="dark:bg-slate-500 bg-neutral-100 grow" />
+  <div
+    v-if="isCoreSettingsEditorVisible"
+    class="fixed bottom-0 left-0 right-0 top-0 z-50 flex flex-col bg-slate-300 p-4 opacity-95 dark:bg-slate-700 md:left-56"
+  >
+    <div class="block h-4/5 w-full grow bg-neutral-200 p-4 dark:bg-slate-600">
+      <div class="flex h-9 items-center">
+        <div class="w-24 px-4 py-0">{{ t('index') }}</div>
+        <div class="flex grow px-4 py-0">
+          <input
+            type="text"
+            v-model="curCoreSettings.index"
+            class="grow bg-neutral-100 dark:bg-slate-500"
+          />
         </div>
       </div>
-      <div class="flex items-center h-9">
-        <div class="py-0 px-4 w-24">{{ t('name') }}</div>
-        <div class="flex grow py-0 px-4">
-          <input type="text" v-model="curCoreSettings.name" class="dark:bg-slate-500 bg-neutral-100 grow" />
+      <div class="flex h-9 items-center">
+        <div class="w-24 px-4 py-0">{{ t('name') }}</div>
+        <div class="flex grow px-4 py-0">
+          <input
+            type="text"
+            v-model="curCoreSettings.name"
+            class="grow bg-neutral-100 dark:bg-slate-500"
+          />
         </div>
       </div>
-      <div class="flex items-center h-9">
-        <div class="py-0 px-4 w-24">{{ t('autorun') }}</div>
-        <div class="flex grow py-0 px-4">
-          <input type="checkbox" v-model="curCoreSettings.isAutorun" class="w-4 h-4" />
+      <div class="flex h-9 items-center">
+        <div class="w-24 px-4 py-0">{{ t('autorun') }}</div>
+        <div class="flex grow px-4 py-0">
+          <input type="checkbox" v-model="curCoreSettings.isAutorun" class="h-4 w-4" />
         </div>
       </div>
-      <div class="flex items-center h-9">
-        <div class="py-0 px-4 w-24">{{ t('hidden') }}</div>
-        <div class="flex grow py-0 px-4">
-          <input type="checkbox" v-model="curCoreSettings.isHidden" class="w-4 h-4" />
+      <div class="flex h-9 items-center">
+        <div class="w-24 px-4 py-0">{{ t('hidden') }}</div>
+        <div class="flex grow px-4 py-0">
+          <input type="checkbox" v-model="curCoreSettings.isHidden" class="h-4 w-4" />
         </div>
       </div>
-      <div class="flex items-center h-9">
-        <div class="py-0 px-4 w-24">{{ t('loadClr') }}</div>
-        <div class="flex grow py-0 px-4">
-          <input type="checkbox" v-model="curCoreSettings.isLoadClr" class="w-4 h-4" />
+      <div class="flex h-9 items-center">
+        <div class="w-24 px-4 py-0">{{ t('loadClr') }}</div>
+        <div class="flex grow px-4 py-0">
+          <input type="checkbox" v-model="curCoreSettings.isLoadClr" class="h-4 w-4" />
         </div>
       </div>
     </div>
-    <div class="flex w-full h-10 justify-center items-end">
-      <button @click="saveCoreSettings" class="my-0 mx-4">{{ t('save') }}</button>
-      <button @click="closeCoreSettingsEditor" class="my-0 mx-4">{{ t('close') }}</button>
+    <div class="flex h-10 w-full items-end justify-center">
+      <button @click="saveCoreSettings" class="mx-4 my-0">{{ t('save') }}</button>
+      <button @click="closeCoreSettingsEditor" class="mx-4 my-0">{{ t('close') }}</button>
     </div>
   </div>
 </template>

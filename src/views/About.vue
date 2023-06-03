@@ -1,9 +1,7 @@
-<script setup>
-
-</script>
+<script setup></script>
 
 <template>
-  <pre class="dark:text-neutral-100 m-4">
+  <pre class="m-4 dark:text-neutral-100">
 <b>WebUI v0.0.2 2023-05</b>
 <a href="https://github.com/vrnobody/WebUI">https://github.com/vrnobody/WebUI</a>
 

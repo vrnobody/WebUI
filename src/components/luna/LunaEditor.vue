@@ -8,7 +8,7 @@ import '@/assets/v-dropdown-menu.css'
 import FileBrowser from '@/components/luna/FileBrowser.vue'
 import Attacher from '@/components/luna/Attacher.vue'
 
-const LuaEditor = defineAsyncComponent(() => import("./LuaEditor.vue"))
+const LuaEditor = defineAsyncComponent(() => import('./LuaEditor.vue'))
 
 const t = utils.getTranslator()
 const scriptName = ref('')
@@ -32,7 +32,7 @@ let logContainer = ref(null)
 
 let logUpdater = 0
 
-let lastScriptContent = ""
+let lastScriptContent = ''
 let lastScriptName = ''
 
 const isTopLevel = computed({
@@ -93,7 +93,7 @@ function closeFileBrowser(isExecCurOp) {
   switch (op) {
     case 'load':
       loadScriptFromFile()
-      break;
+      break
     case 'save':
       saveScriptToFile()
   }
@@ -140,11 +140,15 @@ function loadScriptFromCache() {
     if (lastScriptContent === cur) {
       load(script)
     } else {
-      utils.confirm(t('replaceCurScript'), function () {
-        load(script)
-      }, function () {
-        scriptName.value = lastScriptName
-      })
+      utils.confirm(
+        t('replaceCurScript'),
+        function () {
+          load(script)
+        },
+        function () {
+          scriptName.value = lastScriptName
+        }
+      )
     }
     return
   }
@@ -168,7 +172,6 @@ function updateLog() {
     return
   }
   const next = function (log) {
-
     if (!log) {
       clearInterval(logUpdater)
       return
@@ -206,7 +209,6 @@ function startLogUpdater() {
 }
 
 function runScript() {
-
   const name = (isEditingLocalFile.value ? filename.value : scriptName.value) || ''
   const script = scriptContent.value || ''
   const loadClr = isLoadClr.value
@@ -245,7 +247,6 @@ function newScript() {
 }
 
 function onKeyDown(e) {
-
   if (e.ctrlKey) {
     switch (e.key) {
       case 's':
@@ -265,19 +266,19 @@ function onKeyDown(e) {
     case 'F5':
       runScript()
       e.preventDefault()
-      break;
+      break
     case 'F6':
       stopScript()
       e.preventDefault()
-      break;
+      break
     case 'F7':
       abortScript()
       e.preventDefault()
-      break;
+      break
     case 'F8':
       clearLog()
       e.preventDefault()
-      break;
+      break
   }
 }
 
@@ -330,19 +331,37 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="dark:bg-slate-800 bg-slate-300 p-2 fixed flex flex-col right-0 bottom-0"
-    :class="{ 'z-50 left-0 right-0 top-0': isTopLevel, 'z-20 top-12 pt-0 left-0 md:left-56': !isTopLevel }">
-
+  <div
+    class="fixed bottom-0 right-0 flex flex-col bg-slate-300 p-2 dark:bg-slate-800"
+    :class="{
+      'left-0 right-0 top-0 z-50': isTopLevel,
+      'left-0 top-12 z-20 pt-0 md:left-56': !isTopLevel
+    }"
+  >
     <!-- toolstrip -->
-    <div class="flex w-full dark:bg-slate-500 bg-slate-400 h-10 items-center text-base px-2">
+    <div class="flex h-10 w-full items-center bg-slate-400 px-2 text-base dark:bg-slate-500">
       <label class="mx-1 shrink-0">{{ t(isEditingLocalFile ? 'file' : 'name') }}</label>
-      <div class="grow flex mx-1 overflow-hidden">
-        <span v-if="isEditingLocalFile" class="w-full px-2 whitespace-nowrap overflow-hidden text-ellipsis">{{ filename
-        }}</span>
-        <input v-else type="text" class="w-full px-2 dark:bg-slate-600 bg-neutral-100" list="scriptname-datalist"
-          v-model="scriptName" @change="loadScriptFromCache" />
+      <div class="mx-1 flex grow overflow-hidden">
+        <span
+          v-if="isEditingLocalFile"
+          class="w-full overflow-hidden text-ellipsis whitespace-nowrap px-2"
+          >{{ filename }}</span
+        >
+        <input
+          v-else
+          type="text"
+          class="w-full bg-neutral-100 px-2 dark:bg-slate-600"
+          list="scriptname-datalist"
+          v-model="scriptName"
+          @change="loadScriptFromCache"
+        />
         <datalist id="scriptname-datalist" class="dark:bg-slate-600">
-          <option v-for="(_, key) in scriptDb" :value="key" class="dark:bg-slate-600"></option>
+          <option
+            v-for="(_, key) in scriptDb"
+            :key="key"
+            :value="key"
+            class="dark:bg-slate-600"
+          ></option>
         </datalist>
       </div>
       <DropdownMenu withDropdownCloser>
@@ -350,13 +369,22 @@ onUnmounted(() => {
           <button class="mx-1"><i class="fas fa-tools"></i></button>
         </template>
         <template #body>
-          <ul class="dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 p-2">
-            <li><button @click="newScript" dropdown-closer>{{ t('newScript') }}</button></li>
-            <li v-if="isEditingLocalFile"><button @click="switchEditorMode" dropdown-closer>{{ t('switchEditorMode')
-            }}</button></li>
-            <li><button @click="showFileBrowser('load')" dropdown-closer>{{ t('loadFile') }}</button></li>
-            <li><button @click="showFileBrowser('save')" dropdown-closer>{{ t('saveAs') }}</button></li>
-            <li><button @click="openAttacher" dropdown-closer>{{ t('openAttacher') }}</button></li>
+          <ul class="bg-slate-300 p-2 text-neutral-700 dark:bg-slate-600 dark:text-neutral-300">
+            <li>
+              <button @click="newScript" dropdown-closer>{{ t('newScript') }}</button>
+            </li>
+            <li v-if="isEditingLocalFile">
+              <button @click="switchEditorMode" dropdown-closer>{{ t('switchEditorMode') }}</button>
+            </li>
+            <li>
+              <button @click="showFileBrowser('load')" dropdown-closer>{{ t('loadFile') }}</button>
+            </li>
+            <li>
+              <button @click="showFileBrowser('save')" dropdown-closer>{{ t('saveAs') }}</button>
+            </li>
+            <li>
+              <button @click="openAttacher" dropdown-closer>{{ t('openAttacher') }}</button>
+            </li>
           </ul>
         </template>
       </DropdownMenu>
@@ -367,35 +395,53 @@ onUnmounted(() => {
       <button class="mx-1" @click="clearLog"><i class="fas fa-broom"></i></button>
       <Tooltips :tip="t('allowImportClrLibs')" :css="'right-4 mt-6'">
         <div class="mx-1 inline-flex items-center">
-          <input type="checkbox" v-model="isLoadClr" name="is-load-clr" class="w-4 h-4 mr-1" />
+          <input type="checkbox" v-model="isLoadClr" name="is-load-clr" class="mr-1 h-4 w-4" />
           <label for="is-load-clr">CLR</label>
         </div>
       </Tooltips>
     </div>
 
     <!-- edit area -->
-    <div class="flex grow w-full flex-row">
-      <div class="flex w-[70%] min-w-[20%] overflow-auto resize-x flex-col" :class="{ 'grow': !isLogPanelVisible }">
-        <LuaEditor v-model:script="scriptContent" @onFullScreen="onFullScreenHandler"
-          v-model:logPanelVisible="isLogPanelVisible" />
+    <div class="flex w-full grow flex-row">
+      <div
+        class="flex w-[70%] min-w-[20%] resize-x flex-col overflow-auto"
+        :class="{ grow: !isLogPanelVisible }"
+      >
+        <LuaEditor
+          v-model:script="scriptContent"
+          @onFullScreen="onFullScreenHandler"
+          v-model:logPanelVisible="isLogPanelVisible"
+        />
       </div>
-      <div v-if="isLogPanelVisible" class="grow ml-1 mt-1 flex">
-        <textarea readonly class="dark:bg-slate-600 bg-neutral-200 grow p-1 resize-none" v-model="logContent"
-          ref="logContainer"></textarea>
+      <div v-if="isLogPanelVisible" class="ml-1 mt-1 flex grow">
+        <textarea
+          readonly
+          class="grow resize-none bg-neutral-200 p-1 dark:bg-slate-600"
+          v-model="logContent"
+          ref="logContainer"
+        ></textarea>
       </div>
     </div>
 
     <!-- attacher -->
-    <div v-if="isAttacherVisiable"
-      class="dark:bg-slate-700 bg-slate-300 dark:text-neutral-300 text-neutral-700 fixed flex flex-col p-4 z-50 left-0 right-0 top-0 bottom-0">
+    <div
+      v-if="isAttacherVisiable"
+      class="fixed bottom-0 left-0 right-0 top-0 z-50 flex flex-col bg-slate-300 p-4 text-neutral-700 dark:bg-slate-700 dark:text-neutral-300"
+    >
       <Attacher @onAttach="attachTo" @onClose="closeAttacher" />
     </div>
 
     <!-- file browser -->
-    <div v-if="isFileBrowserVisiable"
-      class="dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 fixed flex flex-col p-4 z-50 left-0 right-0 top-0 bottom-0">
-      <FileBrowser v-model:filename="filename" v-model:op="curOp" @onSave="closeFileBrowser(true)"
-        @onClose="closeFileBrowser(false)" />
+    <div
+      v-if="isFileBrowserVisiable"
+      class="fixed bottom-0 left-0 right-0 top-0 z-50 flex flex-col bg-slate-300 p-4 text-neutral-700 dark:bg-slate-600 dark:text-neutral-300"
+    >
+      <FileBrowser
+        v-model:filename="filename"
+        v-model:op="curOp"
+        @onSave="closeFileBrowser(true)"
+        @onClose="closeFileBrowser(false)"
+      />
     </div>
   </div>
 </template>

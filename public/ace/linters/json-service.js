@@ -7211,7 +7211,7 @@ class AbstractMessageBuffer {
         row: while (chunkIndex < this._chunks.length) {
             const chunk = this._chunks[chunkIndex];
             offset = 0;
-            column: while (offset < chunk.length) {
+            while (offset < chunk.length) {
                 const value = chunk[offset];
                 switch (value) {
                     case CR:

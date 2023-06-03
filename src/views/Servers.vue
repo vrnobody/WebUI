@@ -4,12 +4,12 @@ import config from '@/config.js'
 import { onMounted, onUnmounted, ref, defineAsyncComponent, nextTick } from 'vue'
 import { VueDraggableNext } from 'vue-draggable-next'
 
-import ConfigEditor from '../components/servers/ConfigEditor.vue'
-import LogViewer from '../components/servers/LogViewer.vue'
-import SettingsEditor from '../components/servers/SettingsEditor.vue'
+import ConfigEditor from '@/components/servers/ConfigEditor.vue'
+import LogViewer from '@/components/servers/LogViewer.vue'
+import SettingsEditor from '@/components/servers/SettingsEditor.vue'
 import BatchSettingsEditor from '@/components/servers/BatchSettingsEditor.vue'
-import FadeTransition from '../components/transitions/FadeTransition.vue'
-import LoadingWidget from '../components/widgets/Loading.vue'
+import FadeTransition from '@/components/transitions/FadeTransition.vue'
+import LoadingWidget from '@/components/widgets/Loading.vue'
 import QrcodeViewer from '@/components/servers/QrcodeViewer.vue'
 
 import Tooltips from '@/components/widgets/Tooltips.vue'
@@ -17,16 +17,15 @@ import Tooltips from '@/components/widgets/Tooltips.vue'
 import DropdownMenu from 'v-dropdown-menu'
 import '@/assets/v-dropdown-menu.css'
 
-const VPagination = defineAsyncComponent(() => import("@hennge/vue3-pagination"))
+const VPagination = defineAsyncComponent(() => import('@hennge/vue3-pagination'))
 
 const t = utils.getTranslator()
-
 
 const curPageNum = ref(1)
 const curPageNumText = ref('1')
 const pages = ref(0)
-const searchType = ref("summary")
-const searchKeyword = ref("")
+const searchType = ref('summary')
+const searchKeyword = ref('')
 const isLoading = ref(true)
 const curServUid = ref('')
 const curServTitle = ref('')
@@ -45,7 +44,7 @@ const hWnds = {
   configEditor: ref(false),
   settingsEditor: ref(false),
   qrCodeViwer: ref(false),
-  batchSettingsEditor: ref(false),
+  batchSettingsEditor: ref(false)
 }
 
 function saveSelectionLater() {
@@ -71,7 +70,7 @@ function saveSelectionLater() {
       return
     }
     utils.call(next, 'ChangeSelection', [cs])
-  }, 1000);
+  }, 1000)
 }
 
 function selectAll(isCurPage) {
@@ -120,14 +119,14 @@ function sortSelectedBy(condition) {
   switch (condition) {
     case 'time':
       fn = 'SortSelectedByModifyTime'
-      break;
+      break
     case 'summary':
       fn = 'SortSelectedBySummary'
-      break;
+      break
     case 'latency':
-      break;
+      break
     default:
-      break;
+      break
   }
   utils.call(refresh, fn)
 }
@@ -224,15 +223,15 @@ function deleteServer(uid, name) {
 }
 
 function stopServ(uid) {
-  utils.call(refresh, "StopServ", [uid])
+  utils.call(refresh, 'StopServ', [uid])
 }
 
 function restartServ(uid) {
-  utils.call(refresh, "RestartServ", [uid || '', true])
+  utils.call(refresh, 'RestartServ', [uid || '', true])
 }
 
 function restartOneServ(uid) {
-  utils.call(refresh, "RestartServ", [uid || '', false])
+  utils.call(refresh, 'RestartServ', [uid || '', false])
 }
 
 function search() {
@@ -242,7 +241,6 @@ function search() {
 
 let lastRefreshTimestamp = -1
 function refresh(isScrollToTop) {
-
   if (isRefreshing) {
     setTimeout(() => {
       refresh(isScrollToTop)
@@ -273,13 +271,13 @@ function refresh(isScrollToTop) {
       if (lastRefreshTimestamp == now) {
         refresh()
       }
-    }, 2000);
+    }, 2000)
   }
 
-  utils.call(next, "GetSerializedServers", [
+  utils.call(next, 'GetSerializedServers', [
     curPageNum.value,
     searchType.value || '',
-    searchKeyword.value,
+    searchKeyword.value
   ])
 }
 
@@ -311,7 +309,7 @@ function servOrderChanged(evt) {
   }
 
   const uid = curServ.uid || ''
-  utils.call(next, "ChangeServIndex", [uid, idx])
+  utils.call(next, 'ChangeServIndex', [uid, idx])
 }
 
 function getServTitleByUid(uid) {
@@ -361,14 +359,14 @@ function copyShareLink(uid) {
     utils.copyToClipboard(link)
     Swal.fire(t('copied'))
   }
-  utils.call(next, "GetShareLink", [uid])
+  utils.call(next, 'GetShareLink', [uid])
 }
 
 function getInboundAndModifiedInfo(serv) {
   const inbAddr = serv['inbound']
   const tick = serv['modified'] * 1000
   const date = new Date(tick)
-  const lang = config.get("lang") || navigator.language
+  const lang = config.get('lang') || navigator.language
   return inbAddr + '\n' + date.toLocaleString(lang)
 }
 
@@ -389,107 +387,183 @@ onMounted(() => {
   refresh()
 })
 
-onUnmounted(() => {
-})
+onUnmounted(() => {})
 </script>
 
 <template>
   <!-- toolstrip -->
-  <div class="md:left-56 left-8 top-0 h-12 py-0 px-4 flex grow justify-left items-center fixed z-20">
+  <div
+    class="justify-left fixed left-8 top-0 z-20 flex h-12 grow items-center px-4 py-0 md:left-56"
+  >
     <div class="hidden sm:flex">
-      <select v-model="searchType"
-        class="dark:bg-slate-600 dark:text-neutral-300 bg-neutral-200 border-neutral-400 border w-20 md:w-24 inline-block">
+      <select
+        v-model="searchType"
+        class="inline-block w-20 border border-neutral-400 bg-neutral-200 dark:bg-slate-600 dark:text-neutral-300 md:w-24"
+      >
         <option value="summary" selected>{{ t('summary') }}</option>
         <option value="title">{{ t('title') }}</option>
         <option value="tags">{{ t('tags') }}</option>
         <option value="index">{{ t('index') }}</option>
       </select>
       <div class="relative">
-        <input v-model="searchKeyword" @click="$event.target.select()" @keyup.enter="search" type="text"
-          class="dark:bg-slate-500 bg-neutral-50 w-40 md:w-48 my-0 mx-4 px-1" :placeholder="t('search')" />
-        <div class="dark:text-neutral-700 absolute m-0 right-6 top-0 text-neutral-300">
+        <input
+          v-model="searchKeyword"
+          @click="$event.target.select()"
+          @keyup.enter="search"
+          type="text"
+          class="mx-4 my-0 w-40 bg-neutral-50 px-1 dark:bg-slate-500 md:w-48"
+          :placeholder="t('search')"
+        />
+        <div class="absolute right-6 top-0 m-0 text-neutral-300 dark:text-neutral-700">
           <button @click="clearSearchKeyword"><i class="fas fa-search"></i></button>
         </div>
       </div>
     </div>
-    <div class="dark:bg-slate-500 bg-slate-200 h-3/4 w-0.5 m-1"></div>
-    <div class="m-0 text-2xl shrink-0">
+    <div class="m-1 h-3/4 w-0.5 bg-slate-200 dark:bg-slate-500"></div>
+    <div class="m-0 shrink-0 text-2xl">
       <DropdownMenu withDropdownCloser>
         <template #trigger>
-          <button class="my-0 mx-1"><i class="fas fa-check-circle"></i></button>
+          <button class="mx-1 my-0"><i class="fas fa-check-circle"></i></button>
         </template>
         <template #body>
-          <ul class="min-w-[10rem] dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-base p-2">
+          <ul
+            class="min-w-[10rem] bg-slate-300 p-2 text-base text-neutral-700 dark:bg-slate-600 dark:text-neutral-300"
+          >
             <li>
-              <span class="text-sm dark:text-neutral-400 text-neutral-500">{{ t('curPage') }}</span>
+              <span class="text-sm text-neutral-500 dark:text-neutral-400">{{ t('curPage') }}</span>
             </li>
             <li>
-              <hr>
+              <hr />
             </li>
-            <li><button @click="selectAll(true)" dropdown-closer>{{ t('selectAll') }}</button></li>
-            <li><button @click="invertSelection(true)" dropdown-closer>{{ t('invertSelection') }}</button></li>
-            <li><button @click="selectNone(true)" dropdown-closer>{{ t('selectNone') }}</button></li>
+            <li>
+              <button @click="selectAll(true)" dropdown-closer>{{ t('selectAll') }}</button>
+            </li>
+            <li>
+              <button @click="invertSelection(true)" dropdown-closer>
+                {{ t('invertSelection') }}
+              </button>
+            </li>
+            <li>
+              <button @click="selectNone(true)" dropdown-closer>{{ t('selectNone') }}</button>
+            </li>
             <li class="h-2"></li>
-            <li> <span class="text-sm dark:text-neutral-400 text-neutral-500">{{ t('global') }}</span> </li>
             <li>
-              <hr>
+              <span class="text-sm text-neutral-500 dark:text-neutral-400">{{ t('global') }}</span>
             </li>
-            <li><button @click="selectAll(false)" dropdown-closer>{{ t('selectAll') }}</button></li>
-            <li><button @click="invertSelection(false)" dropdown-closer>{{ t('invertSelection') }}</button></li>
-            <li><button @click="selectNone(false)" dropdown-closer>{{ t('selectNone') }}</button></li>
-            <li><button @click="selectTimeoutGlobal()" dropdown-closer>{{ t('selectTimeout') }}</button></li>
+            <li>
+              <hr />
+            </li>
+            <li>
+              <button @click="selectAll(false)" dropdown-closer>{{ t('selectAll') }}</button>
+            </li>
+            <li>
+              <button @click="invertSelection(false)" dropdown-closer>
+                {{ t('invertSelection') }}
+              </button>
+            </li>
+            <li>
+              <button @click="selectNone(false)" dropdown-closer>{{ t('selectNone') }}</button>
+            </li>
+            <li>
+              <button @click="selectTimeoutGlobal()" dropdown-closer>
+                {{ t('selectTimeout') }}
+              </button>
+            </li>
           </ul>
         </template>
       </DropdownMenu>
       <DropdownMenu withDropdownCloser>
         <template #trigger>
-          <button class="my-0 mx-1"><i class="fas fa-sort-alpha-down"></i></button>
+          <button class="mx-1 my-0"><i class="fas fa-sort-alpha-down"></i></button>
         </template>
         <template #body>
-          <ul class="min-w-[10rem] dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-base p-2">
-            <li><button @click="sortSelectedBy('latency')" dropdown-closer>{{ t('sortSelectedByLatency') }}</button></li>
-            <li><button @click="sortSelectedBy('time')" dropdown-closer>{{ t('sortSelectedByModifyTime') }}</button></li>
-            <li><button @click="sortSelectedBy('summary')" dropdown-closer>{{ t('sortSelectedBySummary') }}</button></li>
+          <ul
+            class="min-w-[10rem] bg-slate-300 p-2 text-base text-neutral-700 dark:bg-slate-600 dark:text-neutral-300"
+          >
+            <li>
+              <button @click="sortSelectedBy('latency')" dropdown-closer>
+                {{ t('sortSelectedByLatency') }}
+              </button>
+            </li>
+            <li>
+              <button @click="sortSelectedBy('time')" dropdown-closer>
+                {{ t('sortSelectedByModifyTime') }}
+              </button>
+            </li>
+            <li>
+              <button @click="sortSelectedBy('summary')" dropdown-closer>
+                {{ t('sortSelectedBySummary') }}
+              </button>
+            </li>
           </ul>
         </template>
       </DropdownMenu>
       <DropdownMenu withDropdownCloser>
         <template #trigger>
-          <button class="my-0 mx-1"><i class="fas fa-angle-double-down"></i></button>
+          <button class="mx-1 my-0"><i class="fas fa-angle-double-down"></i></button>
         </template>
         <template #body>
-          <ul class="min-w-[10rem] dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-base p-2">
-            <li><button @click="copyShareLinkOfSelectedServers" dropdown-closer>{{ t('copyShareLinks') }}</button></li>
-            <li><button @click="openBatchSettingsEditor" dropdown-closer>{{ t('modifySelected') }}</button></li>
-            <li><button @click="runLatencyTestOnSelectedServers" dropdown-closer>{{ t('runLatencyTest') }}</button></li>
-            <li><button @click="stopLatencyTest" dropdown-closer>{{ t('stopLatencyTest') }}</button></li>
-            <li><button @click="deleteSelected" dropdown-closer>{{ t('deleteSelectedServers') }}</button></li>
+          <ul
+            class="min-w-[10rem] bg-slate-300 p-2 text-base text-neutral-700 dark:bg-slate-600 dark:text-neutral-300"
+          >
+            <li>
+              <button @click="copyShareLinkOfSelectedServers" dropdown-closer>
+                {{ t('copyShareLinks') }}
+              </button>
+            </li>
+            <li>
+              <button @click="openBatchSettingsEditor" dropdown-closer>
+                {{ t('modifySelected') }}
+              </button>
+            </li>
+            <li>
+              <button @click="runLatencyTestOnSelectedServers" dropdown-closer>
+                {{ t('runLatencyTest') }}
+              </button>
+            </li>
+            <li>
+              <button @click="stopLatencyTest" dropdown-closer>{{ t('stopLatencyTest') }}</button>
+            </li>
+            <li>
+              <button @click="deleteSelected" dropdown-closer>
+                {{ t('deleteSelectedServers') }}
+              </button>
+            </li>
           </ul>
         </template>
       </DropdownMenu>
     </div>
-    <div class="dark:bg-slate-500 bg-slate-200 h-3/4 w-0.5 m-1"></div>
-    <div class="m-0 text-2xl shrink-0">
+    <div class="m-1 h-3/4 w-0.5 bg-slate-200 dark:bg-slate-500"></div>
+    <div class="m-0 shrink-0 text-2xl">
       <Tooltips :css="'mt-8'" :tip="t('newConfig')">
-        <button @click="openWindow(hWnds.configEditor, null)" class="my-0 mx-1"><i class="fas fa-plus"></i></button>
+        <button @click="openWindow(hWnds.configEditor, null)" class="mx-1 my-0">
+          <i class="fas fa-plus"></i>
+        </button>
       </Tooltips>
       <Tooltips :css="'mt-8'" :tip="t('viewLogs')">
-        <button @click="openWindow(hWnds.logViwer, null)" class="my-0 mx-1"><i class="fas fa-file-alt"></i></button>
+        <button @click="openWindow(hWnds.logViwer, null)" class="mx-1 my-0">
+          <i class="fas fa-file-alt"></i>
+        </button>
       </Tooltips>
     </div>
   </div>
 
   <!-- header -->
-  <div class="left-0 md:left-56 flex fixed top-12 right-0 grow z-10">
-    <div class="dark:bg-slate-500 dark:text-neutral-700 grow bg-slate-400 text-xs text-neutral-600 table h-6">
-      <div class="table-cell py-0 px-1 align-middle text-center w-12">{{ t('status') }}</div>
-      <div class="table-cell py-0 px-1 align-middle text-center w-12">{{ t('select') }}</div>
-      <div class="table-cell py-0 px-1 align-middle text-center w-16">{{ t('index') }}</div>
-      <div class="table-cell py-0 px-1 align-middle text-center">{{ t('title') }}</div>
-      <div class="hidden sm:table-cell  py-0 px-1 align-middle text-center w-60 lg:w-[28%]">{{ t('summary') }}
+  <div class="fixed left-0 right-0 top-12 z-10 flex grow md:left-56">
+    <div
+      class="table h-6 grow bg-slate-400 text-xs text-neutral-600 dark:bg-slate-500 dark:text-neutral-700"
+    >
+      <div class="table-cell w-12 px-1 py-0 text-center align-middle">{{ t('status') }}</div>
+      <div class="table-cell w-12 px-1 py-0 text-center align-middle">{{ t('select') }}</div>
+      <div class="table-cell w-16 px-1 py-0 text-center align-middle">{{ t('index') }}</div>
+      <div class="table-cell px-1 py-0 text-center align-middle">{{ t('title') }}</div>
+      <div class="hidden w-60 px-1 py-0 text-center align-middle sm:table-cell lg:w-[28%]">
+        {{ t('summary') }}
       </div>
-      <div class="hidden lg:table-cell py-0 px-1 align-middle text-center w-56">{{ t('tags') }}</div>
-      <div class="table-cell py-0 px-1 align-middle text-center w-24">{{ t('controls') }}</div>
+      <div class="hidden w-56 px-1 py-0 text-center align-middle lg:table-cell">
+        {{ t('tags') }}
+      </div>
+      <div class="table-cell w-24 px-1 py-0 text-center align-middle">{{ t('controls') }}</div>
     </div>
   </div>
 
@@ -498,71 +572,93 @@ onUnmounted(() => {
 
   <!-- empty list -->
   <div v-if="servsInfo.length <= 0" class="flex justify-center">
-    <div v-if="!isLoading" class="text-lg mt-8">{{ t('listIsEmpty') }}</div>
+    <div v-if="!isLoading" class="mt-8 text-lg">{{ t('listIsEmpty') }}</div>
   </div>
 
   <!-- servers list -->
   <div v-else class="flex flex-col">
-    <div class="block w-full h-6"></div>
+    <div class="block h-6 w-full"></div>
     <ul>
       <VueDraggableNext ghost-class="ghost" :list="servsInfo" @change="servOrderChanged">
-        <li v-for="serv in servsInfo" :key="serv.uid" class="dark:odd:bg-slate-600 odd:bg-neutral-200">
-          <div class="cursor-grab grow text-base table w-full h-8">
-            <div class="leading-[0] table-cell py-0 px-1 align-middle text-center w-12">
-              <button v-if="serv.on"
-                class="dark:bg-lime-700 dark:text-neutral-200 bg-lime-500 text-neutral-100 text-xs py-0.5 px-1 rounded cursor-pointer"
-                @click="stopServ(serv.uid)">ON</button>
+        <li
+          v-for="serv in servsInfo"
+          :key="serv.uid"
+          class="odd:bg-neutral-200 dark:odd:bg-slate-600"
+        >
+          <div class="table h-8 w-full grow cursor-grab text-base">
+            <div class="table-cell w-12 px-1 py-0 text-center align-middle leading-[0]">
+              <button
+                v-if="serv.on"
+                class="cursor-pointer rounded bg-lime-500 px-1 py-0.5 text-xs text-neutral-100 dark:bg-lime-700 dark:text-neutral-200"
+                @click="stopServ(serv.uid)"
+              >
+                ON
+              </button>
             </div>
-            <div class="leading-[0] table-cell py-0 px-1 align-middle text-center w-12">
-              <input type="checkbox" v-model="serv.selected" class="inline-block w-4 h-4" @change="saveSelectionLater" />
+            <div class="table-cell w-12 px-1 py-0 text-center align-middle leading-[0]">
+              <input
+                type="checkbox"
+                v-model="serv.selected"
+                class="inline-block h-4 w-4"
+                @change="saveSelectionLater"
+              />
             </div>
-            <div class="table-cell py-0 px-1 align-middle text-center w-16">{{ serv['index'] }}</div>
-            <div class="table-cell py-1 px-2 align-middle text-left break-all">
+            <div class="table-cell w-16 px-1 py-0 text-center align-middle">
+              {{ serv['index'] }}
+            </div>
+            <div class="table-cell break-all px-2 py-1 text-left align-middle">
               <Tooltips :css="'ml-[3rem] mt-8'" :tip="getInboundAndModifiedInfo(serv)">
                 <button @click="restartServ(serv.uid)" class="whitespace-pre-wrap text-left">
                   {{ serv['name'] }}
                 </button>
               </Tooltips>
             </div>
-            <div class="hidden sm:table-cell lg:w-[28%] py-1 px-2 align-middle text-left break-all w-60">{{
-              serv['summary']
-            }}
+            <div
+              class="hidden w-60 break-all px-2 py-1 text-left align-middle sm:table-cell lg:w-[28%]"
+            >
+              {{ serv['summary'] }}
             </div>
-            <div class="hidden lg:table-cell py-1 px-2 align-middle text-left break-all w-56">
+            <div class="hidden w-56 break-all px-2 py-1 text-left align-middle lg:table-cell">
               <div class="flex flex-wrap justify-start">
-                <div v-if="countTags(serv.tags) < 1" class="text-base py-0 px-1 cursor-pointer text-blue-400"
-                  @click="openWindow(hWnds.settingsEditor, serv.uid)">
+                <div
+                  v-if="countTags(serv.tags) < 1"
+                  class="cursor-pointer px-1 py-0 text-base text-blue-400"
+                  @click="openWindow(hWnds.settingsEditor, serv.uid)"
+                >
                   <i class="fas fa-tags"></i>
                 </div>
-                <div v-for="tagName in tagNames" class="flex">
-                  <div v-if="serv.tags[tagName]"
-                    class="dark:bg-cyan-700 bg-cyan-600 dark:text-neutral-300 text-neutral-200 cursor-pointer rounded inline-block text-xs py-0.5 px-1 max-w-[4.5rem] text-ellipsis overflow-hidden whitespace-nowrap my-0.5 mx-0.5"
-                    @click="openWindow(hWnds.settingsEditor, serv.uid)">{{ tagName == 'isAutoRun' ? 'A' :
-                      serv.tags[tagName] }}
+                <div v-for="tagName in tagNames" :key="tagName" class="flex">
+                  <div
+                    v-if="serv.tags[tagName]"
+                    class="mx-0.5 my-0.5 inline-block max-w-[4.5rem] cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap rounded bg-cyan-600 px-1 py-0.5 text-xs text-neutral-200 dark:bg-cyan-700 dark:text-neutral-300"
+                    @click="openWindow(hWnds.settingsEditor, serv.uid)"
+                  >
+                    {{ tagName == 'isAutoRun' ? 'A' : serv.tags[tagName] }}
                   </div>
                 </div>
               </div>
             </div>
-            <div class="table-cell py-0 px-1 align-middle text-center w-24">
+            <div class="table-cell w-24 px-1 py-0 text-center align-middle">
               <Tooltips :css="'mt-8'" :tip="t('single')">
-                <button class="text-xl my-0 mx-1" @click="restartServ(serv.uid)">
+                <button class="mx-1 my-0 text-xl" @click="restartServ(serv.uid)">
                   <i class="fas fa-angle-right"></i>
                 </button>
               </Tooltips>
               <Tooltips :css="'mt-8 right-2'" :tip="t('parallel')">
-                <button class="text-xl my-0 mx-1" @click="restartOneServ(serv.uid)">
+                <button class="mx-1 my-0 text-xl" @click="restartOneServ(serv.uid)">
                   <i class="fas fa-angle-double-right"></i>
                 </button>
               </Tooltips>
               <DropdownMenu :direction="'right'" withDropdownCloser>
                 <template #trigger>
-                  <button class="text-xl my-0 mx-1">
+                  <button class="mx-1 my-0 text-xl">
                     <i class="fas fa-bars"></i>
                   </button>
                 </template>
                 <template #body>
                   <ul
-                    class="min-w-[7rem] dark:bg-slate-600 bg-slate-300 dark:text-neutral-300 text-neutral-700 text-sm text-left p-2 right-4">
+                    class="right-4 min-w-[7rem] bg-slate-300 p-2 text-left text-sm text-neutral-700 dark:bg-slate-600 dark:text-neutral-300"
+                  >
                     <li>
                       <button @click="openWindow(hWnds.configEditor, serv.uid)" dropdown-closer>
                         {{ t('editConfig') }}
@@ -606,16 +702,26 @@ onUnmounted(() => {
         </li>
       </VueDraggableNext>
     </ul>
-    <div class="block grow h-14"></div>
+    <div class="block h-14 grow"></div>
   </div>
 
-  <div class="dark:bg-slate-500 bg-slate-400 flex items-center z-10 text-neutral-800 text-sm fixed bottom-0 right-0 px-2">
+  <div
+    class="fixed bottom-0 right-0 z-10 flex items-center bg-slate-400 px-2 text-sm text-neutral-800 dark:bg-slate-500"
+  >
     <!-- pager -->
     <div class="inline-flex" v-if="pages > 1">
-      <VPagination v-model="curPageNum" :pages="pages" active-color="#DCEDFF" @update:modelValue="refresh(true)" />
-      <input v-model="curPageNumText"
-        class="inline-block dark:bg-slate-200 bg-slate-200 text-center text-sm my-1 mx-2 w-12"
-        @click="$event.target.select()" @keyup.enter="jumpToPage" />
+      <VPagination
+        v-model="curPageNum"
+        :pages="pages"
+        active-color="#DCEDFF"
+        @update:modelValue="refresh(true)"
+      />
+      <input
+        v-model="curPageNumText"
+        class="mx-2 my-1 inline-block w-12 bg-slate-200 text-center text-sm dark:bg-slate-200"
+        @click="$event.target.select()"
+        @keyup.enter="jumpToPage"
+      />
     </div>
     <!-- counter -->
     <div class="inline-flex py-1">
@@ -627,17 +733,38 @@ onUnmounted(() => {
 
   <!-- popup window -->
   <FadeTransition>
-    <div v-if="isShowPopWindow()"
-      class="transition-transform dark:bg-slate-700 bg-slate-300 left-0 md:left-56 opacity-95 fixed z-50 flex flex-col right-0 bottom-0 p-4 top-0">
-      <SettingsEditor v-if="hWnds.settingsEditor.value" @onClose="closeWindow(hWnds.settingsEditor)"
-        v-model:uid="curServUid" v-model:title="curServTitle" />
-      <ConfigEditor v-if="hWnds.configEditor.value" @onClose="closeWindow(hWnds.configEditor)" v-model:uid="curServUid"
-        v-model:title="curServTitle" />
-      <LogViewer v-if="hWnds.logViwer.value" @onClose="closeWindow(hWnds.logViwer)" v-model:uid="curServUid"
-        v-model:title="curServTitle" />
-      <QrcodeViewer v-if="hWnds.qrCodeViwer.value" v-model:title="curServTitle" v-model:uid="curServUid"
-        @onClose="closeWindow(hWnds.qrCodeViwer)" />
-      <BatchSettingsEditor v-if="hWnds.batchSettingsEditor.value" @onClose="closeWindow(hWnds.batchSettingsEditor)" />
+    <div
+      v-if="isShowPopWindow()"
+      class="fixed bottom-0 left-0 right-0 top-0 z-50 flex flex-col bg-slate-300 p-4 opacity-95 transition-transform dark:bg-slate-700 md:left-56"
+    >
+      <SettingsEditor
+        v-if="hWnds.settingsEditor.value"
+        @onClose="closeWindow(hWnds.settingsEditor)"
+        v-model:uid="curServUid"
+        v-model:title="curServTitle"
+      />
+      <ConfigEditor
+        v-if="hWnds.configEditor.value"
+        @onClose="closeWindow(hWnds.configEditor)"
+        v-model:uid="curServUid"
+        v-model:title="curServTitle"
+      />
+      <LogViewer
+        v-if="hWnds.logViwer.value"
+        @onClose="closeWindow(hWnds.logViwer)"
+        v-model:uid="curServUid"
+        v-model:title="curServTitle"
+      />
+      <QrcodeViewer
+        v-if="hWnds.qrCodeViwer.value"
+        v-model:title="curServTitle"
+        v-model:uid="curServUid"
+        @onClose="closeWindow(hWnds.qrCodeViwer)"
+      />
+      <BatchSettingsEditor
+        v-if="hWnds.batchSettingsEditor.value"
+        @onClose="closeWindow(hWnds.batchSettingsEditor)"
+      />
     </div>
   </FadeTransition>
 </template>

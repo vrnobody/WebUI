@@ -1,6 +1,6 @@
 <script setup>
 import { useI18n } from '@yangss/vue3-i18n'
-import cfg from '../../config.js'
+import cfg from '@/config.js'
 
 const { locale } = useI18n()
 
@@ -13,13 +13,17 @@ function switchLang(lang) {
 </script>
 
 <template>
-  <div class="h-full inline-flex justify-end items-center w-full">
-    <ul class="dark:text-neutral-400 text-neutral-600">
-      <li class="pr-2.5 m-0 inline-block">
-        <a href="javascript:" @click.prevent="switchLang('en-US')" class="text-sm m-0 p-0">English</a>
+  <div class="inline-flex h-full w-full items-center justify-end">
+    <ul class="text-neutral-600 dark:text-neutral-400">
+      <li class="m-0 inline-block pr-2.5">
+        <a href="javascript:" @click.prevent="switchLang('en-US')" class="m-0 p-0 text-sm"
+          >English</a
+        >
       </li>
-      <li class="pr-2.5 m-0 inline-block">
-        <a href="javascript:" @click.prevent="switchLang('zh-CN')" class="text-sm m-0 p-0">简体中文</a>
+      <li class="m-0 inline-block pr-2.5">
+        <a href="javascript:" @click.prevent="switchLang('zh-CN')" class="m-0 p-0 text-sm"
+          >简体中文</a
+        >
       </li>
     </ul>
   </div>

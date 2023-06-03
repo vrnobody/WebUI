@@ -4,8 +4,8 @@ import { ref } from 'vue'
 
 const t = utils.getTranslator()
 
-const content = ref("")
-const mark = ref("")
+const content = ref('')
+const mark = ref('')
 
 function report(count) {
   const msg = t('nNewServerImported', {
@@ -17,31 +17,34 @@ function report(count) {
 function importShareLinks() {
   const links = content.value || ''
   const mk = mark.value || ''
-  utils.call(report, "ImportShareLinks", [links, mk])
+  utils.call(report, 'ImportShareLinks', [links, mk])
 }
-
 </script>
 
 <template>
-  <div class="dark:bg-slate-500 bg-slate-400 md:left-56 flex fixed flex-col left-0 top-12 right-0 bottom-0 p-3">
-    <div class="dark:text-neutral-300 text-neutral-500 flex items-center justify-start">
+  <div
+    class="fixed bottom-0 left-0 right-0 top-12 flex flex-col bg-slate-400 p-3 dark:bg-slate-500 md:left-56"
+  >
+    <div class="flex items-center justify-start text-neutral-500 dark:text-neutral-300">
       {{ t('mark') }}
     </div>
-    <div class="w-full h-10">
-      <input v-model="mark" type="text" class="dark:bg-slate-700 bg-neutral-100 w-full py-1 px-2" />
+    <div class="h-10 w-full">
+      <input v-model="mark" type="text" class="w-full bg-neutral-100 px-2 py-1 dark:bg-slate-700" />
     </div>
-    <div class="dark:text-neutral-300  text-neutral-500 flex items-center justify-start">
+    <div class="flex items-center justify-start text-neutral-500 dark:text-neutral-300">
       {{ t('shareLinks') }}
     </div>
     <div class="flex w-full grow">
-      <textarea v-model="content" class="dark:bg-slate-700 bg-neutral-100 w-full h-full py-1 px-2"
-        placeholder="vmess://... vless://... trojan://...">
+      <textarea
+        v-model="content"
+        class="h-full w-full bg-neutral-100 px-2 py-1 dark:bg-slate-700"
+        placeholder="vmess://... vless://... trojan://..."
+      >
       </textarea>
     </div>
-    <div class="flex justify-center items-end h-8 w-full">
+    <div class="flex h-8 w-full items-end justify-center">
       <button @click="importShareLinks" class="mx-2">{{ t('import') }}</button>
     </div>
-
   </div>
 </template>
 

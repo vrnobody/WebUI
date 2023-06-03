@@ -1,11 +1,10 @@
-<script setup>
-
-</script>
+<script setup></script>
 
 <template>
   <!-- wrap the built-in Transition component -->
   <Transition name="fade">
-    <slot></slot> <!-- pass down slot content -->
+    <slot></slot>
+    <!-- pass down slot content -->
   </Transition>
 </template>
 

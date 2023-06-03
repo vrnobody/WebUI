@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, onUnmounted, computed, watch } from 'vue'
-import utils from '../../misc/utils.js'
-import store from '../../misc/store.js'
+import utils from '@/misc/utils.js'
+import store from '@/misc/store.js'
 
 const props = defineProps(['modelValue'])
 const emit = defineEmits(['update:modelValue'])
@@ -22,31 +22,30 @@ watch(store.onThemeChanges, () => {
 })
 
 async function createJsonConfigV4LintSvcProvider() {
-  const localLinterUrl = window.location.origin + "/ace/linters/"
-  const provider = LanguageProvider.fromCdn(localLinterUrl);
+  const localLinterUrl = window.location.origin + '/ace/linters/'
+  const provider = LanguageProvider.fromCdn(localLinterUrl)
 
   const r = await fetch('/ace/linters/v4-config-schema.json')
   const schema = await r.text()
 
-  provider.setGlobalOptions("json", {
+  provider.setGlobalOptions('json', {
     schemas: [
       {
-        uri: "common.schema.json",
-        schema: schema,
+        uri: 'common.schema.json',
+        schema: schema
       }
     ]
-  });
+  })
 
   return provider
 }
 
 onMounted(async () => {
-
   utils.hideScrollbarY()
 
   editor = ace.edit('json-editor-container')
   utils.updateEditorTheme(editor)
-  editor.session.setMode("ace/mode/json")
+  editor.session.setMode('ace/mode/json')
   editor.setValue(servConfig.value)
   editor.clearSelection()
 
@@ -56,9 +55,9 @@ onMounted(async () => {
     enableLiveAutocompletion: true
   })
 
-  const provider = window.aceJsonLintSvcProvider || await createJsonConfigV4LintSvcProvider()
+  const provider = window.aceJsonLintSvcProvider || (await createJsonConfigV4LintSvcProvider())
   provider.registerEditor(editor)
-  provider.setSessionOptions(editor.session, { schemaUri: "common.schema.json" })
+  provider.setSessionOptions(editor.session, { schemaUri: 'common.schema.json' })
   window.aceJsonLintSvcProvider = provider
 
   editor.on('change', function () {
@@ -70,12 +69,10 @@ onUnmounted(() => {
   utils.destroyEditor(editor)
   utils.showScrollbarY()
 })
-
 </script>
 
 <template>
-  <div class="text-base block grow w-full h-4/5" id="json-editor-container">
-  </div>
+  <div class="block h-4/5 w-full grow text-base" id="json-editor-container"></div>
 </template>
 
 <style scoped></style>
