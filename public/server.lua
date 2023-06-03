@@ -8,14 +8,14 @@ local public = "./lua/webui"
 -- confings
 local Logger = require('lua.modules.logger')
 
-local version = "0.0.2.2"
+local version = "0.0.2.3"
 local pageSize = 50
 local isAllowCors = #args < 1
 
 local logLevel = #args > 1 and args[2] or Logger.logLevels.Debug
 
 -- code
-local haServ = require('lua.modules.httpServ').new()
+local httpServ = require('lua.modules.httpServ').new()
 local json = require('lua.libs.json')
 local utils = require('lua.libs.utils')
 local reader = require('lua.modules.reader')
@@ -252,38 +252,19 @@ function ChangeSelection(selections)
 end
 
 function SelectAllTimeoutedServers()
-    local servs = Server:GetAllServers()
-    for coreServ in Each(servs) do
-        local coreState = coreServ:GetCoreStates()
-        local latency = coreState:GetSpeedTestResult()
-        local isTimeout = latency == utils.Timeout
-        coreState:SetIsSelected(isTimeout)
-    end
+    utils.SelectAllTimeouted()
 end
 
 function SelectNoServer()
-    local servs = Server:GetAllServers()
-    for coreServ in Each(servs) do
-        local coreState = coreServ:GetCoreStates()
-        coreState:SetIsSelected(false)
-    end
+    utils.SelectNone()
 end
 
 function SelectAllServers()
-    local servs = Server:GetAllServers()
-    for coreServ in Each(servs) do
-        local coreState = coreServ:GetCoreStates()
-        coreState:SetIsSelected(true)
-    end
+    utils.SelectAll()
 end
 
 function InvertSelectionGlobal()
-    local servs = Server:GetAllServers()
-    for coreServ in Each(servs) do
-        local coreState = coreServ:GetCoreStates()
-        local selected = not coreState:IsSelected()
-        coreState:SetIsSelected(selected)
-    end
+    utils.InvertSelection()
 end
 
 function SortSelectedByLatency()
@@ -706,9 +687,9 @@ end
 local function Main()
     local ver = GetServerVersion()
     print("server.lua v" .. ver)
-    haServ:Create(url, public, Handler, isAllowCors)
-    print("请打开网址: ", url)
-    haServ:Run()
+    httpServ:Create(url, public, Handler, isAllowCors)
+    print("please visit", url)
+    httpServ:Run()
 end
 
 Main()
