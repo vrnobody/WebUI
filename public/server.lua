@@ -138,9 +138,11 @@ end
 
 local function IsInTags(tags, keyword)
     for _, tag in pairs(tags) do
-        local t = string.lower(tag)
-        if string.find(t, keyword) then
-            return true
+        if type(tag) == "string" then
+            local t = string.lower(tag)
+            if string.find(t, keyword) then
+                return true
+            end
         end
     end
     return false
@@ -150,7 +152,7 @@ local function FilterServsByTags(servs, keyword)
     local r = {}
     for coreServ in Each(servs) do
         local coreState = coreServ:GetCoreStates()
-        local tags = GetterCoreTags(coreState)
+        local tags = GetTags(coreState)
         if IsInTags(tags, keyword) then
             table.insert(r, coreServ)
         end
