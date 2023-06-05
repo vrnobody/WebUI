@@ -182,8 +182,14 @@ function replaceCurAst(ast) {
     try {
         const o = JSON.parse(ast)
         curAst.value = o
+        const methods = {}
+        for (let key in o.methods) {
+            const k = key.replace('.', ':')
+            methods[k] = o.methods[key]
+        }
+        const funcs = { ...methods, ...o.subs, ...o.funcs }
         globalVarList.value = Object.keys(o.vars).sort(caseInSensitiveComparer)
-        functionList.value = Object.keys(o.funcs).sort(caseInSensitiveComparer)
+        functionList.value = Object.keys(funcs).sort(caseInSensitiveComparer)
     } catch (err) {
         console.log(err)
     }
@@ -317,8 +323,8 @@ function getWordAtCursor(editor) {
     const col = pos.column
 
     // Search for the word's beginning and end.
-    let left = str.slice(0, col + 1).search(/\w+$/)
-    let right = str.slice(col).search(/\W/)
+    let left = str.slice(0, col + 1).search(/[\w.:\d]+$/)
+    let right = str.slice(col).search(/[^\w.:\d]/)
 
     // The last word in the string is a special case.
     if (right < 0) {
@@ -339,6 +345,17 @@ function getLineNumberFromAst(word) {
     for (const key in ast.funcs) {
         if (key === word) {
             return ast.funcs[key].line
+        }
+    }
+    for (const key in ast.subs) {
+        if (key === word) {
+            return ast.subs[key].line
+        }
+    }
+    word = word.replace(':', '.')
+    for (const key in ast.methods) {
+        if (key === word) {
+            return ast.methods[key].line
         }
     }
     return 0
