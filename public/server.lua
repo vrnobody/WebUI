@@ -4,15 +4,10 @@ local args = {...}
 -- 如果4000端口已在使用，可修改为其他端口
 local url = #args > 0 and args[1] or "http://localhost:4000/"
 local public = "./lua/webui"
+local version = "0.0.2.3"
 
 -- confings
 local Logger = require('lua.modules.logger')
-
-local version = "0.0.2.3"
-local pageSize = 50
-local isAllowCors = #args < 1
-
-local logLevel = #args > 1 and args[2] or Logger.logLevels.Debug
 
 -- code
 local httpServ = require('lua.modules.httpServ').new()
@@ -21,7 +16,29 @@ local utils = require('lua.libs.utils')
 local reader = require('lua.modules.reader')
 local writer = require('lua.modules.writer')
 
-local sLog = Logger.new(nil, logLevel)
+local sLog = Logger.new(nil, Logger.logLevels.Debug)
+local options = {}
+local token = nil
+
+local function ParseOptions()
+    local o = {}
+    if #args == 1 and type(args[1]) == "table" then
+        o = args[1]
+    end
+    o['salt'] = o['salt'] or '485c5940-cccd-484c-883c-66321d577992'
+    o['logLevel'] = o['logLevel'] or (#args > 0 and Logger.logLevels.Info)
+    o['pageSize'] = o['pageSize'] or 50
+    o['public'] = o['public'] or public
+    if string.isempty(o['url']) then
+        -- backward compactible
+        if #args > 0 and type(args[1]) == "string" then
+            o['url'] = args[1]
+        else
+            o['url'] = url
+        end
+    end
+    options = o
+end
 
 local function Clamp(v, min, max)
     if v < min then
@@ -171,11 +188,15 @@ local function FilterServs(servs, searchType, keyword)
 end
 
 local function CalcTotalPageNumber(total)
-    local pages = math.ceil(total / pageSize)
+    local pages = math.ceil(total / options['pageSize'])
     if pages < 1 then
         pages = 1
     end
     return pages
+end
+
+function GetSalt()
+    return options['salt']
 end
 
 function RunLatencyTestByUid(uid)
@@ -521,8 +542,8 @@ function GetSerializedServers(pageNum, searchType, keyword)
     
     local min = 0
     local max = servs.Count - 1
-    local first = Clamp((pageNum - 1) * pageSize, min, max)
-    local last = Clamp((pageNum) * pageSize - 1, first, max)
+    local first = Clamp((pageNum - 1) * options['pageSize'], min, max)
+    local last = Clamp((pageNum) * options['pageSize'] - 1, first, max)
     if string.isempty(searchType) or string.isempty(keyword) then
         -- print("search all")
         r["pages"] = CalcTotalPageNumber(servs.Count)
@@ -657,11 +678,27 @@ function ImportShareLinks(links, mark)
     return c
 end
 
+local function IsAuthorized(j)
+    local allowFuncs = {'GetSalt', 'GetAppVersion', 'GetServerVersion'}
+    if table.contains(allowFuncs, j['fn']) then
+        return true
+    end
+    local token = options['token']
+    if string.isempty(token) or j['token'] == token then
+        return true
+    end
+    return false
+end
+
 local function Handler(req)
     local ok, j = pcall(json.decode, req)
     if not ok then
         sLog:Debug("parse request error:", req)
         return Response(false, "parseReqError")
+    end
+    
+    if not IsAuthorized(j) then
+        return Response(false, 'unAuthorizedOperation')
     end
     
     local fn = j["fn"]
@@ -687,10 +724,11 @@ local function Handler(req)
 end
 
 local function Main()
-    local ver = GetServerVersion()
-    print("server.lua v" .. ver)
-    httpServ:Create(url, public, Handler, isAllowCors)
-    print("please visit", url)
+    ParseOptions()
+    sLog:SetLogLevel(options['logLevel'])
+    print("server.lua v" .. GetServerVersion())
+    httpServ:Create(options['url'], options['public'], Handler, false)
+    print("please visit", options['url'])
     httpServ:Run()
 end
 
