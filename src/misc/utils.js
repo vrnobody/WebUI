@@ -1,12 +1,11 @@
 import config from '@/config.js'
-import configs from '@/config.js'
 
-const host = config.isDevMode ? configs.devHostUrl : configs.releaseHostUrl
+const host = config.isDevMode ? config.devHostUrl : config.releaseHostUrl
 
 let t = null
 
 function isDarkMode() {
-    const mode = configs.getThemeMode()
+    const mode = config.getThemeMode()
     if (!mode || mode === 'system') {
         return window.matchMedia('(prefers-color-scheme: dark)').matches
     }
@@ -33,6 +32,43 @@ function pop(msg, ps) {
     Swal.fire(m)
 }
 
+let isChangingPassword = false
+function changePassword() {
+    if (isChangingPassword) {
+        return
+    }
+    isChangingPassword = true
+
+    function reloadPage() {
+        location.reload()
+    }
+
+    function genToken(salt) {
+        Swal.fire({
+            title: t('enterPassword'),
+            input: 'password',
+            inputPlaceholder: t('password'),
+            inputAttributes: {
+                maxlength: 256,
+                autocapitalize: 'off',
+                autocorrect: 'off'
+            }
+        }).then((r) => {
+            isChangingPassword = false
+            if (!r.isConfirmed || !r.value || r.value.length < 1) {
+                return
+            }
+            const password = salt + r.value
+            sha512(password).then((token) => {
+                config.set('token', token)
+                config.save()
+                call(reloadPage(), 'IsValidToken')
+            })
+        })
+    }
+    call(genToken, 'GetSalt')
+}
+
 function post(callback, content) {
     const httpRequest = new XMLHttpRequest()
     httpRequest.open('POST', host, true)
@@ -49,6 +85,10 @@ function post(callback, content) {
 
             const r = j['r']
             if (!j['ok']) {
+                if (r === 'unAuthorizedOperation') {
+                    changePassword()
+                    return
+                }
                 pop(r, j['ps'])
                 return
             }
@@ -75,9 +115,10 @@ function copyToClipboard(v) {
 }
 
 function call(callback, fn, ps) {
-    let req = {
+    const req = {
         fn: fn,
-        ps: ps || []
+        ps: ps || [],
+        token: config.get('token')
     }
     post(callback, JSON.stringify(req))
 }
@@ -148,7 +189,20 @@ function confirm(title, onYes, onNo) {
     })
 }
 
+async function sha512(message) {
+    // https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest
+    // usage:
+    // sha512('hello!').then((hex) => console.log(hex))
+
+    const msgUint8 = new TextEncoder().encode(message) // encode as (utf-8) Uint8Array
+    const hashBuffer = await crypto.subtle.digest('SHA-512', msgUint8) // hash the message
+    const hashArray = Array.from(new Uint8Array(hashBuffer)) // convert buffer to byte array
+    const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('') // convert bytes to hex string
+    return hashHex
+}
+
 export default {
+    sha512,
     scrollToPageTop,
     copyToClipboard,
     confirm,

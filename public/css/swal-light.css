@@ -547,7 +547,7 @@
   box-sizing: border-box;
   width: auto;
   transition: initial;
-  border: 1px solid #d9d9d9;
+  border: 1px solid #aaa;
   border-radius: 0;
   background: transparent;
   box-shadow: none;
@@ -573,7 +573,7 @@
 .swal2-input::placeholder,
 .swal2-file::placeholder,
 .swal2-textarea::placeholder {
-  color: #ccc;
+  color: #999;
 }
 
 .swal2-range {

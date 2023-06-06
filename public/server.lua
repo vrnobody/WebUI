@@ -1,29 +1,43 @@
--- args用法: loadfile("./path/to/server.lua")(url, logLevel)
-local args = {...}
+--[[
+用法1: 
+loadfile("./lua/webui/server.lua")("http://localhost:1234/")
 
--- 如果4000端口已在使用，可修改为其他端口
-local url = #args > 0 and args[1] or "http://localhost:4000/"
+用法2: 
+loadfile("./lua/webui/server.lua")({
+    ["url"] = "http://localhost:1234/",
+    ["password"] = "123456",
+    ["salt"] = "485c5940-cccd-484c-883c-66321d577992",
+    ["pageSize"] = "50",
+    ["public"] = "./lua/webui",
+})
+--]]
+
+local version = "0.0.2.5"
+
+-- for debugging only
+local url = "http://localhost:4000/"
 local public = "./lua/webui"
-local version = "0.0.2.3"
-
--- confings
-local Logger = require('lua.modules.logger')
+local password = "12345611"
 
 -- code
+local Logger = require('lua.modules.logger')
 local httpServ = require('lua.modules.httpServ').new()
 local json = require('lua.libs.json')
 local utils = require('lua.libs.utils')
 local reader = require('lua.modules.reader')
 local writer = require('lua.modules.writer')
 
-local sLog = Logger.new(nil, Logger.logLevels.Debug)
+local args = {...}
 local options = {}
-local token = nil
+local sLog = Logger.new(nil, Logger.logLevels.Debug)
 
 local function ParseOptions()
     local o = {}
     if #args == 1 and type(args[1]) == "table" then
         o = args[1]
+    end
+    if #args < 1 and not string.isempty(password) then
+        o['password'] = password
     end
     o['salt'] = o['salt'] or '485c5940-cccd-484c-883c-66321d577992'
     o['logLevel'] = o['logLevel'] or (#args > 0 and Logger.logLevels.Info)
@@ -36,6 +50,11 @@ local function ParseOptions()
         else
             o['url'] = url
         end
+    end
+    if not string.isempty(o['password']) then
+        local str = o['salt'] .. o['password']
+        o['token'] = Misc:Sha512(str)
+        o['password'] = nil
     end
     options = o
 end
@@ -676,6 +695,10 @@ function ImportShareLinks(links, mark)
     local c = Misc:ImportLinks(links, mark)
     Misc:RefreshFormMain()
     return c
+end
+
+function IsValidToken()
+    return true
 end
 
 local function IsAuthorized(j)

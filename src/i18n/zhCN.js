@@ -41,6 +41,7 @@ export default {
     enableSpeedtestSettings: '启用自定义测速设定',
     enableUserAgent: '启用自定义user agent',
     enableUTlsfingerprint: '启用自定义uTLS指纹',
+    enterPassword: '请输入密码',
     error: '错误',
     extensions: '扩展名',
     failed: '失败',
@@ -68,17 +69,17 @@ export default {
     loadClr: '加载CLR',
     loadFile: '从文件加载',
     loading: '加载中...',
-    lunaEditorKeyboardShortcutsContent: `ctrl f        调出搜索框
-ctrl h        调出替换框
-ctrl l        调出跳转到行号框
-ctrl s        快速保存
-ctrl -        光标后退
-ctrl +        光标前进
-F5            运行脚本
-F6            停止脚本
-F7            强制终止脚本
-F8            清除日志
-F12           跳转到定义（比较弱鸡）`,
+    lunaEditorKeyboardShortcutsContent: `ctrl f    调出搜索框
+ctrl h    调出替换框
+ctrl l    调出跳转到行号框
+ctrl s    快速保存
+ctrl -    光标后退
+ctrl +    光标前进
+F5        运行脚本
+F6        停止脚本
+F7        强制终止脚本
+F8        清除日志
+F12       跳转到定义（比较弱鸡）`,
     lunaEditorKeyboardShortcutsTitle: 'Luna编辑器快捷键：',
     manager: '管理器',
     mark: '标记',
@@ -99,6 +100,7 @@ F12           跳转到定义（比较弱鸡）`,
     paramIsNotTable: '参数不是一个列表！',
     parseReqError: '解释请求错误！',
     parseRespError: '解释回复错误！',
+    password: '密码',
     please_update_app: '请更新V2RayGCon v{curVer}至v{expectedVer}+',
     quickSwitchLatency: '快速切换延迟(ms)',
     refresh: '刷新',
@@ -152,7 +154,6 @@ F12           跳转到定义（比较弱鸡）`,
     terminate: '强制终止',
     testing: '测试中',
     title: '标题',
-    unAuthorizedOperation: '无权操作！',
     update: '更新',
     updating: '更新中...',
     userAgent: '自定义user agent',

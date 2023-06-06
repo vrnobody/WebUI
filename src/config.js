@@ -86,10 +86,11 @@ export default {
     isDevMode,
     devHostUrl: 'http://localhost:4000',
     releaseHostUrl: '/',
-    supportedServerVersions: ['0.0.2.3'],
-    supportedAppVersion: '1.7.0.4',
+    supportedServerVersions: ['0.0.2.5'],
+    supportedAppVersion: '1.7.0.5',
     get,
     set,
+    save,
     reload,
     getThemeMode,
     saveThemeMode
