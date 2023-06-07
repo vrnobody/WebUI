@@ -12,12 +12,12 @@ loadfile("./lua/webui/server.lua")({
 })
 --]]
 
-local version = "0.0.2.5"
+local version = "0.0.2.6"
 
 -- for debugging only
 local url = "http://localhost:4000/"
 local public = "./lua/webui"
-local password = "12345611"
+local password = "123456"
 
 -- code
 local Logger = require('lua.modules.logger')
@@ -40,7 +40,7 @@ local function ParseOptions()
         o['password'] = password
     end
     o['salt'] = o['salt'] or '485c5940-cccd-484c-883c-66321d577992'
-    o['logLevel'] = o['logLevel'] or (#args > 0 and Logger.logLevels.Info)
+    o['logLevel'] = o['logLevel'] or (#args > 0 and Logger.logLevels.Info or Logger.logLevels.Debug)
     o['pageSize'] = o['pageSize'] or 50
     o['public'] = o['public'] or public
     if string.isempty(o['url']) then
@@ -131,7 +131,6 @@ local function GetterCoreServInfo(coreServ)
     t["summary"] = coreState:GetSummary()
     t["uid"] = coreState:GetUid()
     t["on"] = coreCtrl:IsCoreRunning()
-    t["selected"] = coreState:IsSelected()
     t["inbound"] = GetInboundInfo(coreState)
     local cSharpTicks = coreState:GetLastModifiedUtcTicks()
     t["modified"] = utils.ToLuaTicks(cSharpTicks)
@@ -222,10 +221,6 @@ function RunLatencyTestByUid(uid)
     return Server:RunSpeedTestByUids({uid})
 end
 
-function RunLatencyTestOnSelectedServers()
-    return Server:RunSpeedTestOnSelectedServersBgQuiet()
-end
-
 function StopLatencyTest()
     Server:StopSpeedTest()
 end
@@ -240,22 +235,6 @@ end
 
 function GetScriptFromLuaVm(luavm)
     return Sys:LuaVmGetScript(luavm)
-end
-
-function CopyShareLinkOfSelectedServers()
-    local links = {}
-    local servs = Server:GetAllServers()
-    for coreServ in Each(servs) do
-        local coreState = coreServ:GetCoreStates()
-        if coreState:IsSelected() then
-            local coreConfiger = coreServ:GetConfiger()
-            local link = coreConfiger:GetShareLink()
-            if not string.isempty(link) then
-                table.insert(links, link)
-            end
-        end
-    end
-    return table.concat(links, '\n')
 end
 
 function GetShareLink(uid)
@@ -279,46 +258,6 @@ end
 
 function Ls(path, exts)
     return Sys:Ls(path, exts)
-end
-
-function ChangeSelection(selections)
-    local s = json.decode(selections)
-    local servs = Server:GetAllServers()
-    for coreServ in Each(servs) do
-        local coreState = coreServ:GetCoreStates()
-        local uid = coreState:GetUid()
-        if s[uid] ~= nil then
-            coreState:SetIsSelected(s[uid])
-        end
-    end
-end
-
-function SelectAllTimeoutedServers()
-    utils.SelectAllTimeouted()
-end
-
-function SelectNoServer()
-    utils.SelectNone()
-end
-
-function SelectAllServers()
-    utils.SelectAll()
-end
-
-function InvertSelectionGlobal()
-    utils.InvertSelection()
-end
-
-function SortSelectedByLatency()
-    Server:SortSelectedServersBySpeedTest()
-end
-
-function SortSelectedBySummary()
-    Server:SortSelectedServersBySummary()
-end
-
-function SortSelectedByModifyTime()
-    Server:SortSelectedServersByLastModifiedDate()
 end
 
 function UpdateSubscriptions()
@@ -428,36 +367,91 @@ function AbortLuaVm(luavm)
     Sys:LuaVmAbort(luavm)
 end
 
-function ChangeSelectedServersSetting(s)
-    local keys = {"inbMode", "inbIp", "inbPort", "isAutoRun", "mark", "remark", "tag1", "tag2", "tag3"}
+function GetAllServersUid()
     local servs = Server:GetAllServers()
+    local r = {}
     for coreServ in Each(servs) do
         local coreState = coreServ:GetCoreStates()
-        if coreState:IsSelected() then
-            for _, key in pairs(keys) do
-                local v = s[key]
-                if v ~= nil then
-                    if key == "inbMode" then
-                        coreState:SetInboundType(tonumber(v))
-                    elseif key == "inbIp" then
-                        local port = coreState:GetInboundPort()
-                        coreState:SetInboundAddr(v, port)
-                    elseif key == "inbPort" then
-                        local ip = coreState:GetInboundIp()
-                        coreState:SetInboundAddr(ip, tonumber(v))
-                    elseif key == "isAutoRun" then
-                        coreState:SetIsAutoRun(v)
-                    elseif key == "mark" then
-                        coreState:SetMark(v)
-                    elseif key == "remark" then
-                        coreState:SetRemark(v)
-                    elseif  key == "tag1" then
-                        coreState:SetTag1(v)
-                    elseif key == "tag2" then
-                        coreState:SetTag2(v)
-                    elseif  key == "tag3" then
-                        coreState:SetTag3(v)
-                    end
+        local uid = coreState:GetUid()
+        table.insert(r, uid)
+    end
+    return r
+end
+
+function GetAllTimeoutedServersUid()
+    local servs = Server:GetAllServers()
+    local r = {}
+    for coreServ in Each(servs) do
+        local coreState = coreServ:GetCoreStates()
+        if coreState:GetSpeedTestResult() == utils.Timeout then
+            local uid = coreState:GetUid()
+            table.insert(r, uid)
+        end
+    end
+    return r
+end
+
+function SortServersByLatency(uids)
+    Server:SortServersBySpeedTest(uids)
+end
+
+function SortServersByModifyDate(uids)
+    Server:SortServersByLastModifiedDate(uids)
+end
+
+function SortServersBySummary(uids)
+    Server:SortServersBySummary(uids)
+end
+
+function ReverseServersByIndex(uids)
+    Server:ReverseServersByIndex(uids)
+end
+
+function CopyShareLinkOfServers(uids)
+    local servs = Server:GetServersByUids(uids)
+    local links = {}
+    for coreServ in Each(servs) do
+        local coreConfiger = coreServ:GetConfiger()
+        local link = coreConfiger:GetShareLink()
+        if not string.isempty(link) then
+            table.insert(links, link)
+        end
+    end
+    return table.concat(links, '\n') or ''
+end
+
+function RunLatencyTestOnServers(uids)
+    return Server:RunSpeedTestByUids(uids)
+end
+
+function ChangeServersSetting(uids, s)
+    local keys = {"inbMode", "inbIp", "inbPort", "isAutoRun", "mark", "remark", "tag1", "tag2", "tag3"}
+    local servs = Server:GetServersByUids(uids)
+    for coreServ in Each(servs) do
+        local coreState = coreServ:GetCoreStates()
+        for _, key in pairs(keys) do
+            local v = s[key]
+            if v ~= nil then
+                if key == "inbMode" then
+                    coreState:SetInboundType(tonumber(v))
+                elseif key == "inbIp" then
+                    local port = coreState:GetInboundPort()
+                    coreState:SetInboundAddr(v, port)
+                elseif key == "inbPort" then
+                    local ip = coreState:GetInboundIp()
+                    coreState:SetInboundAddr(ip, tonumber(v))
+                elseif key == "isAutoRun" then
+                    coreState:SetIsAutoRun(v)
+                elseif key == "mark" then
+                    coreState:SetMark(v)
+                elseif key == "remark" then
+                    coreState:SetRemark(v)
+                elseif  key == "tag1" then
+                    coreState:SetTag1(v)
+                elseif key == "tag2" then
+                    coreState:SetTag2(v)
+                elseif  key == "tag3" then
+                    coreState:SetTag3(v)
                 end
             end
         end
@@ -465,21 +459,15 @@ function ChangeSelectedServersSetting(s)
     return true
 end
 
-function GetFirstSelectedServerSettings()
-    local coreServ = nil
-    local servs = Server:GetAllServers()
-    for coreServ in Each(servs) do
-        local coreState = coreServ:GetCoreStates()
-        if coreState:IsSelected() then
-            local tags = GetTags(coreState)
-            tags["inbMode"] = coreState:GetInboundType()
-            tags["inbIp"] = coreState:GetInboundIp()
-            tags["inbPort"] = coreState:GetInboundPort()
-            tags["isAutoRun"] = coreState:IsAutoRun()
-            return tags
-        end
+function GetFirstServSettings(uids)
+    local servs = Server:GetServersByUids(uids)
+    if servs.Count < 1 then
+        return nil
     end
-    return {}
+    local coreServ = servs[0]
+    local coreState = coreServ:GetCoreStates()
+    local uid = coreState:GetUid()
+    return GetServSettings(uid)
 end
 
 function GetServSettings(uid)
@@ -550,7 +538,6 @@ function GetSerializedServers(pageNum, searchType, keyword)
     local r = {
         ["pages"] = 1,
         ["data"] = {},
-        ["selected"] = Server:CountSelected(),
         ["isTesting"] = Server:IsRunningSpeedTest(),
         ["count"] = servs.Count,
     }
@@ -674,21 +661,8 @@ function GetServerConfig(uid)
     return nil
 end
 
-function DeleteServByUid(uid)
-    Server:DeleteServerByUids({uid})
-end
-
-function DeleteSelectedServers()
-    local uids = {}
-    local servs = Server:GetAllServers()
-    for coreServ in Each(servs) do
-        local coreState = coreServ:GetCoreStates()
-        if coreState:IsSelected() then
-            local uid = coreState:GetUid()
-            table.insert(uids, uid)
-        end
-    end
-    Server:DeleteServerByUids(uids)
+function DeleteServByUids(uids)
+    return Server:DeleteServerByUids(uids)
 end
 
 function ImportShareLinks(links, mark)
@@ -743,7 +717,7 @@ local function Handler(req)
     if ok then
         return Response(true, r)
     end
-    return Response(false, "callFuncError", fFullName, r)
+    return Response(false, "callFuncError", fFullName, tostring(r))
 end
 
 local function Main()

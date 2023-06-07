@@ -34,8 +34,6 @@ let servsInfo = ref([])
 const servsCount = ref(0)
 const servsSelected = ref(0)
 const isTesting = ref(false)
-let curSelection = '{}'
-let isRefreshing = false
 
 const tagNames = ['isAutoRun', 'status', 'mark', 'remark', 'tag1', 'tag2', 'tag3']
 
@@ -47,67 +45,62 @@ const hWnds = {
     batchSettingsEditor: ref(false)
 }
 
-function saveSelectionLater() {
-    const servs = servsInfo.value
-    const selection = {}
-    for (let index = 0; index < servs.length; index++) {
-        const serv = servs[index]
-        selection[serv.uid] = serv.selected
-    }
-
-    const cs = JSON.stringify(selection)
-    curSelection = cs
-
-    const next = function () {
-        isRefreshing = false
-        refresh()
-    }
-
-    isRefreshing = true
-    setTimeout(() => {
-        if (curSelection !== cs) {
-            // pass
-            return
-        }
-        utils.call(next, 'ChangeSelection', [cs])
-    }, 1000)
-}
+const selections = ref({})
 
 function selectAll(isCurPage) {
     if (isCurPage) {
         for (const serv of servsInfo.value) {
-            serv.selected = true
+            selections.value[serv.uid] = true
         }
-        saveSelectionLater()
         return
     }
-    utils.call(refresh, 'SelectAllServers')
+
+    utils.call(replaceSelections, 'GetAllServersUid')
+}
+
+function replaceSelections(uids) {
+    selections.value = {}
+    for (let uid of uids) {
+        selections.value[uid] = true
+    }
 }
 
 function selectNone(isCurPage) {
     if (isCurPage) {
         for (const serv of servsInfo.value) {
-            serv.selected = false
+            selections.value[serv.uid] = false
         }
-        saveSelectionLater()
         return
     }
-    utils.call(refresh, 'SelectNoServer')
+    selections.value = {}
 }
 
 function selectTimeoutGlobal() {
-    utils.call(refresh, 'SelectAllTimeoutedServers')
+    utils.call(replaceSelections, 'GetAllTimeoutedServersUid')
 }
 
 function invertSelection(isCurPage) {
     if (isCurPage) {
         for (const serv of servsInfo.value) {
-            serv.selected = !serv.selected
+            selections.value[serv.uid] = !selections.value[serv.uid]
         }
-        saveSelectionLater()
         return
     }
-    utils.call(refresh, 'InvertSelectionGlobal')
+    function next(uids) {
+        for (let uid of uids) {
+            selections.value[uid] = selections.value[uid] !== true
+        }
+    }
+    utils.call(next, 'GetAllServersUid')
+}
+
+function getSelectedUids() {
+    const s = selections.value
+    return Object.keys(s).filter((k) => s[k])
+}
+
+function countSelected() {
+    return getSelectedUids().length
 }
 
 function sortSelectedBy(condition) {
@@ -115,20 +108,25 @@ function sortSelectedBy(condition) {
         return
     }
 
-    let fn = 'SortSelectedByLatency'
+    let fn = 'SortServersByLatency'
     switch (condition) {
         case 'time':
-            fn = 'SortSelectedByModifyTime'
+            fn = 'SortServersByModifyDate'
             break
         case 'summary':
-            fn = 'SortSelectedBySummary'
+            fn = 'SortServersBySummary'
             break
         case 'latency':
+            break
+        case 'reverse':
+            fn = 'ReverseServersByIndex'
             break
         default:
             break
     }
-    utils.call(refresh, fn)
+
+    const uids = getSelectedUids()
+    utils.call(refresh, fn, [uids])
 }
 
 function openBatchSettingsEditor() {
@@ -152,7 +150,8 @@ function copyShareLinkOfSelectedServers() {
         Swal.fire(t('success'))
     }
 
-    utils.call(next, 'CopyShareLinkOfSelectedServers')
+    const uids = getSelectedUids()
+    utils.call(next, 'CopyShareLinkOfServers', [uids])
 }
 
 function runLatencyTestOnSelectedServers() {
@@ -168,7 +167,8 @@ function runLatencyTestOnSelectedServers() {
         Swal.fire(t('failed'))
     }
 
-    utils.call(next, 'RunLatencyTestOnSelectedServers')
+    const uids = getSelectedUids()
+    utils.call(next, 'RunLatencyTestOnServers', [uids])
 }
 
 function runLatencyTest(uid) {
@@ -176,7 +176,7 @@ function runLatencyTest(uid) {
 }
 
 function isSelectAnyServer() {
-    const count = servsSelected.value
+    const count = countSelected()
     if (count < 1) {
         Swal.fire(t('noServerSelected'))
         return false
@@ -196,26 +196,31 @@ function deleteSelected() {
         return
     }
 
-    const count = servsSelected.value
-    const next = function () {
-        const msg = t('serversDeleted')
+    const uids = getSelectedUids()
+    const count = uids.length
+    const next = function (c) {
+        selections.value = {}
+        const msg = t('serversDeleted', { count: c })
         Swal.fire(msg)
         refresh()
     }
 
     const title = t('confirmDeleteNServers', { count: count })
     utils.confirm(title, function () {
-        utils.call(next, 'DeleteSelectedServers')
+        utils.call(next, 'DeleteServByUids', [uids])
     })
 }
 
 function deleteServer(uid, name) {
-    const next = function () {
+    const next = function (c) {
+        selections.value[uid] = false
+        const msg = t('serversDeleted', { count: c })
+        Swal.fire(msg)
         refresh()
     }
 
     const onYes = function () {
-        utils.call(next, 'DeleteServByUid', [uid])
+        utils.call(next, 'DeleteServByUids', [[uid]])
     }
 
     const msg = t('confirmDelete', { name: name })
@@ -241,13 +246,6 @@ function search() {
 
 let lastRefreshTimestamp = -1
 function refresh(isScrollToTop) {
-    if (isRefreshing) {
-        setTimeout(() => {
-            refresh(isScrollToTop)
-        }, 2000)
-        return
-    }
-
     const next = function (r) {
         curPageNumText.value = curPageNum.value.toString()
         pages.value = r.pages
@@ -268,7 +266,7 @@ function refresh(isScrollToTop) {
         const now = new Date().getTime()
         lastRefreshTimestamp = now
         setTimeout(() => {
-            if (lastRefreshTimestamp == now) {
+            if (lastRefreshTimestamp === now) {
                 refresh()
             }
         }, 2000)
@@ -362,7 +360,7 @@ function copyShareLink(uid) {
     utils.call(next, 'GetShareLink', [uid])
 }
 
-function getInboundAndModifiedInfo(serv) {
+function getInboundAndLastModifiedDate(serv) {
     const inbAddr = serv['inbound']
     const tick = serv['modified'] * 1000
     const date = new Date(tick)
@@ -507,6 +505,11 @@ onUnmounted(() => {})
                                 {{ t('sortSelectedBySummary') }}
                             </button>
                         </li>
+                        <li>
+                            <button @click="sortSelectedBy('reverse')" dropdown-closer>
+                                {{ t('reverseServersByIndex') }}
+                            </button>
+                        </li>
                     </ul>
                 </template>
             </DropdownMenu>
@@ -614,9 +617,8 @@ onUnmounted(() => {})
                         <div class="table-cell w-12 px-1 py-0 text-center align-middle leading-[0]">
                             <input
                                 type="checkbox"
-                                v-model="serv.selected"
+                                v-model="selections[serv.uid]"
                                 class="inline-block h-4 w-4"
-                                @change="saveSelectionLater"
                             />
                         </div>
                         <div class="table-cell w-16 px-1 py-0 text-center align-middle">
@@ -625,7 +627,7 @@ onUnmounted(() => {})
                         <div class="table-cell break-all px-2 py-1 text-left align-middle">
                             <Tooltips
                                 :css="'ml-[3rem] mt-8'"
-                                :tip="getInboundAndModifiedInfo(serv)"
+                                :tip="getInboundAndLastModifiedDate(serv)"
                             >
                                 <button
                                     @click="restartServ(serv.uid)"
@@ -771,8 +773,10 @@ onUnmounted(() => {})
         <!-- counter -->
         <div class="inline-flex py-1">
             <span class="px-1">{{ t('count') }}: {{ servsCount }} </span>
-            <span class="px-1"> {{ t('selected') }}: {{ servsSelected }}</span>
-            <span v-if="isTesting" class="px-1"> {{ t('testing') }}</span>
+            <span class="px-1"> {{ t('selected') }}: {{ countSelected() }}</span>
+            <span v-if="isTesting" class="px-1"
+                ><b> {{ t('testing') }} </b></span
+            >
         </div>
     </div>
 
@@ -808,6 +812,7 @@ onUnmounted(() => {})
             />
             <BatchSettingsEditor
                 v-if="hWnds.batchSettingsEditor.value"
+                :uids="getSelectedUids()"
                 @onClose="closeWindow(hWnds.batchSettingsEditor)"
             />
         </div>

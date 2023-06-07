@@ -108,6 +108,7 @@ F12       Goto to definition`,
     remove: 'Remove',
     replaceCurScript: 'Replace current unsaved script?',
     restart: 'Restart',
+    reverseServersByIndex: 'Reverse by index',
     runLatencyTest: 'Run latency test',
     save: 'Save',
     saveAs: 'Save as',
@@ -122,7 +123,7 @@ F12       Goto to definition`,
         'server.lua v{curVer} is not supported!\nPlease update to v{expectedVer}.',
     serverNotFound: 'Server not found!',
     servers: 'Servers',
-    serversDeleted: 'Servers deleted.',
+    serversDeleted: 'Total [{count}] servers deleted.',
     servPanelAndLunaManagerContent: `click "ON" label to stop
 click name to restart
 click tag to change settings

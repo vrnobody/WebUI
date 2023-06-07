@@ -2,6 +2,8 @@
 import utils from '@/misc/utils.js'
 import { onMounted, ref } from 'vue'
 
+const props = defineProps(['uids'])
+
 const emit = defineEmits(['onClose'])
 
 const servSettings = ref({})
@@ -51,7 +53,7 @@ function loadSettings() {
         Swal.fire(t('failed'))
     }
 
-    utils.call(next, 'GetFirstSelectedServerSettings')
+    utils.call(next, 'GetFirstServSettings', [props.uids])
 }
 
 function save() {
@@ -70,7 +72,7 @@ function save() {
         Swal.fire(t('failed'))
     }
 
-    utils.call(next, 'ChangeSelectedServersSetting', [s])
+    utils.call(next, 'ChangeServersSetting', [props.uids, s])
 }
 
 function close() {

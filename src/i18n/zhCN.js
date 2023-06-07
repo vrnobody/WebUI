@@ -108,6 +108,7 @@ F12       跳转到定义（比较弱鸡）`,
     remove: '删除',
     replaceCurScript: '替换当前未保存的脚本？',
     restart: '重启',
+    reverseServersByIndex: '按序号逆序',
     runLatencyTest: '进行延迟测试',
     save: '保存',
     saveAs: '另存为文件',
@@ -121,7 +122,7 @@ F12       跳转到定义（比较弱鸡）`,
     server_ver_not_supported: 'server.lua v{curVer}不受支持！\n请更新到v{expectedVer}。',
     serverNotFound: '查找服务器失败！',
     servers: '服务器',
-    serversDeleted: '服务器已删除！',
+    serversDeleted: '共[{count}]个服务器已删除！',
     servPanelAndLunaManagerContent: `点击"ON"标签停止服务器
 点击服务器名字重启
 点击标签修改设置
