@@ -2,20 +2,20 @@
 import utils from '@/misc/utils.js'
 import { onMounted, ref } from 'vue'
 
-const props = defineProps(['settings'])
-const emit = defineEmits(['update:settings', 'onClose', 'onSave'])
+const props = defineProps(['subs'])
+const emit = defineEmits(['update:subs', 'onClose', 'onSave'])
 
 const t = utils.getTranslator()
 
 const settings = ref({})
 
 function loadSettings() {
-    const s = JSON.parse(JSON.stringify(props.settings))
+    const s = JSON.parse(JSON.stringify(props.subs))
     settings.value = s
 }
 
 function save() {
-    emit('update:settings', settings.value)
+    emit('update:subs', settings.value)
     emit('onSave')
 }
 

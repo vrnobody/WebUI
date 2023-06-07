@@ -173,7 +173,7 @@ onMounted(() => {
             <SubEditor
                 @onClose="closeSubEditorWindow"
                 @onSave="onSaveCurSub"
-                v-model:settings="curSubSettings"
+                v-model:subs="curSubSettings"
             />
         </div>
     </FadeTransition>
