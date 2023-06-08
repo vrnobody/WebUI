@@ -117,6 +117,7 @@ F12       Goto to definition`,
     selectAll: 'Select all',
     selected: 'Selected',
     selectNone: 'Select none',
+    selectNotTimeout: 'Select not timeouted',
     selectTimeout: 'Select timeouted',
     sendReqError: 'Send request error!',
     server_ver_not_supported:
