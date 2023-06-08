@@ -75,6 +75,10 @@ function selectNone(isCurPage) {
     selections.value = {}
 }
 
+function selectNotTestedGlobal() {
+    utils.call(replaceSelections, 'GetAllNotTtestedServersUid')
+}
+
 function selectNotTimeoutGlobal() {
     utils.call(replaceSelections, 'GetAllNotTimeoutedServersUid')
 }
@@ -486,6 +490,11 @@ onUnmounted(() => {})
                         <li>
                             <button @click="selectNotTimeoutGlobal()" dropdown-closer>
                                 {{ t('selectNotTimeout') }}
+                            </button>
+                        </li>
+                        <li>
+                            <button @click="selectNotTestedGlobal()" dropdown-closer>
+                                {{ t('selectNotTested') }}
                             </button>
                         </li>
                     </ul>

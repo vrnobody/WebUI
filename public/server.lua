@@ -378,6 +378,20 @@ function GetAllServersUid()
     return r
 end
 
+function GetAllNotTtestedServersUid()
+    local servs = Server:GetAllServers()
+    local r = {}
+    for coreServ in Each(servs) do
+        local coreState = coreServ:GetCoreStates()
+        local latency = coreState:GetSpeedTestResult()
+        if latency < 1 then
+            local uid = coreState:GetUid()
+            table.insert(r, uid)
+        end
+    end
+    return r
+end
+
 function GetAllNotTimeoutedServersUid()
     local servs = Server:GetAllServers()
     local r = {}
