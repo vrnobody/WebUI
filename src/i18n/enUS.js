@@ -60,7 +60,7 @@ export default {
     inbMode: 'Inbound mode',
     inbPort: 'Inbound port',
     index: 'Index',
-    invertSelection: 'Invert selection',
+    inverseSelection: 'Inverse selection',
     isAutoRun: 'Auto run',
     key: 'Key',
     lightTheme: 'Light theme',

@@ -367,6 +367,17 @@ function AbortLuaVm(luavm)
     Sys:LuaVmAbort(luavm)
 end
 
+function FilterSelections(uids)
+    local servs = Server:GetServersByUids(uids)
+    local r = {}
+    for coreServ in Each(servs) do
+        local coreState = coreServ:GetCoreStates()
+        local uid = coreState:GetUid()
+        table.insert(r, uid)
+    end
+    return r
+end
+
 function GetAllServersUid()
     local servs = Server:GetAllServers()
     local r = {}

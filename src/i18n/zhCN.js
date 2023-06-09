@@ -60,7 +60,7 @@ export default {
     inbMode: 'Inbound模式',
     inbPort: 'Inbound端口',
     index: '序号',
-    invertSelection: '反选',
+    inverseSelection: '反选',
     isAutoRun: '自启动',
     key: '键名',
     lightTheme: '亮主题',

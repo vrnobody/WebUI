@@ -45,16 +45,35 @@ const hWnds = {
     batchSettingsEditor: ref(false)
 }
 
+const selectionsKey = 'selections'
 const selections = ref({})
+
+let saveSelectionsTimestamp = -1
+function selectionsChanged() {
+    const now = Date.now()
+    saveSelectionsTimestamp = now
+    setTimeout(() => {
+        if (now !== saveSelectionsTimestamp) {
+            return
+        }
+        config.set(selectionsKey, selections.value)
+    }, 300)
+}
+
+function loadSelections() {
+    selections.value = config.get(selectionsKey) || {}
+    const uids = getSelectedUids()
+    utils.call(replaceSelections, 'FilterSelections', [uids])
+}
 
 function selectAll(isCurPage) {
     if (isCurPage) {
         for (const serv of servsInfo.value) {
             selections.value[serv.uid] = true
         }
+        selectionsChanged()
         return
     }
-
     utils.call(replaceSelections, 'GetAllServersUid')
 }
 
@@ -63,6 +82,7 @@ function replaceSelections(uids) {
     for (let uid of uids) {
         selections.value[uid] = true
     }
+    selectionsChanged()
 }
 
 function selectNone(isCurPage) {
@@ -70,9 +90,11 @@ function selectNone(isCurPage) {
         for (const serv of servsInfo.value) {
             selections.value[serv.uid] = false
         }
+        selectionsChanged()
         return
     }
     selections.value = {}
+    selectionsChanged()
 }
 
 function selectNotTestedGlobal() {
@@ -87,17 +109,19 @@ function selectTimeoutGlobal() {
     utils.call(replaceSelections, 'GetAllTimeoutedServersUid')
 }
 
-function invertSelection(isCurPage) {
+function inverseSelection(isCurPage) {
     if (isCurPage) {
         for (const serv of servsInfo.value) {
             selections.value[serv.uid] = !selections.value[serv.uid]
         }
+        selectionsChanged()
         return
     }
     function next(uids) {
         for (let uid of uids) {
             selections.value[uid] = selections.value[uid] !== true
         }
+        selectionsChanged()
     }
     utils.call(next, 'GetAllServersUid')
 }
@@ -208,6 +232,7 @@ function deleteSelected() {
     const count = uids.length
     const next = function (c) {
         selections.value = {}
+        selectionsChanged()
         const msg = t('serversDeleted', { count: c })
         Swal.fire(msg)
         refresh()
@@ -222,6 +247,7 @@ function deleteSelected() {
 function deleteServer(uid, name) {
     const next = function (c) {
         selections.value[uid] = false
+        selectionsChanged()
         const msg = t('serversDeleted', { count: c })
         Swal.fire(msg)
         refresh()
@@ -244,7 +270,13 @@ function restartServ(uid) {
 }
 
 function restartOneServ(uid) {
-    utils.call(refresh, 'RestartServ', [uid || '', false])
+    function next() {
+        // restart may failed
+        setTimeout(() => {
+            refresh()
+        }, 3000)
+    }
+    utils.call(next, 'RestartServ', [uid || '', false])
 }
 
 function search() {
@@ -390,6 +422,7 @@ function countTags(tags) {
 }
 
 onMounted(() => {
+    loadSelections()
     refresh()
 })
 
@@ -449,8 +482,8 @@ onUnmounted(() => {})
                             </button>
                         </li>
                         <li>
-                            <button @click="invertSelection(true)" dropdown-closer>
-                                {{ t('invertSelection') }}
+                            <button @click="inverseSelection(true)" dropdown-closer>
+                                {{ t('inverseSelection') }}
                             </button>
                         </li>
                         <li>
@@ -473,8 +506,8 @@ onUnmounted(() => {})
                             </button>
                         </li>
                         <li>
-                            <button @click="invertSelection(false)" dropdown-closer>
-                                {{ t('invertSelection') }}
+                            <button @click="inverseSelection(false)" dropdown-closer>
+                                {{ t('inverseSelection') }}
                             </button>
                         </li>
                         <li>
@@ -637,6 +670,7 @@ onUnmounted(() => {})
                                 type="checkbox"
                                 v-model="selections[serv.uid]"
                                 class="inline-block h-4 w-4"
+                                @change="selectionsChanged"
                             />
                         </div>
                         <div class="table-cell w-16 px-1 py-0 text-center align-middle">

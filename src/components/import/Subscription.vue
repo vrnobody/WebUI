@@ -9,6 +9,20 @@ const t = utils.getTranslator()
 
 const subs = ref([])
 
+function selectAll() {
+    for (let sub of subs.value) {
+        sub.isUse = true
+    }
+    saveSubs(() => {})
+}
+
+function inverseSelections() {
+    for (let sub of subs.value) {
+        sub.isUse = !sub.isUse
+    }
+    saveSubs(() => {})
+}
+
 function refresh() {
     const next = function (str) {
         try {
@@ -152,6 +166,12 @@ onMounted(() => {
     <!-- bottom controls -->
     <div class="fixed bottom-0 right-0 z-10 flex-col bg-slate-400 px-1 py-1 dark:bg-slate-500">
         <div class="text-base">
+            <button @click="selectAll" class="px-2">
+                <i class="fas fa-check-double"></i> {{ t('selectAll') }}
+            </button>
+            <button @click="inverseSelections" class="px-2">
+                <i class="fas fa-adjust"></i> {{ t('inverseSelection') }}
+            </button>
             <button @click="editSub(-1)" class="px-2">
                 <i class="fas fa-plus"></i> {{ t('add') }}
             </button>
