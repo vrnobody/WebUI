@@ -31,19 +31,19 @@ loadfile(serv)(options)
 但是！这还是防不了暴力破解，所以最好还是别放到公网上。  
   
 #### 开发
-##### 下载源码并安装依赖
+下载源码并安装依赖
 ```sh
 git clone https://github.com/vrnobody/WebUI.git
 cd WebUI
 npm install
 ```
   
-##### 启动客户端
+启动客户端
 ```sh
 npm run dev
 ```
   
-##### 启动服务端
+启动服务端
  1. 在Luna脚本编辑器中加载`public/server.lua`并运行  
  2. 禁用浏览器的CORS检测  
 ```bash
