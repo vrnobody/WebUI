@@ -31,6 +31,11 @@ local args = {...}
 local options = {}
 local sLog = Logger.new(nil, Logger.logLevels.Debug)
 
+local forbiddenFuncList = {}
+for k, _ in pairs(_G) do
+    forbiddenFuncList[k] = true
+end
+
 local function ParseOptions()
     local o = {}
     if #args == 1 and type(args[1]) == "table" then
@@ -738,6 +743,11 @@ local function Handler(req)
     end
     
     local fn = j["fn"]
+    if forbiddenFuncList[fn] then
+        sLog:Warn("call forbidden function:", fn)
+        return Response(false, "funcNotExists", fn)
+    end
+    
     local f = _G[fn]
     local p = j["ps"]
     if type(f) ~= "function" then
