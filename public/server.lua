@@ -1,6 +1,6 @@
 --[[
 用法1: 
-loadfile("./lua/webui/server.lua")("http://localhost:1234/")
+loadfile("./lua/webui/server.lua")()
 
 用法2: 
 loadfile("./lua/webui/server.lua")({
@@ -12,7 +12,7 @@ loadfile("./lua/webui/server.lua")({
 })
 --]]
 
-local version = "0.0.2.6"
+local version = "0.0.3.0"
 
 -- for debugging only
 local url = "http://localhost:4000/"
