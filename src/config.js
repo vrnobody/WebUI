@@ -85,7 +85,7 @@ init()
 export default {
     isDevMode,
     devHostUrl: 'http://localhost:4000',
-    releaseHostUrl: '/',
+    releaseHostUrl: './',
     supportedServerVersions: ['0.0.3.0'],
     supportedAppVersion: '1.7.1.0',
     get,

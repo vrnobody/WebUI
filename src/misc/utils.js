@@ -17,10 +17,10 @@ function reloadThemeMode() {
     const css = document.createElement('link')
     css.rel = 'stylesheet'
     if (dark) {
-        css.href = '/css/swal-dark.css'
+        css.href = './css/swal-dark.css'
         document.documentElement.classList.add('dark')
     } else {
-        css.href = '/css/swal-light.css'
+        css.href = './css/swal-light.css'
         document.documentElement.classList.remove('dark')
     }
     document.head.appendChild(css)
