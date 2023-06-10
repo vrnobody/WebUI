@@ -5,11 +5,12 @@ V2RayGCon的网页端。
 V2RayGCon v1.6.9+包含了WebUI无需另外下载安装。  
 在Luna插件中运行以下代码即可：  
 ```lua
-loadfile('./lua/webui/server.lua')()
+local url = 'http://localhost:4000/'
+loadfile('./lua/webui/server.lua')(url)
 ```
 然后在浏览器中访问`http://localhost:4000/`  
   
-进阶玩法：  
+进阶用法：  
 ```lua
 local Logger = require('lua.modules.logger')
 
@@ -44,9 +45,16 @@ npm run dev
 ```
   
 启动服务端
- 1. 在Luna脚本编辑器中加载`public/server.lua`并运行  
- 2. 禁用浏览器的CORS检测  
+```lua
+在Luna脚本编辑器中加载`public/server.lua`并运行
+```
+
+禁用浏览器的CORS检测
 ```bash
 "c:\chrome.exe" --user-data-dir="c:\temp\" --disable-web-security --disable-site-isolation-trials
 ```
- 3. 访问`http://localhost:5173/`  
+
+最后访问网址  
+```js
+http://localhost:5173/
+```

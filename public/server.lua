@@ -17,7 +17,7 @@ local version = "0.0.3.0"
 -- for debugging only
 local url = "http://localhost:4000/"
 local public = "./lua/webui"
-local password = "123456"
+local password = ""
 
 -- code
 local Logger = require('lua.modules.logger')
