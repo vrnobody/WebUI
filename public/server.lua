@@ -1,8 +1,8 @@
 --[[
-用法1: 
+usage 1: 
 loadfile("./lua/webui/server.lua")()
 
-用法2: 
+usage 2: 
 loadfile("./lua/webui/server.lua")({
     ["url"] = "http://localhost:1234/",
     ["password"] = "123456",
@@ -12,7 +12,7 @@ loadfile("./lua/webui/server.lua")({
 })
 --]]
 
-local version = "0.0.3.0"
+local version = "0.0.4.0"
 
 -- for debugging only
 local url = "http://localhost:4000/"
