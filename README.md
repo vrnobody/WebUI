@@ -58,3 +58,7 @@ npm run dev
 ```js
 http://localhost:5173/
 ```
+
+#### 更新记录
+[update-log.txt](https://github.com/vrnobody/WebUI/blob/main/update-log.txt)  
+
