@@ -274,7 +274,7 @@ function restartOneServ(uid) {
         // restart may failed
         setTimeout(() => {
             refresh()
-        }, 2500)
+        }, 2000)
         refresh()
     }
     utils.call(next, 'RestartServ', [uid || '', false])

@@ -12,7 +12,7 @@ loadfile("./lua/webui/server.lua")({
 })
 --]]
 
-local version = "0.0.4.0"
+local version = "0.0.4.1"
 
 -- for debugging only
 local url = "http://localhost:4000/"
@@ -637,7 +637,7 @@ function RestartServ(uid, stopOthers)
         if stopOthers == true then
             Server:StopAllServers()
         end
-        coreCtrl:RestartCore()
+        coreCtrl:RestartCoreIgnoreError()
         return true
     end
     return false
