@@ -32,16 +32,16 @@ function pop(msg, ps) {
     Swal.fire(m)
 }
 
+function reloadPage() {
+    location.reload()
+}
+
 let isChangingPassword = false
 function changePassword() {
     if (isChangingPassword) {
         return
     }
     isChangingPassword = true
-
-    function reloadPage() {
-        location.reload()
-    }
 
     function genToken(salt) {
         Swal.fire({

@@ -10,6 +10,7 @@ export default {
     callFuncError: '执行函数时发生错误！',
     changeSettings: '修改设置',
     cleanup: '清理',
+    clearPassword: '删除保存的密码',
     close: '关闭',
     configIsEmpty: 'config为空！',
     confirmDelete: '确定要删除 [{name}] 吗?',
@@ -69,6 +70,7 @@ export default {
     loadClr: '加载CLR',
     loadFile: '从文件加载',
     loading: '加载中...',
+    logout: '登出',
     lunaEditorKeyboardShortcutsContent: `ctrl f    调出搜索框
 ctrl h    调出替换框
 ctrl l    调出跳转到行号框

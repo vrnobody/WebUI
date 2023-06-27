@@ -10,6 +10,7 @@ export default {
     callFuncError: 'Call function error!',
     changeSettings: 'Change settings',
     cleanup: 'Cleanup',
+    clearPassword: 'Clear password',
     close: 'Close',
     configIsEmpty: 'Config is empty!',
     confirmDelete: 'Delete [{name}]?',
@@ -69,6 +70,7 @@ export default {
     loadClr: 'LoadCLR',
     loadFile: 'Load file',
     loading: 'Loading...',
+    logout: 'Logout',
     lunaEditorKeyboardShortcutsContent: `ctrl f    Show search box
 ctrl h    Show replace box
 ctrl l    Show goto-line box
