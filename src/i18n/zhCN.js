@@ -71,6 +71,7 @@ export default {
     loadFile: '从文件加载',
     loading: '加载中...',
     logout: '登出',
+    luaPatterns: '(Lua正则)',
     lunaEditorKeyboardShortcutsContent: `ctrl f    调出搜索框
 ctrl h    调出替换框
 ctrl l    调出跳转到行号框

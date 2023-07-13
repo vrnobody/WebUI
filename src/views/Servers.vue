@@ -422,6 +422,10 @@ function countTags(tags) {
     return count
 }
 
+function searchBoxPlaceholder() {
+    return t('search') + ' ' + t('luaPatterns')
+}
+
 onMounted(() => {
     loadSelections()
     refresh()
@@ -452,7 +456,7 @@ onUnmounted(() => {})
                     @keyup.enter="search"
                     type="text"
                     class="mx-4 my-0 w-40 bg-neutral-50 px-1 dark:bg-slate-500 md:w-48"
-                    :placeholder="t('search')"
+                    :placeholder="searchBoxPlaceholder()"
                 />
                 <div class="absolute right-6 top-0 m-0 text-neutral-300 dark:text-neutral-700">
                     <button @click="clearSearchKeyword"><i class="fas fa-search"></i></button>

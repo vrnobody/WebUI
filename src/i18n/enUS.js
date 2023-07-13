@@ -71,6 +71,7 @@ export default {
     loadFile: 'Load file',
     loading: 'Loading...',
     logout: 'Logout',
+    luaPatterns: '(Lua patterns)',
     lunaEditorKeyboardShortcutsContent: `ctrl f    Show search box
 ctrl h    Show replace box
 ctrl l    Show goto-line box
