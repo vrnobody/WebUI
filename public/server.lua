@@ -152,9 +152,21 @@ local function SearchAllServer(servs, first, last)
     return d
 end
 
+local function GetServersByUids(uids)
+    local r = {}
+    local servs = Server:GetServersByUids(uids)
+    local et = servs:GetEnumerator()
+    while et:MoveNext() do
+        local coreServ = et.Current
+        table.insert(r, coreServ)
+    end
+    et:Dispose()
+    return r
+end
+
 local function FilterServsByName(servs, keyword)
     local r = {}
-    for coreServ in Each(servs) do
+    for _, coreServ in ipairs(servs) do
         local coreState = coreServ:GetCoreStates()
         local name = string.lower(coreState:GetName())
         if string.find(name, keyword) then
@@ -166,7 +178,7 @@ end
 
 local function FilterServsBySummary(servs, keyword)
     local r = {}
-    for coreServ in Each(servs) do
+    for _, coreServ in ipairs(servs) do
         local coreState = coreServ:GetCoreStates()
         local summary = string.lower(coreState:GetSummary())
         if string.find(summary, keyword) then
@@ -190,7 +202,7 @@ end
 
 local function FilterServsByTags(servs, keyword)
     local r = {}
-    for coreServ in Each(servs) do
+    for _, coreServ in ipairs(servs) do
         local coreState = coreServ:GetCoreStates()
         local tags = GetTags(coreState)
         if IsInTags(tags, keyword) then
@@ -373,9 +385,9 @@ function AbortLuaVm(luavm)
 end
 
 function FilterSelections(uids)
-    local servs = Server:GetServersByUids(uids)
+    local servs = GetServersByUids(uids)
     local r = {}
-    for coreServ in Each(servs) do
+    for _, coreServ in ipairs(servs) do
         local coreState = coreServ:GetCoreStates()
         local uid = coreState:GetUid()
         table.insert(r, uid)
@@ -384,9 +396,9 @@ function FilterSelections(uids)
 end
 
 function GetAllServersUid()
-    local servs = Server:GetAllServers()
+    local servs = utils.GetAllServers()
     local r = {}
-    for coreServ in Each(servs) do
+    for _, coreServ in ipairs(servs) do
         local coreState = coreServ:GetCoreStates()
         local uid = coreState:GetUid()
         table.insert(r, uid)
@@ -395,9 +407,9 @@ function GetAllServersUid()
 end
 
 function GetAllNotTtestedServersUid()
-    local servs = Server:GetAllServers()
+    local servs = utils.GetAllServers()
     local r = {}
-    for coreServ in Each(servs) do
+    for _, coreServ in ipairs(servs) do
         local coreState = coreServ:GetCoreStates()
         local latency = coreState:GetSpeedTestResult()
         if latency < 1 then
@@ -409,9 +421,9 @@ function GetAllNotTtestedServersUid()
 end
 
 function GetAllNotTimeoutedServersUid()
-    local servs = Server:GetAllServers()
+    local servs = utils.GetAllServers()
     local r = {}
-    for coreServ in Each(servs) do
+    for _, coreServ in ipairs(servs) do
         local coreState = coreServ:GetCoreStates()
         local latency = coreState:GetSpeedTestResult()
         if latency > 0 and latency < utils.Timeout then
@@ -423,9 +435,9 @@ function GetAllNotTimeoutedServersUid()
 end
 
 function GetAllTimeoutedServersUid()
-    local servs = Server:GetAllServers()
+    local servs = utils.GetAllServers()
     local r = {}
-    for coreServ in Each(servs) do
+    for _, coreServ in ipairs(servs) do
         local coreState = coreServ:GetCoreStates()
         if coreState:GetSpeedTestResult() == utils.Timeout then
             local uid = coreState:GetUid()
@@ -452,9 +464,9 @@ function ReverseServersByIndex(uids)
 end
 
 function CopyShareLinkOfServers(uids)
-    local servs = Server:GetServersByUids(uids)
+    local servs = GetServersByUids(uids)
     local links = {}
-    for coreServ in Each(servs) do
+    for _, coreServ in ipairs(servs) do
         local coreConfiger = coreServ:GetConfiger()
         local link = coreConfiger:GetShareLink()
         if not string.isempty(link) then
@@ -470,8 +482,8 @@ end
 
 function ChangeServersSetting(uids, s)
     local keys = {"inbMode", "inbIp", "inbPort", "isAutoRun", "mark", "remark", "tag1", "tag2", "tag3"}
-    local servs = Server:GetServersByUids(uids)
-    for coreServ in Each(servs) do
+    local servs = GetServersByUids(uids)
+    for _, coreServ in ipairs(servs) do
         local coreState = coreServ:GetCoreStates()
         for _, key in pairs(keys) do
             local v = s[key]
@@ -504,11 +516,11 @@ function ChangeServersSetting(uids, s)
 end
 
 function GetFirstServSettings(uids)
-    local servs = Server:GetServersByUids(uids)
-    if servs.Count < 1 then
+    local servs = GetServersByUids(uids)
+    if #servs < 1 then
         return nil
     end
-    local coreServ = servs[0]
+    local coreServ = servs[1]
     local coreState = coreServ:GetCoreStates()
     local uid = coreState:GetUid()
     return GetServSettings(uid)
@@ -578,32 +590,32 @@ function GetSerializedServers(pageNum, searchType, keyword)
     searchType = searchType or ""
     keyword = keyword or ""
     -- sLog:Debug("params:", pageNum, searchType, keyword)
-    local servs = Server:GetAllServers()
+    local servs = utils.GetAllServers()
     local r = {
         ["pages"] = 1,
         ["data"] = {},
         ["isTesting"] = Server:IsRunningSpeedTest(),
-        ["count"] = servs.Count,
+        ["count"] = #servs,
     }
     
-    if servs.Count < 1 then
+    if #servs < 1 then
         return r
     end
     
-    local min = 0
-    local max = servs.Count - 1
-    local first = Clamp((pageNum - 1) * options['pageSize'], min, max)
-    local last = Clamp((pageNum) * options['pageSize'] - 1, first, max)
+    local min = 1
+    local max = #servs
+    local first = Clamp((pageNum - 1) * options['pageSize'] + 1, min, max)
+    local last = Clamp((pageNum) * options['pageSize'], first, max)
     if string.isempty(searchType) or string.isempty(keyword) then
         -- print("search all")
-        r["pages"] = CalcTotalPageNumber(servs.Count)
+        r["pages"] = CalcTotalPageNumber(#servs)
         r["data"] = SearchAllServer(servs, first, last)
         return r
     end
     
     if searchType == "index" then
-        local idx = math.floor((tonumber(keyword) or 0) - 1)
-        if idx < 0 or idx >= servs.Count then
+        local idx = math.floor((tonumber(keyword) or 1))
+        if idx < 1 or idx > #servs then
             r["count"] = 0
             return r
         end
@@ -618,7 +630,7 @@ function GetSerializedServers(pageNum, searchType, keyword)
     r["pages"] = CalcTotalPageNumber(#filtered)
     r["count"] = max
     local d = {}
-    for i = first + 1, last + 1 do
+    for i = first, last do
         if i <= max then
             local coreServ = filtered[i]
             local t = GetterCoreServInfo(coreServ)
