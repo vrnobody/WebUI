@@ -153,15 +153,8 @@ local function SearchAllServer(servs, first, last)
 end
 
 local function GetServersByUids(uids)
-    local r = {}
     local servs = Server:GetServersByUids(uids)
-    local et = servs:GetEnumerator()
-    while et:MoveNext() do
-        local coreServ = et.Current
-        table.insert(r, coreServ)
-    end
-    et:Dispose()
-    return r
+    return utils.ToLuaTable(servs)
 end
 
 local function FilterServsByName(servs, keyword)
