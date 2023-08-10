@@ -1,33 +1,20 @@
 --[[
-usage 1: 
-loadfile("./lua/webui/server.lua")()
 
-usage 2: 
-loadfile("./lua/webui/server.lua")({
-    ["url"] = "http://localhost:1234/",
-    ["password"] = "123456",
-    ["salt"] = "485c5940-cccd-484c-883c-66321d577992",
-    ["pageSize"] = "50",
-    ["public"] = "./lua/webui",
-})
+usage:
+loadfile("./3rd/neolua/webui/server.lua")()
+
 --]]
 
-local version = "0.0.4.1"
+local args = {...}
 
--- for debugging only
-local url = "http://localhost:4000/"
-local public = "./lua/webui"
-local password = ""
+local version = "0.0.5.0"
 
 -- code
-local Logger = require('lua.modules.logger')
-local httpServ = require('lua.modules.httpServ').new()
-local json = require('lua.libs.json')
-local utils = require('lua.libs.utils')
-local reader = require('lua.modules.reader')
-local writer = require('lua.modules.writer')
+local Logger = require('3rd/neolua/mods/logger')
+local httpServ = require('3rd/neolua/mods/httpServ').new()
+local json = require('3rd/neolua/libs/json')
+local utils = require('3rd/neolua/libs/utils')
 
-local args = {...}
 local options = {}
 local sLog = Logger.new(nil, Logger.logLevels.Debug)
 
@@ -37,31 +24,32 @@ for k, _ in pairs(_G) do
 end
 
 local function ParseOptions()
-    local o = {}
-    if #args == 1 and type(args[1]) == "table" then
-        o = args[1]
-    end
-    if #args < 1 and not string.isempty(password) then
-        o['password'] = password
-    end
-    o['salt'] = o['salt'] or '485c5940-cccd-484c-883c-66321d577992'
-    o['logLevel'] = o['logLevel'] or (#args > 0 and Logger.logLevels.Info or Logger.logLevels.Debug)
-    o['pageSize'] = o['pageSize'] or 50
-    o['public'] = o['public'] or public
-    if string.isempty(o['url']) then
-        -- backward compactible
-        if #args > 0 and type(args[1]) == "string" then
-            o['url'] = args[1]
-        else
-            o['url'] = url
+    local o = {
+        ["url"] = "http://localhost:4000/",
+        ["password"] = "",
+        ["salt"] = "485c5940-cccd-484c-883c-66321d577992",
+        ["pageSize"] = "50",
+        ["public"] = "./3rd/neolua/webui",
+        ['logLevel'] = Logger.logLevels.Info,
+    }
+
+    if #args == 1 and type(args[1]) == 'table' then
+        local a = args[1]
+        foreach kv in o do
+            local key = kv.Key
+            if a[key] ~= nil and type(a[key]) == type(o[key]) then
+                o[key] = a[key]
+            end
         end
     end
+
     if not string.isempty(o['password']) then
         local str = o['salt'] .. o['password']
-        o['token'] = Misc:Sha512(str)
+        o['token'] = std.Misc:Sha512(str)
         o['password'] = nil
     end
     options = o
+    -- 0rint(table.dump(o))
 end
 
 local function Clamp(v, min, max)
@@ -94,6 +82,15 @@ local function Response(ok, result, ...)
         ["ps"] = { ... },
     }
     return json.encode(r)
+end
+
+local function GetAllServers()
+    local r = {}
+    local servs = std.Server:GetAllServers()
+    foreach serv in servs do
+        table.insert(r, serv)
+    end
+    return r
 end
 
 local function GetTags(coreState)
@@ -150,11 +147,6 @@ local function SearchAllServer(servs, first, last)
         table.insert(d, t)
     end
     return d
-end
-
-local function GetServersByUids(uids)
-    local servs = Server:GetServersByUids(uids)
-    return utils.ToLuaTable(servs)
 end
 
 local function FilterServsByName(servs, keyword)
@@ -228,27 +220,27 @@ function GetSalt()
 end
 
 function RunLatencyTestByUid(uid)
-    return Server:RunSpeedTestByUids({uid})
+    return std.Server:RunSpeedTestByUids({uid})
 end
 
 function StopLatencyTest()
-    Server:StopSpeedTest()
+    std.Server:StopSpeedTest()
 end
 
 function GetAllLuaVmsInfo()
-    return Sys:LuaVmGetAllVmsInfo()
+    return std.Sys:LuaVmGetAllVmsInfo()
 end
 
 function RemoveAllStoppedLuaVms()
-    Sys:LuaVmRemoveStopped()
+    std.Sys:LuaVmRemoveStopped()
 end
 
 function GetScriptFromLuaVm(luavm)
-    return Sys:LuaVmGetScript(luavm)
+    return std.Sys:LuaVmGetScript(luavm)
 end
 
 function GetShareLink(uid)
-    local coreServ = utils.GetFirstServerWithUid(uid)
+    local coreServ = std.Server:GetServerByUid(uid)
     if coreServ ~= nil then
         local coreConfiger = coreServ:GetConfiger()
         return coreConfiger:GetShareLink()
@@ -257,37 +249,35 @@ function GetShareLink(uid)
 end
 
 function WrtieFile(filename, content)
-    local w = writer.new(filename)
-    w:WriteAllText(content)
+    std.Sys:WriteAllText(filename, content)
 end
 
 function ReadFile(filename)
-    local r = reader.new(filename)
-    return r:ReadAllText()
+    return std.Sys:ReadAllText(filename)
 end
 
 function Ls(path, exts)
-    return Sys:Ls(path, exts)
+    return std.Sys:Ls(path, exts)
 end
 
 function UpdateSubscriptions()
-    local proxyPort = Web:GetProxyPort()
-    return Web:UpdateSubscriptions(proxyPort)
+    local proxyPort = std.Web:GetProxyPort()
+    return std.Web:UpdateSubscriptions(proxyPort)
 end
 
 function SaveSubscriptions(subs)
-    Misc:SetSubscriptionConfig(subs)
+    std.Misc:SetSubscriptionConfig(subs)
 end
 
 function GetSubscriptions()
-    return Misc:GetSubscriptionConfig()
+    return std.Misc:GetSubscriptionConfig()
 end
 
 function GetLog(uid)
     if string.isempty(uid) then
-        return Misc:GetLogAsString()
+        return std.Misc:GetLogAsString()
     end
-    local coreServ = utils.GetFirstServerWithUid(uid)
+    local coreServ = std.Server:GetServerByUid(uid)
     if coreServ == nil then
         return nil
     end
@@ -296,91 +286,91 @@ function GetLog(uid)
 end
 
 function LuaAnalyzeCode(code)
-    return Sys:LuaAnalyzeCode(code)
+    return std.Sys:LuaAnalyzeCode(code)
 end
 
 function GenLuaModuleSnippets(code)
-    return Sys:LuaGenModuleSnippets(code)
+    return std.Sys:LuaGenModuleSnippets(code)
 end
 
 function GetLuaStaticSnippets()
-    return Sys:LuaGetStaticSnippets()
+    return std.Sys:LuaGetStaticSnippets()
 end
 
 function ChangeLuaCoreIndex(name, index)
-    return Sys:LusServSetIndex(name, index)
+    return std.Sys:LusServSetIndex(name, index)
 end    
 
 function StartLuaCore(name)
-    Sys:LuaServStart(name)
+    std.Sys:LuaServStart(name)
 end
 
 function RestartLuaCore(name)
-    Sys:LuaServRestart(name)
+    std.Sys:LuaServRestart(name)
 end
 
 function StopLuaCore(name)
-    Sys:LuaServStop(name)
+    std.Sys:LuaServStop(name)
 end
 
 function AbortLuaCore(name)
-    Sys:LuaServAbort(name)
+    std.Sys:LuaServAbort(name)
 end
 
 function RemoveLuaCore(name)
-    return Sys:LuaServRemove(name)
+    return std.Sys:LuaServRemove(name)
 end
 
 function ChangeLuaCoreInfo(name, settings)
-    return Sys:LuaServChangeSettings(name, settings)
+    return std.Sys:LuaServChangeSettings(name, settings)
 end
 
 function GetAllLuaCoreInfos()
-    return Sys:LuaServGetAllCoreInfos()
+    return std.Sys:LuaServGetAllCoreInfos()
 end
 
 function AddLuaScript(name, script)
-    return Sys:LuaServAdd(name, script)
+    return std.Sys:LuaServAdd(name, script)
 end
 
 function GetAllLuaScripts()
-    return Sys:LuaServGetAllScripts()
+    return std.Sys:LuaServGetAllScripts()
 end
 
 function RemoveLuaVm(luavm)
-    Sys:LuaVmRemove(luavm)
+    std.Sys:LuaVmRemove(luavm)
 end
 
 function ClearLuaVmLog(luavm)
-    Sys:LuaVmClearLog(luavm)
+    std.Sys:LuaVmClearLog(luavm)
 end
 
 function GetLuaVmLog(luavm)
-    return Sys:LuaVmGetLog(luavm)
+    return std.Sys:LuaVmGetLog(luavm)
 end
 
 function RunLuaScript(name, script, isLoadClr)
-    local luavm = Sys:LuaVmCreate()
+    local luavm = std.Sys:LuaVmCreate(name)
     if string.isempty(luavm) then
         return ""
     end
     isLoadClr = isLoadClr == true
-    Sys:LuaVmRun(luavm, name, script, isLoadClr)
+    std.Sys:LuaVmRun(luavm, script, isLoadClr)
     return luavm
 end
 
 function StopLuaVm(luavm)
-    Sys:LuaVmStop(luavm)
+    std.Sys:LuaVmStop(luavm)
 end
 
 function AbortLuaVm(luavm)
-    Sys:LuaVmAbort(luavm)
+    std.Sys:LuaVmAbort(luavm)
 end
 
 function FilterSelections(uids)
-    local servs = GetServersByUids(uids)
+    local servs = std.Server:GetServersByUids(uids)
     local r = {}
-    for _, coreServ in ipairs(servs) do
+    foreach coreServ in servs do
         local coreState = coreServ:GetCoreStates()
         local uid = coreState:GetUid()
         table.insert(r, uid)
@@ -389,7 +379,7 @@ function FilterSelections(uids)
 end
 
 function GetAllServersUid()
-    local servs = utils.GetAllServers()
+    local servs = GetAllServers()
     local r = {}
     for _, coreServ in ipairs(servs) do
         local coreState = coreServ:GetCoreStates()
@@ -400,7 +390,7 @@ function GetAllServersUid()
 end
 
 function GetAllNotTtestedServersUid()
-    local servs = utils.GetAllServers()
+    local servs = GetAllServers()
     local r = {}
     for _, coreServ in ipairs(servs) do
         local coreState = coreServ:GetCoreStates()
@@ -414,7 +404,7 @@ function GetAllNotTtestedServersUid()
 end
 
 function GetAllNotTimeoutedServersUid()
-    local servs = utils.GetAllServers()
+    local servs = GetAllServers()
     local r = {}
     for _, coreServ in ipairs(servs) do
         local coreState = coreServ:GetCoreStates()
@@ -428,7 +418,7 @@ function GetAllNotTimeoutedServersUid()
 end
 
 function GetAllTimeoutedServersUid()
-    local servs = utils.GetAllServers()
+    local servs = GetAllServers()
     local r = {}
     for _, coreServ in ipairs(servs) do
         local coreState = coreServ:GetCoreStates()
@@ -441,25 +431,25 @@ function GetAllTimeoutedServersUid()
 end
 
 function SortServersByLatency(uids)
-    Server:SortServersBySpeedTest(uids)
+    std.Server:SortServersBySpeedTest(uids)
 end
 
 function SortServersByModifyDate(uids)
-    Server:SortServersByLastModifiedDate(uids)
+    std.Server:SortServersByLastModifiedDate(uids)
 end
 
 function SortServersBySummary(uids)
-    Server:SortServersBySummary(uids)
+    std.Server:SortServersBySummary(uids)
 end
 
 function ReverseServersByIndex(uids)
-    Server:ReverseServersByIndex(uids)
+    std.Server:ReverseServersByIndex(uids)
 end
 
 function CopyShareLinkOfServers(uids)
-    local servs = GetServersByUids(uids)
+    local servs = std.Server:GetServersByUids(uids)
     local links = {}
-    for _, coreServ in ipairs(servs) do
+    foreach coreServ in servs do
         local coreConfiger = coreServ:GetConfiger()
         local link = coreConfiger:GetShareLink()
         if not string.isempty(link) then
@@ -470,13 +460,13 @@ function CopyShareLinkOfServers(uids)
 end
 
 function RunLatencyTestOnServers(uids)
-    return Server:RunSpeedTestByUids(uids)
+    return std.Server:RunSpeedTestByUids(uids)
 end
 
 function ChangeServersSetting(uids, s)
     local keys = {"inbMode", "inbIp", "inbPort", "isAutoRun", "mark", "remark", "tag1", "tag2", "tag3"}
-    local servs = GetServersByUids(uids)
-    for _, coreServ in ipairs(servs) do
+    local servs = std.Server:GetServersByUids(uids)
+    foreach coreServ in servs do
         local coreState = coreServ:GetCoreStates()
         for _, key in pairs(keys) do
             local v = s[key]
@@ -509,8 +499,8 @@ function ChangeServersSetting(uids, s)
 end
 
 function GetFirstServSettings(uids)
-    local servs = GetServersByUids(uids)
-    if #servs < 1 then
+    local servs = std.Server:GetServersByUids(uids)
+    if servs.Count < 1 then
         return nil
     end
     local coreServ = servs[1]
@@ -520,7 +510,7 @@ function GetFirstServSettings(uids)
 end
 
 function GetServSettings(uid)
-    local coreServ = utils.GetFirstServerWithUid(uid)
+    local coreServ = std.Server:GetServerByUid(uid)
     if not coreServ then
         return nil
     end
@@ -535,7 +525,7 @@ function GetServSettings(uid)
 end
 
 function SaveServSettings(uid, s)
-    local coreServ = utils.GetFirstServerWithUid(uid)
+    local coreServ = std.Server:GetServerByUid(uid)
     if not coreServ then
         return false
     end
@@ -558,24 +548,24 @@ function SaveServSettings(uid, s)
     coreState:SetInboundAddr(s["inbIp"], tonumber(s["inbPort"]))
     
     coreState:SetIsAutoRun(s["isAutoRun"])
-    Server:ResetIndexes()
+    std.Server:ResetIndexes()
     
     return true
 end
 
 function ChangeServIndex(uid, idx)
-    local coreServ = utils.GetFirstServerWithUid(uid)
+    local coreServ = std.Server:GetServerByUid(uid)
     if not coreServ then
         return false
     end
     local coreState = coreServ:GetCoreStates()
     coreState:SetIndex(idx)
-    Server:ResetIndexes()
+    std.Server:ResetIndexes()
     return true
 end
 
 function GetAppVersion()
-    return Sys:GetAppVersion()
+    return std.Sys:GetAppVersion()
 end
 
 function GetSerializedServers(pageNum, searchType, keyword)
@@ -583,11 +573,11 @@ function GetSerializedServers(pageNum, searchType, keyword)
     searchType = searchType or ""
     keyword = keyword or ""
     -- sLog:Debug("params:", pageNum, searchType, keyword)
-    local servs = utils.GetAllServers()
+    local servs = GetAllServers()
     local r = {
         ["pages"] = 1,
         ["data"] = {},
-        ["isTesting"] = Server:IsRunningSpeedTest(),
+        ["isTesting"] = std.Server:IsRunningSpeedTest(),
         ["count"] = #servs,
     }
     
@@ -636,11 +626,11 @@ end
 
 function RestartServ(uid, stopOthers)
     uid = uid or ""
-    local coreServ = utils.GetFirstServerWithUid(uid)
+    local coreServ = std.Server:GetServerByUid(uid)
     if coreServ ~= nil then
         local coreCtrl = coreServ:GetCoreCtrl()
         if stopOthers == true then
-            Server:StopAllServers()
+            std.Server:StopAllServers()
         end
         coreCtrl:RestartCoreIgnoreError()
         return true
@@ -650,7 +640,7 @@ end
 
 function StopServ(uid)
     uid = uid or ""
-    local coreServ = utils.GetFirstServerWithUid(uid)
+    local coreServ = std.Server:GetServerByUid(uid)
     if coreServ ~= nil then
         local coreCtrl = coreServ:GetCoreCtrl()
         coreCtrl:StopCore()
@@ -665,12 +655,12 @@ end
 
 function SetUserSettings(props)
     local p = json.encode(props)
-    return Misc:SetUserSettings(p)
+    return std.Misc:SetUserSettings(p)
 end
 
 function GetUserSettings(props)
     local p = json.encode(props)
-    return Misc:GetUserSettings(p)
+    return std.Misc:GetUserSettings(p)
 end
 
 function SaveServerConfig(uid, config)
@@ -682,7 +672,7 @@ function SaveServerConfig(uid, config)
     end
     
     if string.isempty(uid) then
-        local ok = Server:Add(config)
+        local ok = std.Server:Add(config)
         if not ok then
             return "addServerFailed"
         else
@@ -690,7 +680,7 @@ function SaveServerConfig(uid, config)
         end
     end
     
-    local coreServ = utils.GetFirstServerWithUid(uid)
+    local coreServ = std.Server:GetServerByUid(uid)
     if coreServ == nil then
         return "serverNotFound"
     end
@@ -701,7 +691,7 @@ function SaveServerConfig(uid, config)
 end
 
 function GetServerConfig(uid)
-    local coreServ = utils.GetFirstServerWithUid(uid)
+    local coreServ = std.Server:GetServerByUid(uid)
     if coreServ then
         local coreConfiger = coreServ:GetConfiger()
         local config = coreConfiger:GetConfig()
@@ -711,12 +701,12 @@ function GetServerConfig(uid)
 end
 
 function DeleteServByUids(uids)
-    return Server:DeleteServerByUids(uids)
+    return std.Server:DeleteServerByUids(uids)
 end
 
 function ImportShareLinks(links, mark)
-    local c = Misc:ImportLinks(links, mark)
-    Misc:RefreshFormMain()
+    local c = std.Misc:ImportLinks(links, mark)
+    std.Misc:RefreshFormMain()
     return c
 end
 

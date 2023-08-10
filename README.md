@@ -2,31 +2,32 @@
 V2RayGCon的网页端。  
 
 #### 安装使用
-V2RayGCon v1.6.9+包含了WebUI无需另外下载安装。  
-在Luna插件中运行以下代码即可：  
+V2RayGCon v1.8+包含了WebUI无需另外下载安装。  
+
+在NeoLuna插件中运行以下代码：  
 ```lua
-local url = 'http://localhost:4000/'
-loadfile('./lua/webui/server.lua')(url)
+loadfile('3rd/neolua/webui/server.lua')()
 ```
 然后在浏览器中访问`http://localhost:4000/`  
+但每次更新之后要在浏览中按shift+F5刷新缓存。  
   
-进阶用法：  
+进阶用法：
 ```lua
-local Logger = require('lua.modules.logger')
+local Logger = require('3rd/neolua/mods/logger')
 
-local serv = './lua/webui/server.lua'
+local serv = '3rd/neolua/webui/server.lua'
 local options = {
     ["url"] = "http://localhost:5000/",
     ["password"] = "123abc中文😀",
     ["salt"] = "485c5940-cccd-484c-883c-66321d577992",
     ["pageSize"] = "50",
-    ["public"] = "./lua/webui",
+    ["public"] = "./3rd/neolua/webui",
     ["logLevel"] = Logger.logLevels.Info,
 }
 
 loadfile(serv)(options)
 ```
-
+  
 安全提示：  
 密码验证不能防中间人攻击，请用Nginx之类的反向代理并启用TLS以提高安全性。  
 但是！这还是防不了暴力破解，所以最好还是别放到公网上。  
@@ -46,7 +47,7 @@ npm run dev
   
 启动服务端
 ```lua
-在Luna脚本编辑器中加载`public/server.lua`并运行
+在NeoLuna脚本编辑器中加载`public/server.lua`并运行
 ```
 
 禁用浏览器的CORS检测

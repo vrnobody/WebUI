@@ -63,36 +63,19 @@ onMounted(() => {
 <template>
     <div class="inline-flex h-12 w-full items-center justify-center text-2xl">V2RayGCon</div>
     <nav class="inline-block w-full grow p-0 text-left">
-        <RouterLink
-            to="/"
-            exact-active-class="dark:bg-slate-600 bg-slate-400"
-            class="hover:bg-slate-500 dark:hover:bg-slate-500"
-            ><i class="fas fa-server"></i> {{ t('servers') }}</RouterLink
-        >
-        <RouterLink
-            to="/import"
-            exact-active-class="dark:bg-slate-600 bg-slate-400"
-            class="hover:bg-slate-500 dark:hover:bg-slate-500"
-            ><i class="fas fa-file-import"></i> {{ t('import') }}</RouterLink
-        >
-        <RouterLink
-            to="/luna"
-            exact-active-class="dark:bg-slate-600 bg-slate-400"
-            class="hover:bg-slate-500 dark:hover:bg-slate-500"
-            ><i class="fas fa-code"></i> Luna</RouterLink
-        >
-        <RouterLink
-            to="/settings"
-            exact-active-class="dark:bg-slate-600 bg-slate-400"
-            class="hover:bg-slate-500 dark:hover:bg-slate-500"
-            ><i class="fas fa-cog"></i> {{ t('settings') }}
+        <RouterLink to="/" exact-active-class="dark:bg-slate-600 bg-slate-400"
+            class="hover:bg-slate-500 dark:hover:bg-slate-500"><i class="fas fa-server"></i> {{ t('servers') }}</RouterLink>
+        <RouterLink to="/import" exact-active-class="dark:bg-slate-600 bg-slate-400"
+            class="hover:bg-slate-500 dark:hover:bg-slate-500"><i class="fas fa-file-import"></i> {{ t('import') }}
         </RouterLink>
-        <RouterLink
-            to="/about"
-            exact-active-class="dark:bg-slate-600 bg-slate-400"
-            class="hover:bg-slate-500 dark:hover:bg-slate-500"
-            ><i class="fas fa-info-circle"></i> {{ t('about') }}</RouterLink
-        >
+        <RouterLink to="/luna" exact-active-class="dark:bg-slate-600 bg-slate-400"
+            class="hover:bg-slate-500 dark:hover:bg-slate-500"><i class="fas fa-code"></i> NeoLuna</RouterLink>
+        <RouterLink to="/settings" exact-active-class="dark:bg-slate-600 bg-slate-400"
+            class="hover:bg-slate-500 dark:hover:bg-slate-500"><i class="fas fa-cog"></i> {{ t('settings') }}
+        </RouterLink>
+        <RouterLink to="/about" exact-active-class="dark:bg-slate-600 bg-slate-400"
+            class="hover:bg-slate-500 dark:hover:bg-slate-500"><i class="fas fa-info-circle"></i> {{ t('about') }}
+        </RouterLink>
     </nav>
     <div class="absolute bottom-4 flex h-6 w-full items-center justify-center text-xl">
         <Tooltips :css="'-mt-8'" :tip="t('lightTheme')">
