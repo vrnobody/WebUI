@@ -17,11 +17,13 @@ const servUid = computed({
     }
 })
 
-const servTitle = computed({
+const propTitle = computed({
     get() {
         return props.title
     }
 })
+
+const servTitle = ref('')
 
 function close() {
     emit('onClose')
@@ -38,12 +40,7 @@ function loadConfig() {
 
 function parseServConfig(config) {
     try {
-        let s = '{\n\n}'
-        if (config) {
-            const j = JSON.parse(config)
-            s = JSON.stringify(j, null, 4)
-        }
-        servConfig.value = s
+        servConfig.value = config
         isShowJsonEditor.value = true
     } catch (err) {
         Swal.fire(err.toString())
@@ -65,22 +62,28 @@ function saveServConfig(uid) {
 
     try {
         uid = uid || ''
-        const config = servConfig.value
-        utils.call(next, 'SaveServerConfig', [uid, config])
+        const config = servConfig.value || ''
+        const title = servTitle.value || ''
+        utils.call(next, 'SaveServerConfig', [uid, title, config])
     } catch (err) {
         Swal.fire(err.toString())
     }
 }
 
 onMounted(() => {
+    servTitle.value = propTitle.value
     loadConfig()
 })
 
 onUnmounted(() => {})
 </script>
 <template>
-    <div v-if="servTitle" class="mb-1 text-base">
-        {{ servTitle }}
+    <div v-if="propTitle" class="mb-1 flex text-base">
+        <span>{{ servTitle }}</span>
+    </div>
+    <div v-else class="mb-1 flex text-base">
+        <span class="mr-1 w-12">{{ t('name') }}</span>
+        <input type="text" v-model="servTitle" class="grow bg-neutral-100 px-1 dark:bg-slate-500" />
     </div>
     <JsonEditor v-if="isShowJsonEditor" v-model="servConfig" />
     <LoadingWidget v-else />

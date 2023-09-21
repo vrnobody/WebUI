@@ -11,7 +11,8 @@ const servSettings = ref({})
 const t = utils.getTranslator()
 
 const servSettingKeys = [
-    'inbMode',
+    'coreName',
+    'inbName',
     'inbIp',
     'inbPort',
     'isAutoRun',
@@ -32,8 +33,6 @@ function initSelection() {
 
 function getElementType(key) {
     switch (key) {
-        case 'inbMode':
-            return 'select'
         case 'isAutoRun':
             return 'checkbox'
         default:
@@ -92,16 +91,6 @@ onMounted(() => {
                 </div>
                 <div class="mx-2 w-32 p-0">{{ t(key) }}</div>
                 <div class="mx-2 flex grow p-0">
-                    <select
-                        v-if="getElementType(key) === 'select'"
-                        v-model="servSettings[key]"
-                        class="grow border border-neutral-400 bg-neutral-300 dark:bg-slate-600"
-                    >
-                        <option value="0">Config</option>
-                        <option value="1">HTTP</option>
-                        <option value="2">SOCKS</option>
-                        <option value="3">{{ t('custom') }}</option>
-                    </select>
                     <input
                         v-if="getElementType(key) === 'text'"
                         type="text"

@@ -24,7 +24,8 @@ const servTitle = computed({
 const servSettingKeys = [
     'index',
     'name',
-    'inbMode',
+    'coreName',
+    'inbName',
     'inbIp',
     'inbPort',
     'isAutoRun',
@@ -37,8 +38,6 @@ const servSettingKeys = [
 
 function getElementType(key) {
     switch (key) {
-        case 'inbMode':
-            return 'select'
         case 'isAutoRun':
             return 'checkbox'
         default:
@@ -87,16 +86,6 @@ onMounted(() => {
             <div class="flex h-9 items-center">
                 <div class="mr-4 w-32 p-0">{{ t(key) }}</div>
                 <div class="flex grow p-0">
-                    <select
-                        v-if="getElementType(key) === 'select'"
-                        v-model="servSettings[key]"
-                        class="grow border border-neutral-400 bg-neutral-300 dark:bg-slate-600"
-                    >
-                        <option value="0">Config</option>
-                        <option value="1">HTTP</option>
-                        <option value="2">SOCKS</option>
-                        <option value="3">{{ t('custom') }}</option>
-                    </select>
                     <input
                         v-if="getElementType(key) === 'text'"
                         type="text"

@@ -690,7 +690,7 @@ onUnmounted(() => {})
                                     @click="restartServ(serv.uid)"
                                     class="whitespace-pre-wrap text-left"
                                 >
-                                    {{ serv['name'] }}
+                                    {{ serv['name'] || t('empty') }}
                                 </button>
                             </Tooltips>
                         </div>

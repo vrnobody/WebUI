@@ -1,8 +1,11 @@
 
+v0.0.6.0
+适配V2RayGCon v1.8.5
+
 v0.0.5.0
-WebUI搬迁到3rd/neolua/webui目录里面  
-需要在NeoLuna插件中运行server.lua  
-在“配置”面板顶部添加“登出”删除token功能  
+WebUI搬迁到3rd/neolua/webui目录里面
+需要在NeoLuna插件中运行server.lua
+在“配置”面板顶部添加“登出”删除token功能
 
 v0.0.4.0
 支持URL子目录（反向代理时可以使用https://www.my-site.dev/webui/形式的URL）

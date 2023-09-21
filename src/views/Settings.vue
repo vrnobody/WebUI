@@ -23,15 +23,13 @@ const propsTable = {
     QuickSwitchServerLantency: 'quickSwitchLatency',
     CustomDefImportTrojanShareLink: 'importTrojan',
     CustomDefImportSsShareLink: 'importShadowsocks',
-    CustomDefImportMode: 'importMode',
-    CustomDefImportIp: 'importIp',
-    CustomDefImportPort: 'importPort',
-    CustomDefInbounds: 'customInbounds'
+    DefaultCoreName: 'coreName',
+    DefaultInboundName: 'inbName',
+    CustomDefImportHost: 'importIp',
+    CustomDefImportPort: 'importPort'
 }
 
-const optionsTable = {
-    CustomDefImportMode: ['Config', 'HTTP', 'SOCKS', t('custom')]
-}
+const optionsTable = {}
 
 const areasTable = {
     CustomDefInbounds: 'h-[12rem]'

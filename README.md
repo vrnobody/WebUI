@@ -9,7 +9,7 @@ V2RayGCon v1.8+包含了WebUI无需另外下载安装。
 loadfile('3rd/neolua/webui/server.lua')()
 ```
 然后在浏览器中访问`http://localhost:4000/`  
-但每次更新之后要在浏览中按shift+F5刷新缓存。  
+注意每次更新后要在浏览中按shift+F5刷新缓存。  
   
 进阶用法：
 ```lua
@@ -47,7 +47,8 @@ npm run dev
   
 启动服务端
 ```lua
-在NeoLuna脚本编辑器中加载`public/server.lua`并运行
+在NeoLuna脚本编辑器中加载`public/server.lua`
+注释掉`args = {...}`这行，然后按F5运行
 ```
 
 禁用浏览器的CORS检测

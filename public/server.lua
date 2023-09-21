@@ -5,12 +5,19 @@ loadfile("./3rd/neolua/webui/server.lua")()
 
 --]]
 
-local args = {...}
+local Logger = require('3rd/neolua/mods/logger')
+local args = {
+    {
+        ['logLevel'] = Logger.logLevels.Debug,
+    }
+}
 
-local version = "0.0.5.0"
+-- comment out the following line while developing
+args = {...}
+
+local version = "0.0.6.0"
 
 -- code
-local Logger = require('3rd/neolua/mods/logger')
 local httpServ = require('3rd/neolua/mods/httpServ').new()
 local json = require('3rd/neolua/libs/json')
 local utils = require('3rd/neolua/libs/utils')
@@ -105,21 +112,6 @@ local function GetTags(coreState)
     return r
 end
 
-local function GetInboundInfo(coreState)
-    local mode = coreState:GetInboundType()
-    if mode == 0 then
-        return "Config"
-    end
-    if mode == 3 then
-        return "Custom"
-    end
-    if mode == 1 or mode == 2 then
-        local prefix = (mode == 1 and "http" or "socks")
-        return prefix .. "://" .. coreState:GetInboundAddr()
-    end
-    return "Unknow"
-end
-
 local function GetterCoreServInfo(coreServ)
     local t = {}
     if coreServ == nil then
@@ -133,7 +125,7 @@ local function GetterCoreServInfo(coreServ)
     t["summary"] = coreState:GetSummary()
     t["uid"] = coreState:GetUid()
     t["on"] = coreCtrl:IsCoreRunning()
-    t["inbound"] = GetInboundInfo(coreState)
+    t["inbound"] = coreState:GetInboundName()
     local cSharpTicks = coreState:GetLastModifiedUtcTicks()
     t["modified"] = utils.ToLuaTicks(cSharpTicks)
     return t
@@ -165,7 +157,8 @@ local function FilterServsBySummary(servs, keyword)
     local r = {}
     for _, coreServ in ipairs(servs) do
         local coreState = coreServ:GetCoreStates()
-        local summary = string.lower(coreState:GetSummary())
+        local s = coreState:GetSummary()
+        local summary = string.lower(s)
         if string.find(summary, keyword) then
             table.insert(r, coreServ)
         end
@@ -464,33 +457,35 @@ function RunLatencyTestOnServers(uids)
 end
 
 function ChangeServersSetting(uids, s)
-    local keys = {"inbMode", "inbIp", "inbPort", "isAutoRun", "mark", "remark", "tag1", "tag2", "tag3"}
+    local keys = {"coreName", "inbName", "inbIp", "inbPort", "isAutoRun", "mark", "remark", "tag1", "tag2", "tag3"}
     local servs = std.Server:GetServersByUids(uids)
     foreach coreServ in servs do
-        local coreState = coreServ:GetCoreStates()
+        local wserv = coreServ:Wrap()
         for _, key in pairs(keys) do
             local v = s[key]
             if v ~= nil then
-                if key == "inbMode" then
-                    coreState:SetInboundType(tonumber(v))
+                if key == "coreName" then
+                    wserv:SetCustomCoreName(v)
+                elseif key == "inbName" then
+                    wserv:SetInboundName(v)
                 elseif key == "inbIp" then
-                    local port = coreState:GetInboundPort()
-                    coreState:SetInboundAddr(v, port)
+                    local port = wserv:GetInboundPort()
+                    wserv:SetInboundAddr(v, port)
                 elseif key == "inbPort" then
-                    local ip = coreState:GetInboundIp()
-                    coreState:SetInboundAddr(ip, tonumber(v))
+                    local ip = wserv:GetInboundIp()
+                    wserv:SetInboundAddr(ip, tonumber(v))
                 elseif key == "isAutoRun" then
-                    coreState:SetIsAutoRun(v)
+                    wserv:SetIsAutoRun(v)
                 elseif key == "mark" then
-                    coreState:SetMark(v)
+                    wserv:SetMark(v)
                 elseif key == "remark" then
-                    coreState:SetRemark(v)
+                    wserv:SetRemark(v)
                 elseif  key == "tag1" then
-                    coreState:SetTag1(v)
+                    wserv:SetTag1(v)
                 elseif key == "tag2" then
-                    coreState:SetTag2(v)
+                    wserv:SetTag2(v)
                 elseif  key == "tag3" then
-                    coreState:SetTag3(v)
+                    wserv:SetTag3(v)
                 end
             end
         end
@@ -514,13 +509,14 @@ function GetServSettings(uid)
     if not coreServ then
         return nil
     end
-    local coreState = coreServ:GetCoreStates()
-    local r = GetTags(coreState)
-    r["index"] = coreState:GetIndex()
-    r["name"] =coreState:GetName()
-    r["inbMode"] = coreState:GetInboundType()
-    r["inbIp"] = coreState:GetInboundIp()
-    r["inbPort"] = coreState:GetInboundPort()
+    local wserv = coreServ:Wrap()
+    local r = GetTags(wserv)
+    r["index"] = wserv:GetIndex()
+    r["name"] = wserv:GetName()
+    r["coreName"] = wserv:GetCustomCoreName()
+    r["inbName"] = wserv:GetInboundName()
+    r["inbIp"] = wserv:GetInboundIp()
+    r["inbPort"] = wserv:GetInboundPort()
     return r
 end
 
@@ -529,25 +525,25 @@ function SaveServSettings(uid, s)
     if not coreServ then
         return false
     end
-    local coreState = coreServ:GetCoreStates()
-    
-    coreState:SetName(s["name"])
+    local wserv = coreServ:Wrap()
+    wserv:SetCustomCoreName(s["coreName"])
+    wserv:SetName(s["name"])
     local coreConfiger = coreServ:GetConfiger()
     coreConfiger:UpdateSummary() -- fix name is empty bug
     
-    coreState:SetMark(s["mark"])
-    coreState:SetRemark(s["remark"])
-    coreState:SetMark(s["mark"])
-    coreState:SetTag1(s["tag1"])
-    coreState:SetTag2(s["tag2"])
-    coreState:SetTag3(s["tag3"])
+    wserv:SetMark(s["mark"])
+    wserv:SetRemark(s["remark"])
+    wserv:SetMark(s["mark"])
+    wserv:SetTag1(s["tag1"])
+    wserv:SetTag2(s["tag2"])
+    wserv:SetTag3(s["tag3"])
     
-    coreState:SetIndex(tonumber(s["index"]) or 1)
+    wserv:SetIndex(tonumber(s["index"]) or 1)
     
-    coreState:SetInboundType(tonumber(s["inbMode"]))
-    coreState:SetInboundAddr(s["inbIp"], tonumber(s["inbPort"]))
+    wserv:SetInboundName(s["inbName"])
+    wserv:SetInboundAddr(s["inbIp"], tonumber(s["inbPort"]))
     
-    coreState:SetIsAutoRun(s["isAutoRun"])
+    wserv:SetIsAutoRun(s["isAutoRun"])
     std.Server:ResetIndexes()
     
     return true
@@ -663,8 +659,9 @@ function GetUserSettings(props)
     return std.Misc:GetUserSettings(p)
 end
 
-function SaveServerConfig(uid, config)
+function SaveServerConfig(uid, name, config)
     uid = uid or ""
+    name = name or ""
     config = config or ""
     
     if string.isempty(config) then
@@ -672,7 +669,7 @@ function SaveServerConfig(uid, config)
     end
     
     if string.isempty(uid) then
-        local ok = std.Server:Add(config)
+        local ok = std.Server:Add(name, config, "")
         if not ok then
             return "addServerFailed"
         else
