@@ -2,12 +2,21 @@ const isDevMode = import.meta.env.DEV
 
 const skey = isDevMode ? 'V2RayGConWebUiSettingsDev' : 'V2RayGConWebUiSettings'
 const tkey = isDevMode ? 'V2RayGConWebUiThemeDev' : 'V2RayGConWebUiTheme'
+const adminSessionKey = 'VgcAdminToken'
 
 let isSaving = false
 let userSettings = {}
 
 function getThemeMode() {
     return localStorage.getItem(tkey)
+}
+
+function saveAdminToken(token) {
+    sessionStorage.setItem(adminSessionKey, token)
+}
+
+function getAdminToken() {
+    return sessionStorage.getItem(adminSessionKey)
 }
 
 function saveThemeMode(mode) {
@@ -86,12 +95,14 @@ export default {
     isDevMode,
     devHostUrl: 'http://localhost:4000',
     releaseHostUrl: './',
-    supportedServerVersions: ['0.0.6.0'],
-    supportedAppVersion: '1.8.5.0',
+    supportedServerVersions: ['0.0.7.0'],
+    supportedAppVersion: '1.8.6.0',
     get,
     set,
     save,
     reload,
     getThemeMode,
-    saveThemeMode
+    saveThemeMode,
+    saveAdminToken,
+    getAdminToken
 }

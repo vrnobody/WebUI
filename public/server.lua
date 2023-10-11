@@ -5,17 +5,11 @@ loadfile("./3rd/neolua/webui/server.lua")()
 
 --]]
 
+local args = {...}
+
 local Logger = require('3rd/neolua/mods/logger')
-local args = {
-    {
-        ['logLevel'] = Logger.logLevels.Debug,
-    }
-}
 
--- comment out the following line while developing
-args = {...}
-
-local version = "0.0.6.0"
+local version = "0.0.7.0"
 
 -- code
 local httpServ = require('3rd/neolua/mods/httpServ').new()
@@ -23,7 +17,7 @@ local json = require('3rd/neolua/libs/json')
 local utils = require('3rd/neolua/libs/utils')
 
 local options = {}
-local sLog = Logger.new(nil, Logger.logLevels.Debug)
+local sLog = Logger.new(nil, false, Logger.logLevels.Debug)
 
 local forbiddenFuncList = {}
 for k, _ in pairs(_G) do
@@ -34,6 +28,7 @@ local function ParseOptions()
     local o = {
         ["url"] = "http://localhost:4000/",
         ["password"] = "",
+        ["adminpassword"] = "",
         ["salt"] = "485c5940-cccd-484c-883c-66321d577992",
         ["pageSize"] = "50",
         ["public"] = "./3rd/neolua/webui",
@@ -50,13 +45,18 @@ local function ParseOptions()
         end
     end
 
-    if not string.isempty(o['password']) then
-        local str = o['salt'] .. o['password']
-        o['token'] = std.Misc:Sha512(str)
-        o['password'] = nil
+    local keys = {"", "admin"}
+    for idx, key in ipairs(keys) do
+        local pk = key .. "password"
+        local tk = key .. "token"
+        if not string.isempty(o[pk]) then
+            local str = o['salt'] .. o[pk]
+            o[tk] = std.Misc:Sha512(str)
+            o[pk] = nil
+        end
     end
+    
     options = o
-    -- 0rint(table.dump(o))
 end
 
 local function Clamp(v, min, max)
@@ -711,13 +711,34 @@ function IsValidToken()
     return true
 end
 
-local function IsAuthorized(j)
+local function IsWhiteListedFunctions(j)
     local allowFuncs = {'GetSalt', 'GetAppVersion', 'GetServerVersion'}
     if table.contains(allowFuncs, j['fn']) then
         return true
     end
+    return false
+end
+
+local function IsAuthorized(j)
     local token = options['token']
     if string.isempty(token) or j['token'] == token then
+        return true
+    end
+    return false
+end
+
+local function CheckAdminPrivilege(j)
+    local fn = string.lower(j["fn"])
+    local blacklist = {'ls', 'readfile', 'writefile'}
+    if not table.contains(blacklist, fn)
+        and string.find(fn, "luacore", 1, true) == nil
+        and string.find(fn, "luavm", 1, true) == nil
+        and string.find(fn, "luascript", 1, true) == nil
+    then
+        return true
+    end
+    local token = options['admintoken']
+    if string.isempty(token) or j['admintoken'] == token then
         return true
     end
     return false
@@ -730,8 +751,13 @@ local function Handler(req)
         return Response(false, "parseReqError")
     end
     
-    if not IsAuthorized(j) then
-        return Response(false, 'unAuthorizedOperation')
+    if not IsWhiteListedFunctions(j) then
+        if not IsAuthorized(j) then
+            return Response(false, 'unAuthorizedOperation')
+        end
+        if not CheckAdminPrivilege(j) then
+            return Response(false, 'requireAdminPrivilege')
+        end
     end
     
     local fn = j["fn"]
@@ -764,6 +790,7 @@ end
 local function Main()
     ParseOptions()
     sLog:SetLogLevel(options['logLevel'])
+    -- sLog:Debug(table.dump(options))
     print("server.lua v" .. GetServerVersion())
     httpServ:Create(options['url'], options['public'], Handler, false)
     print("please visit", options['url'])

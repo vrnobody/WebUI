@@ -44,6 +44,7 @@ export default {
     enableSpeedtestSettings: 'Enable speedtest settings',
     enableUserAgent: 'Enable custom user agent',
     enableUTlsfingerprint: 'Enable uTLS fingerprint',
+    enterAdminPassword: 'Enter admin password',
     enterPassword: 'Enter password',
     error: 'Error',
     extensions: 'Extensions',

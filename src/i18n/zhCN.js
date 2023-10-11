@@ -44,6 +44,7 @@ export default {
     enableSpeedtestSettings: '启用自定义测速设定',
     enableUserAgent: '启用自定义user agent',
     enableUTlsfingerprint: '启用自定义uTLS指纹',
+    enterAdminPassword: '请输入管理员密码',
     enterPassword: '请输入密码',
     error: '错误',
     extensions: '扩展名',

@@ -37,15 +37,17 @@ function reloadPage() {
 }
 
 let isChangingPassword = false
-function changePassword() {
+function changePassword(isAdmin) {
     if (isChangingPassword) {
         return
     }
     isChangingPassword = true
 
+    const title = isAdmin ? t('enterAdminPassword') : t('enterPassword')
+
     function genToken(salt) {
         Swal.fire({
-            title: t('enterPassword'),
+            title: title,
             input: 'password',
             inputPlaceholder: t('password'),
             inputAttributes: {
@@ -60,8 +62,12 @@ function changePassword() {
             }
             const password = salt + r.value
             sha512(password).then((token) => {
-                config.set('token', token)
-                config.save()
+                if (isAdmin) {
+                    config.saveAdminToken(token)
+                } else {
+                    config.set('token', token)
+                    config.save()
+                }
                 call(reloadPage(), 'IsValidToken')
             })
         })
@@ -85,9 +91,13 @@ function post(callback, content) {
 
             const r = j['r']
             if (!j['ok']) {
-                if (r === 'unAuthorizedOperation') {
-                    changePassword()
-                    return
+                switch (r) {
+                    case 'unAuthorizedOperation':
+                        changePassword(false)
+                        return
+                    case 'requireAdminPrivilege':
+                        changePassword(true)
+                        return
                 }
                 pop(r, j['ps'])
                 return
@@ -118,7 +128,8 @@ function call(callback, fn, ps) {
     const req = {
         fn: fn,
         ps: ps || [],
-        token: config.get('token')
+        token: config.get('token'),
+        admintoken: config.getAdminToken()
     }
     post(callback, JSON.stringify(req))
 }

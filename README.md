@@ -19,6 +19,7 @@ local serv = '3rd/neolua/webui/server.lua'
 local options = {
     ["url"] = "http://localhost:5000/",
     ["password"] = "123abc中文😀",
+    ["adminpassword"] = "123456",
     ["salt"] = "485c5940-cccd-484c-883c-66321d577992",
     ["pageSize"] = "50",
     ["public"] = "./3rd/neolua/webui",
@@ -27,6 +28,8 @@ local options = {
 
 loadfile(serv)(options)
 ```
+password存储在本地，下次打开浏览器不需要再次输入。可以点击“配置-登出”清除密码。  
+adminpassword在关闭浏览器后自动清除，使用NeoLuna功能会检查这项设置。  
   
 安全提示：  
 密码验证不能防中间人攻击，请用Nginx之类的反向代理并启用TLS以提高安全性。  

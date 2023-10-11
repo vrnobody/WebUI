@@ -21,25 +21,6 @@ watch(store.onThemeChanges, () => {
     utils.updateEditorTheme(editor)
 })
 
-async function createJsonConfigV4LintSvcProvider() {
-    const localLinterUrl = window.location.origin + '/ace/linters/'
-    const provider = LanguageProvider.fromCdn(localLinterUrl)
-
-    const r = await fetch('/ace/linters/v4-config-schema.json')
-    const schema = await r.text()
-
-    provider.setGlobalOptions('json', {
-        schemas: [
-            {
-                uri: 'common.schema.json',
-                schema: schema
-            }
-        ]
-    })
-
-    return provider
-}
-
 onMounted(async () => {
     utils.hideScrollbarY()
 
@@ -54,11 +35,6 @@ onMounted(async () => {
         enableSnippets: true,
         enableLiveAutocompletion: true
     })
-
-    const provider = window.aceJsonLintSvcProvider || (await createJsonConfigV4LintSvcProvider())
-    provider.registerEditor(editor)
-    provider.setSessionOptions(editor.session, { schemaUri: 'common.schema.json' })
-    window.aceJsonLintSvcProvider = provider
 
     editor.on('change', function () {
         servConfig.value = editor.getValue()
