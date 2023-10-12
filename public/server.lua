@@ -1,7 +1,19 @@
 --[[
 
-usage:
-loadfile("./3rd/neolua/webui/server.lua")()
+local Logger = require('3rd/neolua/mods/logger')
+
+local options = {
+    ["url"] = "http://localhost:5000/",
+    ["password"] = "123abc中文😀",
+    ["adminpassword"] = "123456",
+    ["salt"] = "485c5940-cccd-484c-883c-66321d577992",
+    ["pageSize"] = "50",
+    ["public"] = "./3rd/neolua/webui",
+    ["logLevel"] = Logger.logLevels.Info,
+}
+
+local serv = '3rd/neolua/webui/server.lua'
+loadfile(serv)(options)
 
 --]]
 
@@ -753,9 +765,11 @@ local function Handler(req)
     
     if not IsWhiteListedFunctions(j) then
         if not IsAuthorized(j) then
+            std.Misc:Sleep(1000)
             return Response(false, 'unAuthorizedOperation')
         end
         if not CheckAdminPrivilege(j) then
+            std.Misc:Sleep(1000)
             return Response(false, 'requireAdminPrivilege')
         end
     end

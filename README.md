@@ -64,6 +64,12 @@ npm run dev
 http://localhost:5173/
 ```
 
+#### 升级package.json
+```bash
+npm outdated
+npm update --save
+```
+
 #### 更新记录
 [update-log.txt](https://github.com/vrnobody/WebUI/blob/main/update-log.txt)  
 
