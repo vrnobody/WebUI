@@ -1,8 +1,6 @@
 <script setup>
-import config from '@/config.js'
 import utils from '@/misc/utils.js'
 import { onMounted, ref } from 'vue'
-import Tooltips from '@/components/widgets/Tooltips.vue'
 
 const t = utils.getTranslator()
 
@@ -33,13 +31,6 @@ const optionsTable = {}
 
 const areasTable = {
     CustomDefInbounds: 'h-[12rem]'
-}
-
-function clearPassword() {
-    function onYes() {
-        config.set('token', '')
-    }
-    utils.confirm(t('clearPassword'), onYes)
 }
 
 function saveSettings() {
@@ -111,11 +102,6 @@ onMounted(() => {
             <button @click="saveSettings" class="mx-1 my-0">
                 <i class="fas fa-save"></i> {{ t('save') }}
             </button>
-            <Tooltips :css="'mt-8'" :tip="t('clearPassword')">
-                <button @click="clearPassword" class="mx-4 my-0">
-                    <i class="fas fa-sign-out-alt"></i> {{ t('logout') }}
-                </button>
-            </Tooltips>
         </div>
     </div>
 

@@ -2,7 +2,7 @@ const isDevMode = import.meta.env.DEV
 
 const skey = isDevMode ? 'V2RayGConWebUiSettingsDev' : 'V2RayGConWebUiSettings'
 const tkey = isDevMode ? 'V2RayGConWebUiThemeDev' : 'V2RayGConWebUiTheme'
-const adminSessionKey = 'VgcAdminToken'
+const adminSessionKey = 'V2RayGConAdministratorToken'
 
 let isSaving = false
 let userSettings = {}

@@ -31,16 +31,19 @@ local utils = require('3rd/neolua/libs/utils')
 local options = {}
 local sLog = Logger.new(nil, false, Logger.logLevels.Debug)
 
+local lowerAdminFuncList = {}
 local forbiddenFuncList = {}
 for k, _ in pairs(_G) do
     forbiddenFuncList[k] = true
 end
 
+local adminFunctions = {'ls', 'readfile', 'writefile', 'getusersettings', 'setusersettings'}
+
 local function ParseOptions()
     local o = {
         ["url"] = "http://localhost:4000/",
-        ["password"] = "",
-        ["adminpassword"] = "",
+        ["password"] = "1122",
+        ["adminpassword"] = "1212",
         ["salt"] = "485c5940-cccd-484c-883c-66321d577992",
         ["pageSize"] = "50",
         ["public"] = "./3rd/neolua/webui",
@@ -69,6 +72,15 @@ local function ParseOptions()
     end
     
     options = o
+end
+
+local function ToLower(t)
+    local r = {}
+    for idx, v in ipairs(t) do
+        v = v or ""
+        table.insert(r, v:lower())
+    end
+    return r
 end
 
 local function Clamp(v, min, max)
@@ -741,8 +753,7 @@ end
 
 local function CheckAdminPrivilege(j)
     local fn = string.lower(j["fn"])
-    local blacklist = {'ls', 'readfile', 'writefile'}
-    if not table.contains(blacklist, fn)
+    if not table.contains(lowerAdminFuncList, fn)
         and string.find(fn, "luacore", 1, true) == nil
         and string.find(fn, "luavm", 1, true) == nil
         and string.find(fn, "luascript", 1, true) == nil
@@ -802,6 +813,7 @@ local function Handler(req)
 end
 
 local function Main()
+    lowerAdminFuncList = ToLower(adminFunctions)
     ParseOptions()
     sLog:SetLogLevel(options['logLevel'])
     -- sLog:Debug(table.dump(options))

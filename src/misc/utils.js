@@ -226,5 +226,6 @@ export default {
     hideScrollbarX,
     call,
     init,
+    reloadPage,
     reloadThemeMode
 }
