@@ -3,17 +3,23 @@ import { onMounted, onUnmounted, computed, watch } from 'vue'
 import utils from '@/misc/utils.js'
 import store from '@/misc/store.js'
 
-const props = defineProps(['modelValue'])
-const emit = defineEmits(['update:modelValue'])
+const props = defineProps(['config', 'type'])
+const emit = defineEmits(['update:config'])
 
 let editor = null
 
 const servConfig = computed({
     get() {
-        return props.modelValue
+        return props.config
     },
     set(value) {
-        emit('update:modelValue', value)
+        emit('update:config', value)
+    }
+})
+
+const servConfigType = computed({
+    get() {
+        return props.type
     }
 })
 
@@ -26,7 +32,13 @@ onMounted(async () => {
 
     editor = ace.edit('json-editor-container')
     utils.updateEditorTheme(editor)
-    editor.session.setMode('ace/mode/json')
+    let mode = 'ace/mode/json'
+    switch (servConfigType.value) {
+        case 'yaml':
+            mode = 'ace/mode/yaml'
+            break
+    }
+    editor.session.setMode(mode)
     editor.setValue(servConfig.value)
     editor.clearSelection()
 

@@ -58,6 +58,7 @@ export default {
     importIp: '默认导入IP',
     importPort: '默认导入端口',
     importShadowsocks: '导入ss://...',
+    importTemplate: '默认导入模板',
     importTrojan: '导入trojan://...',
     inbIp: 'Inbound IP',
     inbName: 'Inbound名称',

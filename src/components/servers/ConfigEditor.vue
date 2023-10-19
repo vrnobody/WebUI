@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import utils from '@/misc/utils.js'
-import JsonEditor from './JsonEditor.vue'
+import TextEditor from './TextEditor.vue'
 import LoadingWidget from '@/components/widgets/Loading.vue'
 
 const t = utils.getTranslator()
@@ -9,7 +9,8 @@ const t = utils.getTranslator()
 const props = defineProps(['uid', 'title'])
 const emit = defineEmits(['onClose'])
 const servConfig = ref('{}')
-const isShowJsonEditor = ref(false)
+const servConfigType = ref('')
+const isShowTextEditor = ref(false)
 
 const servUid = computed({
     get() {
@@ -38,10 +39,16 @@ function loadConfig() {
     }
 }
 
-function parseServConfig(config) {
+function parseServConfig(data) {
     try {
-        servConfig.value = config
-        isShowJsonEditor.value = true
+        if (data) {
+            servConfig.value = data['config']
+            servConfigType.value = data['type']
+        } else {
+            servConfig.value = ''
+            servConfigType.value = ''
+        }
+        isShowTextEditor.value = true
     } catch (err) {
         Swal.fire(err.toString())
     }
@@ -85,7 +92,7 @@ onUnmounted(() => {})
         <span class="mr-1 w-12">{{ t('name') }}</span>
         <input type="text" v-model="servTitle" class="grow bg-neutral-100 px-1 dark:bg-slate-500" />
     </div>
-    <JsonEditor v-if="isShowJsonEditor" v-model="servConfig" />
+    <TextEditor v-if="isShowTextEditor" v-model:config="servConfig" v-model:type="servConfigType" />
     <LoadingWidget v-else />
     <div class="flex h-10 w-full items-end justify-center">
         <button @click="addNewServ" class="mx-4 my-0">{{ t('add') }}</button>

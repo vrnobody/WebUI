@@ -58,6 +58,7 @@ export default {
     importIp: 'Import IP',
     importPort: 'Import port',
     importShadowsocks: 'Import ss://...',
+    importTemplate: 'Import template',
     importTrojan: 'Import trojan://...',
     inbIp: 'Inbound IP',
     inbName: 'Inbound name',

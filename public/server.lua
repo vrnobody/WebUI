@@ -42,8 +42,8 @@ local adminFunctions = {'ls', 'readfile', 'writefile', 'getusersettings', 'setus
 local function ParseOptions()
     local o = {
         ["url"] = "http://localhost:4000/",
-        ["password"] = "1122",
-        ["adminpassword"] = "1212",
+        ["password"] = "",
+        ["adminpassword"] = "",
         ["salt"] = "485c5940-cccd-484c-883c-66321d577992",
         ["pageSize"] = "50",
         ["public"] = "./3rd/neolua/webui",
@@ -716,7 +716,11 @@ function GetServerConfig(uid)
     if coreServ then
         local coreConfiger = coreServ:GetConfiger()
         local config = coreConfiger:GetConfig()
-        return config
+        local ty = std.Misc:DetectConfigType(config)
+        return {
+            ["config"] = config,
+            ["type"] = ty,
+        }
     end
     return nil
 end

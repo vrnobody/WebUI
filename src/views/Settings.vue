@@ -22,7 +22,7 @@ const propsTable = {
     CustomDefImportTrojanShareLink: 'importTrojan',
     CustomDefImportSsShareLink: 'importShadowsocks',
     DefaultCoreName: 'coreName',
-    DefaultInboundName: 'inbName',
+    DefaultInboundName: 'importTemplate',
     CustomDefImportHost: 'importIp',
     CustomDefImportPort: 'importPort'
 }
