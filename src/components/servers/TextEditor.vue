@@ -3,10 +3,16 @@ import { onMounted, onUnmounted, computed, watch } from 'vue'
 import utils from '@/misc/utils.js'
 import store from '@/misc/store.js'
 
-const props = defineProps(['config', 'type'])
+const props = defineProps(['config', 'type', 'isfinalconfig'])
 const emit = defineEmits(['update:config'])
 
 let editor = null
+
+const isFinalConfig = computed({
+    get() {
+        return props.isfinalconfig
+    }
+})
 
 const servConfig = computed({
     get() {
@@ -48,9 +54,13 @@ onMounted(async () => {
         enableLiveAutocompletion: true
     })
 
-    editor.on('change', function () {
-        servConfig.value = editor.getValue()
-    })
+    if (isFinalConfig.value) {
+        editor.setReadOnly(true)
+    } else {
+        editor.on('change', function () {
+            servConfig.value = editor.getValue()
+        })
+    }
 })
 
 onUnmounted(() => {

@@ -6,11 +6,17 @@ import LoadingWidget from '@/components/widgets/Loading.vue'
 
 const t = utils.getTranslator()
 
-const props = defineProps(['uid', 'title'])
+const props = defineProps(['uid', 'title', 'isfinalconfig'])
 const emit = defineEmits(['onClose'])
 const servConfig = ref('{}')
 const servConfigType = ref('')
 const isShowTextEditor = ref(false)
+
+const isFinalConfig = computed({
+    get() {
+        return props.isfinalconfig
+    }
+})
 
 const servUid = computed({
     get() {
@@ -32,10 +38,11 @@ function close() {
 
 function loadConfig() {
     const uid = servUid.value
+    const fn = isFinalConfig.value ? 'GetServerFinalConfig' : 'GetServerConfig'
     if (!uid) {
         parseServConfig(null)
     } else {
-        utils.call(parseServConfig, 'GetServerConfig', [uid])
+        utils.call(parseServConfig, fn, [uid])
     }
 }
 
@@ -77,6 +84,13 @@ function saveServConfig(uid) {
     }
 }
 
+function GetServerTitle() {
+    if (isFinalConfig.value) {
+        return '<' + t('readonly') + '> ' + servTitle.value
+    }
+    return servTitle.value
+}
+
 onMounted(() => {
     servTitle.value = propTitle.value
     loadConfig()
@@ -86,17 +100,22 @@ onUnmounted(() => {})
 </script>
 <template>
     <div v-if="propTitle" class="mb-1 flex text-base">
-        <span>{{ servTitle }}</span>
+        <span>{{ GetServerTitle() }}</span>
     </div>
     <div v-else class="mb-1 flex text-base">
         <span class="mr-1 w-12">{{ t('name') }}</span>
         <input type="text" v-model="servTitle" class="grow bg-neutral-100 px-1 dark:bg-slate-500" />
     </div>
-    <TextEditor v-if="isShowTextEditor" v-model:config="servConfig" v-model:type="servConfigType" />
+    <TextEditor
+        v-if="isShowTextEditor"
+        v-model:config="servConfig"
+        v-model:type="servConfigType"
+        v-model:isfinalconfig="isFinalConfig"
+    />
     <LoadingWidget v-else />
     <div class="flex h-10 w-full items-end justify-center">
-        <button @click="addNewServ" class="mx-4 my-0">{{ t('add') }}</button>
-        <button v-if="servUid" @click="saveServConfig(servUid)" class="mx-4 my-0">
+        <button v-if="!isFinalConfig" @click="addNewServ" class="mx-4 my-0">{{ t('add') }}</button>
+        <button v-if="!isFinalConfig && servUid" @click="saveServConfig(servUid)" class="mx-4 my-0">
             {{ t('save') }}
         </button>
         <button @click="close" class="mx-4 my-0">{{ t('close') }}</button>

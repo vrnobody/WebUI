@@ -6,7 +6,7 @@ const t = utils.getTranslator()
 
 <template>
     <pre class="m-4 dark:text-neutral-100">
-<b>WebUI v0.0.7 2023-10</b>
+<b>WebUI v1.0 2023-11</b>
 <a href="https://github.com/vrnobody/WebUI">https://github.com/vrnobody/WebUI</a>
 
 <b>{{ t('servPanelAndLunaManagerTitle') }}</b>

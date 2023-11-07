@@ -21,7 +21,7 @@ local args = {...}
 
 local Logger = require('3rd/neolua/mods/logger')
 
-local version = "0.0.7.0"
+local version = "1.0.0.0"
 
 -- code
 local httpServ = require('3rd/neolua/mods/httpServ').new()
@@ -708,6 +708,20 @@ function SaveServerConfig(uid, name, config)
     
     local coreConfiger = coreServ:GetConfiger()
     coreConfiger:SetConfig(config)
+    return nil
+end
+
+function GetServerFinalConfig(uid)
+    local wserv = std.Server:GetWrappedServerByUid(uid)
+    if wserv then
+        wserv:GetFinalConfig()
+        local config = wserv:GetFinalConfig()
+        local ty = std.Misc:DetectConfigType(config)
+        return {
+            ["config"] = config,
+            ["type"] = ty,
+        }
+    end
     return nil
 end
 

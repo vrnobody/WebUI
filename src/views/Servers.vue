@@ -29,6 +29,7 @@ const searchKeyword = ref('')
 const isLoading = ref(true)
 const curServUid = ref('')
 const curServTitle = ref('')
+const isFinalConfig = ref(false)
 
 let servsInfo = ref([])
 const servsCount = ref(0)
@@ -361,9 +362,10 @@ function getServTitleByUid(uid) {
     return null
 }
 
-function openWindow(handle, uid) {
+function openWindow(handle, uid, isReadonly) {
     curServUid.value = uid
     curServTitle.value = getServTitleByUid(uid)
+    isFinalConfig.value = isReadonly == true
     handle.value = true
 }
 
@@ -792,6 +794,16 @@ onUnmounted(() => {})
                                         </li>
                                         <li>
                                             <button
+                                                @click="
+                                                    openWindow(hWnds.configEditor, serv.uid, true)
+                                                "
+                                                dropdown-closer
+                                            >
+                                                {{ t('showFinalConfig') }}
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button
                                                 @click="openWindow(hWnds.logViwer, serv.uid)"
                                                 dropdown-closer
                                             >
@@ -854,6 +866,7 @@ onUnmounted(() => {})
                 @onClose="closeWindow(hWnds.configEditor)"
                 v-model:uid="curServUid"
                 v-model:title="curServTitle"
+                v-model:isfinalconfig="isFinalConfig"
             />
             <LogViewer
                 v-if="hWnds.logViwer.value"

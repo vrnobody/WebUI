@@ -28,7 +28,7 @@ local options = {
 
 loadfile(serv)(options)
 ```
-password存储在本地，下次打开浏览器不需要再次输入。可以点击“配置-登出”清除密码。  
+password存储在本地，下次打开浏览器不需要再次输入。可以点右上角的“登出”清除密码。  
 adminpassword在关闭浏览器后自动清除，使用NeoLuna功能会检查这项设置。  
   
 安全提示：  

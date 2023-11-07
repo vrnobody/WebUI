@@ -16,7 +16,7 @@ jobs:
 
     env:
         projName: webui
-        verStr: '0.0.x'
+        verStr: '1.0.x'
 
     steps:
         - name: Checkout main
