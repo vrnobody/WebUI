@@ -80,7 +80,7 @@ function saveScriptToFile(quiet) {
             Swal.fire(t('success'))
         }
     }
-    utils.call(next, 'WrtieFile', [fn, content])
+    utils.call(next, 'WriteFile', [fn, content])
 }
 
 function closeFileBrowser(isExecCurOp) {

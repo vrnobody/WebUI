@@ -21,7 +21,7 @@ local args = {...}
 
 local Logger = require('3rd/neolua/mods/logger')
 
-local version = "1.0.0.0"
+local version = "1.0.0.1"
 
 -- code
 local httpServ = require('3rd/neolua/mods/httpServ').new()
@@ -265,7 +265,7 @@ function GetShareLink(uid)
     return ''
 end
 
-function WrtieFile(filename, content)
+function WriteFile(filename, content)
     std.Sys:WriteAllText(filename, content)
 end
 
@@ -769,13 +769,20 @@ local function IsAuthorized(j)
     return false
 end
 
-local function CheckAdminPrivilege(j)
+local function IsAdminFunctions(j)
     local fn = string.lower(j["fn"])
     if not table.contains(lowerAdminFuncList, fn)
         and string.find(fn, "luacore", 1, true) == nil
         and string.find(fn, "luavm", 1, true) == nil
         and string.find(fn, "luascript", 1, true) == nil
     then
+        return false
+    end
+    return true
+end
+
+local function CheckAdminPrivilege(j)
+    if not IsAdminFunctions(j) then
         return true
     end
     local token = options['admintoken']
@@ -830,13 +837,41 @@ local function Handler(req)
     return Response(false, "callFuncError", fFullName, tostring(r))
 end
 
+local function ListAllFunctions()
+    local r = {
+        ["no"] = {},
+        ["all"] = {},
+        ["admin"] = {},
+        ["user"] = {},
+    }
+    local j = {}
+    for key, _ in pairs(_G) do
+        j['fn'] = key
+        if forbiddenFuncList[key] then
+            table.insert(r["no"], key)
+        elseif IsWhiteListedFunctions(j) then
+            table.insert(r["all"], key)
+        elseif IsAdminFunctions(j) then
+            table.insert(r["admin"], key)
+        else
+            table.insert(r["user"], key)
+        end
+    end
+    sLog:Debug("Functions:", table.dump(r))
+end
+
 local function Main()
     lowerAdminFuncList = ToLower(adminFunctions)
     ParseOptions()
-    sLog:SetLogLevel(options['logLevel'])
+    local level = options['logLevel']
+    sLog:SetLogLevel(level)
     -- sLog:Debug(table.dump(options))
+    if level == Logger.logLevels.Debug then
+        ListAllFunctions()
+    end
     print("server.lua v" .. GetServerVersion())
     httpServ:Create(options['url'], options['public'], Handler, false)
+    
     print("please visit", options['url'])
     httpServ:Run()
 end
