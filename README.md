@@ -29,7 +29,8 @@ local options = {
 loadfile(serv)(options)
 ```
 password存储在本地，下次打开浏览器不需要再次输入。可以点右上角的“登出”清除密码。  
-adminpassword在关闭浏览器后自动清除，使用NeoLuna功能会检查这项设置。  
+adminpassword在关闭浏览器后自动清除，修改设置、使用NeoLuna等危险操作时会检查这个密码。  
+上面两个选项留空就不会弹出输密码窗口。  
   
 安全提示：  
 密码验证不能防中间人攻击，请用Nginx之类的反向代理并启用TLS以提高安全性。  
