@@ -11,9 +11,10 @@ const t = utils.getTranslator()
 function IsNewerVersion(minVer, curVer) {
     const mvs = minVer.split('.').map((n) => parseInt(n))
     const cvs = curVer.split('.').map((n) => parseInt(n))
-    for (let index = 0; index < mvs.length; index++) {
-        if (mvs[index] > cvs[index]) {
-            return false
+    const len = Math.min(mvs.length, cvs.length)
+    for (let index = 0; index < len; index++) {
+        if (cvs[index] != mvs[index]) {
+            return cvs[index] > mvs[index]
         }
     }
     return true

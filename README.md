@@ -51,8 +51,7 @@ npm run dev
   
 启动服务端
 ```lua
-在NeoLuna脚本编辑器中加载`public/server.lua`
-注释掉`args = {...}`这行，然后按F5运行
+在NeoLuna脚本编辑器中加载`public/server.lua`，然后按F5运行
 ```
 
 禁用浏览器的CORS检测

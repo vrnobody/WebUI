@@ -2,6 +2,8 @@
 # /public/ace-builds
 # /public/ace-linter
 
+/package-lock.json
+
 # Logs
 logs
 *.log

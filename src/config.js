@@ -92,11 +92,13 @@ function get(key) {
 init()
 
 export default {
+    webUiVersion: '1.0.1.1',
+    supportedServerVersions: ['1.0.1.0'],
+    supportedAppVersion: '1.8.8.0',
+
     isDevMode,
     devHostUrl: 'http://localhost:4000',
     releaseHostUrl: './',
-    supportedServerVersions: ['1.0.1.0'],
-    supportedAppVersion: '1.8.8.0',
     get,
     set,
     save,
