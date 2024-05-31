@@ -1,5 +1,5 @@
 ## WebUI
-V2RayGCon的网页端。  
+V2RayGCon的网页端。如有问题请到[V2RayGCon](https://github.com/vrnobody/V2RayGCon/issues)发issue。  
 
 #### 安装使用
 V2RayGCon v1.8+包含了WebUI无需另外下载安装。  
