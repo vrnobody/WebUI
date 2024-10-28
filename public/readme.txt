@@ -1,4 +1,4 @@
-需要V2RayGCon v1.6.9+
+需要V2RayGCon v2.0.6+
 
 1.解压webui.zip到lua/webui/目录中
 
