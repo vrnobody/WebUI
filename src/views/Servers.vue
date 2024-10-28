@@ -24,7 +24,6 @@ const t = utils.getTranslator()
 const curPageNum = ref(1)
 const curPageNumText = ref('1')
 const pages = ref(0)
-const searchType = ref('summary')
 const searchKeyword = ref('')
 const isLoading = ref(true)
 const curServUid = ref('')
@@ -316,7 +315,6 @@ function refresh(isScrollToTop) {
 
     utils.call(next, 'GetSerializedServers', [
         curPageNum.value,
-        searchType.value || '',
         searchKeyword.value
     ])
 }
@@ -425,7 +423,7 @@ function countTags(tags) {
 }
 
 function searchBoxPlaceholder() {
-    return t('search') + ' ' + t('luaPatterns')
+    return `${t('search')} (${t('manual')})`
 }
 
 onMounted(() => {
@@ -441,30 +439,7 @@ onUnmounted(() => {})
     <div
         class="justify-left fixed left-8 top-0 z-20 flex h-12 grow items-center px-4 py-0 md:left-56"
     >
-        <div class="hidden sm:flex">
-            <select
-                v-model="searchType"
-                class="inline-block w-20 border border-neutral-400 bg-neutral-200 dark:bg-slate-600 dark:text-neutral-300 md:w-24"
-            >
-                <option value="summary" selected>{{ t('summary') }}</option>
-                <option value="title">{{ t('title') }}</option>
-                <option value="tags">{{ t('tags') }}</option>
-                <option value="index">{{ t('index') }}</option>
-            </select>
-            <div class="relative">
-                <input
-                    v-model="searchKeyword"
-                    @click="$event.target.select()"
-                    @keyup.enter="search"
-                    type="text"
-                    class="mx-4 my-0 w-40 bg-neutral-50 px-1 dark:bg-slate-500 md:w-48"
-                    :placeholder="searchBoxPlaceholder()"
-                />
-                <div class="absolute right-6 top-0 m-0 text-neutral-300 dark:text-neutral-700">
-                    <button @click="clearSearchKeyword"><i class="fas fa-search"></i></button>
-                </div>
-            </div>
-        </div>
+        <!-- buttons -->
         <div class="m-1 h-3/4 w-0.5 bg-slate-200 dark:bg-slate-500"></div>
         <div class="m-0 shrink-0 text-2xl">
             <DropdownMenu withDropdownCloser>
@@ -620,6 +595,22 @@ onUnmounted(() => {})
                     <i class="fas fa-file-alt"></i>
                 </button>
             </Tooltips>
+        </div>
+        <div class="m-1 h-3/4 w-0.5 bg-slate-200 dark:bg-slate-500"></div>
+        <div class="hidden sm:flex">
+            <div class="relative">
+                <input
+                    v-model="searchKeyword"
+                    @click="$event.target.select()"
+                    @keyup.enter="search"
+                    type="text"
+                    class="mx-2 my-0 w-64 bg-neutral-50 px-1 dark:bg-slate-500 md:w-52 lg:w-[28rem] xl:w-[42rem]"
+                    :placeholder="searchBoxPlaceholder()"
+                />
+                <div class="absolute right-4 top-0 m-0 text-neutral-300 dark:text-neutral-700">
+                    <button @click="clearSearchKeyword"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
         </div>
     </div>
 

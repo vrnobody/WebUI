@@ -8,7 +8,7 @@ const ver = config.webUiVersion
 
 <template>
     <pre class="m-4 dark:text-neutral-100">
-<b>WebUI v{{ver}} 2024-04</b>
+<b>WebUI v{{ver}} 2024-10</b>
 <a href="https://github.com/vrnobody/WebUI">https://github.com/vrnobody/WebUI</a>
 
 <b>{{ t('servPanelAndLunaManagerTitle') }}</b>

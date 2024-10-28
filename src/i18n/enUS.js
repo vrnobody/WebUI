@@ -74,7 +74,6 @@ export default {
     loadFile: 'Load file',
     loading: 'Loading...',
     logout: 'Logout',
-    luaPatterns: '(Lua patterns)',
     lunaEditorKeyboardShortcutsContent: `ctrl f    Show search box
 ctrl h    Show replace box
 ctrl l    Show goto-line box
@@ -88,6 +87,7 @@ F8        Clear log
 F12       Goto to definition`,
     lunaEditorKeyboardShortcutsTitle: 'Luna editor keyboard shortcuts:',
     manager: 'Manager',
+    manual: 'manual',
     mark: 'Mark',
     maxConcurrentCore: 'Concurrent cores',
     modifySelected: 'Modify selected servers',

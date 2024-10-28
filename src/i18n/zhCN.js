@@ -74,7 +74,6 @@ export default {
     loadFile: '从文件加载',
     loading: '加载中...',
     logout: '登出',
-    luaPatterns: '(Lua正则)',
     lunaEditorKeyboardShortcutsContent: `ctrl f    调出搜索框
 ctrl h    调出替换框
 ctrl l    调出跳转到行号框
@@ -88,6 +87,7 @@ F8        清除日志
 F12       跳转到定义（比较弱鸡）`,
     lunaEditorKeyboardShortcutsTitle: 'Luna编辑器快捷键：',
     manager: '管理器',
+    manual: '手册',
     mark: '标记',
     maxConcurrentCore: '并发core数量',
     modifySelected: '修改选中的服务器',

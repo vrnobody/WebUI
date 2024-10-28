@@ -21,7 +21,7 @@ local args = {...}
 
 local Logger = require('3rd/neolua/mods/logger')
 
-local version = "1.0.1.0"
+local version = "1.0.1.2"
 
 -- code
 local httpServ = require('3rd/neolua/mods/httpServ').new()
@@ -124,6 +124,19 @@ local function GetAllServers()
     return r
 end
 
+local function GetFilteredServers(keyword)
+    if string.isempty(keyword) then
+        return GetAllServers()
+    end
+    
+    local r = {}
+    local servs = std.Server:GetFilteredServers(keyword)
+    foreach serv in servs do
+        table.insert(r, serv)
+    end
+    return r
+end
+
 local function GetTags(coreState)
     local r = {}
     r["mark"] = coreState:GetMark()
@@ -153,75 +166,6 @@ local function GetterCoreServInfo(coreServ)
     local cSharpTicks = coreState:GetLastModifiedUtcTicks()
     t["modified"] = utils.ToLuaTicks(cSharpTicks)
     return t
-end
-
-local function SearchAllServer(servs, first, last)
-    local d = {}
-    for i = first, last do
-        local coreServ = servs[i]
-        local t = GetterCoreServInfo(coreServ)
-        table.insert(d, t)
-    end
-    return d
-end
-
-local function FilterServsByName(servs, keyword)
-    local r = {}
-    for _, coreServ in ipairs(servs) do
-        local coreState = coreServ:GetCoreStates()
-        local name = string.lower(coreState:GetName())
-        if string.find(name, keyword) then
-            table.insert(r, coreServ)
-        end
-    end
-    return r
-end
-
-local function FilterServsBySummary(servs, keyword)
-    local r = {}
-    for _, coreServ in ipairs(servs) do
-        local coreState = coreServ:GetCoreStates()
-        local s = coreState:GetSummary()
-        local summary = string.lower(s)
-        if string.find(summary, keyword) then
-            table.insert(r, coreServ)
-        end
-    end
-    return r
-end
-
-local function IsInTags(tags, keyword)
-    for _, tag in pairs(tags) do
-        if type(tag) == "string" then
-            local t = string.lower(tag)
-            if string.find(t, keyword) then
-                return true
-            end
-        end
-    end
-    return false
-end
-
-local function FilterServsByTags(servs, keyword)
-    local r = {}
-    for _, coreServ in ipairs(servs) do
-        local coreState = coreServ:GetCoreStates()
-        local tags = GetTags(coreState)
-        if IsInTags(tags, keyword) then
-            table.insert(r, coreServ)
-        end
-    end
-    return r
-end
-
-local function FilterServs(servs, searchType, keyword)
-    keyword = string.lower(keyword)
-    if searchType == "title" then
-        return FilterServsByName(servs, keyword)
-    elseif searchType == "tags" then
-        return FilterServsByTags(servs, keyword)
-    end
-    return FilterServsBySummary(servs, keyword)
 end
 
 local function CalcTotalPageNumber(total)
@@ -588,49 +532,27 @@ function GetAppVersion()
     return std.Sys:GetAppVersion()
 end
 
-function GetSerializedServers(pageNum, searchType, keyword)
+function GetSerializedServers(pageNum, keyword)
     pageNum = tonumber(pageNum) or 1
-    searchType = searchType or ""
     keyword = keyword or ""
-    -- sLog:Debug("params:", pageNum, searchType, keyword)
-    local servs = GetAllServers()
+    -- sLog:Debug("params:", pageNum, keyword)
+    local filtered = GetFilteredServers(keyword)
+    local max = #filtered
     local r = {
         ["pages"] = 1,
         ["data"] = {},
         ["isTesting"] = std.Server:IsRunningSpeedTest(),
-        ["count"] = #servs,
+        ["count"] = max,
     }
     
-    if #servs < 1 then
+    if max < 1 then
         return r
     end
     
-    local min = 1
-    local max = #servs
-    local first = Clamp((pageNum - 1) * options['pageSize'] + 1, min, max)
+    local first = Clamp((pageNum - 1) * options['pageSize'] + 1, 1, max)
     local last = Clamp((pageNum) * options['pageSize'], first, max)
-    if string.isempty(searchType) or string.isempty(keyword) then
-        -- print("search all")
-        r["pages"] = CalcTotalPageNumber(#servs)
-        r["data"] = SearchAllServer(servs, first, last)
-        return r
-    end
-    
-    if searchType == "index" then
-        local idx = math.floor((tonumber(keyword) or 1))
-        if idx < 1 or idx > #servs then
-            r["count"] = 0
-            return r
-        end
-        r["pages"] = 1
-        r["data"] = { GetterCoreServInfo(servs[idx]) }
-        r["count"] = 1
-        return r
-    end
-    
-    local filtered = FilterServs(servs, searchType, keyword)
-    local max = #filtered
-    r["pages"] = CalcTotalPageNumber(#filtered)
+   
+    r["pages"] = CalcTotalPageNumber(max)
     r["count"] = max
     local d = {}
     for i = first, last do
