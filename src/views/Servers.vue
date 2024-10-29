@@ -313,10 +313,7 @@ function refresh(isScrollToTop) {
         }, 2000)
     }
 
-    utils.call(next, 'GetSerializedServers', [
-        curPageNum.value,
-        searchKeyword.value
-    ])
+    utils.call(next, 'GetSerializedServers', [curPageNum.value, searchKeyword.value])
 }
 
 function clearSearchKeyword() {

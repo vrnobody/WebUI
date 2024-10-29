@@ -13,7 +13,6 @@ function switchLang(lang) {
     locale.value = langs[index < 0 ? 0 : index]
     config.set('lang', locale.value)
 }
-
 </script>
 
 <template>

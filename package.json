@@ -1,41 +1,36 @@
 {
-  "name": "webui",
-  "version": "0.0.1",
-  "private": true,
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "test:unit": "vitest",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore --ignore-path .eslintignore",
-    "format": "prettier --write src/"
-  },
-  "dependencies": {
-    "@hennge/vue3-pagination": "^1.0.17",
-    "@yangss/vue3-i18n": "^1.1.4",
-    "pinia": "^2.2.4",
-    "v-dropdown-menu": "^2.0.4",
-    "vue": "^3.5.12",
-    "vue-draggable-next": "^2.2.1",
-    "vue-router": "^4.4.5"
-  },
-  "devDependencies": {
-    "@rushstack/eslint-patch": "^1.10.4",
-    "@vitejs/plugin-vue": "^4.6.2",
-    "@vue/eslint-config-prettier": "^7.1.0",
-    "@vue/test-utils": "^2.4.6",
-    "autoprefixer": "^10.4.20",
-    "eslint": "^8.57.1",
-    "eslint-plugin-cypress": "^2.15.2",
-    "eslint-plugin-vue": "^9.29.1",
-    "jsdom": "^21.1.2",
-    "postcss": "^8.4.47",
-    "prettier": "^2.8.8",
-    "prettier-plugin-tailwindcss": "^0.3.0",
-    "start-server-and-test": "^2.0.8",
-    "tailwindcss": "^3.4.14",
-    "vite": "^5.3.1",
-    "vite-plugin-singlefile": "^2.0.2",
-    "vitest": "^0.29.8"
-  }
+    "name": "webui",
+    "version": "0.0.1",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "test:unit": "vitest",
+        "format": "prettier --write src/"
+    },
+    "dependencies": {
+        "@hennge/vue3-pagination": "^1.0.17",
+        "@yangss/vue3-i18n": "^1.1.4",
+        "pinia": "^2.2.4",
+        "v-dropdown-menu": "^2.0.4",
+        "vue": "^3.5.12",
+        "vue-draggable-next": "^2.2.1",
+        "vue-router": "^4.4.5"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-vue": "^5.1.4",
+        "@vue/test-utils": "^2.4.6",
+        "autoprefixer": "^10.4.20",
+        "jsdom": "^25.0.1",
+        "postcss": "^8.4.47",
+        "prettier": "^3.3.3",
+        "prettier-plugin-tailwindcss": "^0.6.8",
+        "start-server-and-test": "^2.0.8",
+        "tailwindcss": "^3.4.14",
+        "vite": "^5.3.1",
+        "vite-plugin-singlefile": "^2.0.2",
+        "vitest": "2.1.3"
+    }
 }
