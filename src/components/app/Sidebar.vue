@@ -55,6 +55,22 @@ function changeThemeMode(mode) {
     store.onThemeChanges.value = !store.onThemeChanges.value
 }
 
+function clearPassword() {
+    function onYes() {
+        config.set('token', '')
+        config.saveAdminToken('')
+        config.save()
+        utils.reloadPage()
+    }
+    utils.confirm(t('clearPassword'), onYes)
+}
+
+function isTokenSet() {
+    const token = config.get('token')
+    // console.log("token:", token)
+    return token && token.length > 1
+}
+
 onMounted(() => {
     checkAppVersion()
     checkServerVersion()
@@ -109,6 +125,11 @@ onMounted(() => {
         <Tooltips :css="'-mt-8'" :tip="t('system')">
             <button @click="changeThemeMode('system')">
                 <i class="fas fa-desktop mx-1 my-0"></i>
+            </button>
+        </Tooltips>
+        <Tooltips v-if="isTokenSet()" :css="'-mt-8'" :tip="t('logout')">
+            <button @click="clearPassword()">
+                <i class="fas fa-sign-out-alt mx-1 my-0"></i>
             </button>
         </Tooltips>
     </div>

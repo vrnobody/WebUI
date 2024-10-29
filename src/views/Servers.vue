@@ -437,7 +437,7 @@ onUnmounted(() => {})
 <template>
     <!-- toolstrip -->
     <div
-        class="justify-left fixed left-8 top-0 z-20 flex h-12 grow items-center px-4 py-0 md:left-56"
+        class="justify-left fixed left-8 top-0 z-20 flex h-12 grow items-center px-0 py-0 md:left-56"
     >
         <!-- buttons -->
         <div class="m-1 h-3/4 w-0.5 bg-slate-200 dark:bg-slate-500"></div>
