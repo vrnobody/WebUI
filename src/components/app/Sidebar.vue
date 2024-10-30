@@ -78,51 +78,54 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="inline-flex h-12 w-full items-center justify-center text-2xl">V2RayGCon</div>
-    <nav class="inline-block w-full grow p-0 text-left">
+    <div class="inline-flex h-12 w-full items-center justify-center text-2xl">
+        <span class="hidden lg:inline-block">V2RayGCon</span>
+        <span class="inline-block lg:hidden">G</span>
+    </div>
+    <nav class="inline-block w-full grow text-center lg:text-left">
         <RouterLink
             to="/"
-            exact-active-class="dark:bg-slate-600 bg-slate-400"
-            class="hover:bg-slate-500 dark:hover:bg-slate-500"
-            ><i class="fas fa-server"></i> {{ t('servers') }}</RouterLink
+            exact-active-class="dark:bg-slate-600 bg-slate-400 px-2 py-2 lg:px-4"
+            class="hover:bg-slate-500 dark:hover:bg-slate-500 px-2 py-2 lg:px-4"
+            ><i class="fas fa-server p-0"></i><span  class="hidden lg:inline-block">&nbsp;{{ t('servers') }}</span></RouterLink
         >
         <RouterLink
             to="/import"
-            exact-active-class="dark:bg-slate-600 bg-slate-400"
-            class="hover:bg-slate-500 dark:hover:bg-slate-500"
-            ><i class="fas fa-file-import"></i> {{ t('import') }}
+            exact-active-class="dark:bg-slate-600 bg-slate-400 px-2 py-2 lg:px-4"
+            class="hover:bg-slate-500 dark:hover:bg-slate-500 px-2 py-2 lg:px-4"
+            ><i class="fas fa-file-import p-0"></i><span  class="hidden lg:inline-block">&nbsp;{{ t('import') }}</span>
         </RouterLink>
         <RouterLink
             to="/luna"
-            exact-active-class="dark:bg-slate-600 bg-slate-400"
-            class="hover:bg-slate-500 dark:hover:bg-slate-500"
-            ><i class="fas fa-code"></i> NeoLuna</RouterLink
+            exact-active-class="dark:bg-slate-600 bg-slate-400 px-2 py-2 lg:px-4"
+            class="hover:bg-slate-500 dark:hover:bg-slate-500 px-2 py-2 lg:px-4"
+            ><i class="fas fa-code"></i><span  class="hidden lg:inline-block">&nbsp;NeoLuna</span></RouterLink
         >
         <RouterLink
             to="/settings"
-            exact-active-class="dark:bg-slate-600 bg-slate-400"
-            class="hover:bg-slate-500 dark:hover:bg-slate-500"
-            ><i class="fas fa-cog"></i> {{ t('settings') }}
+            exact-active-class="dark:bg-slate-600 bg-slate-400 px-2 py-2 lg:px-4"
+            class="hover:bg-slate-500 dark:hover:bg-slate-500 px-2 py-2 lg:px-4"
+            ><i class="fas fa-cog"></i><span  class="hidden lg:inline-block">&nbsp;{{ t('settings') }}</span>
         </RouterLink>
         <RouterLink
             to="/about"
-            exact-active-class="dark:bg-slate-600 bg-slate-400"
-            class="hover:bg-slate-500 dark:hover:bg-slate-500"
-            ><i class="fas fa-info-circle"></i> {{ t('about') }}
+            exact-active-class="dark:bg-slate-600 bg-slate-400 px-2 py-2 lg:px-4"
+            class="hover:bg-slate-500 dark:hover:bg-slate-500 px-2 py-2 lg:px-4"
+            ><i class="fas fa-info-circle"></i><span  class="hidden lg:inline-block">&nbsp;{{ t('about') }}</span>
         </RouterLink>
     </nav>
     <div class="absolute bottom-4 flex h-6 w-full items-center justify-center text-xl">
-        <Tooltips :css="'-mt-8'" :tip="t('lightTheme')">
+        <Tooltips :css="'-mt-8'" :tip="t('lightTheme')" class="hidden lg:inline-block">
             <button @click="changeThemeMode('light')">
                 <i class="fas fa-sun mx-1 my-0"></i>
             </button>
         </Tooltips>
-        <Tooltips :css="'-mt-8'" :tip="t('darkTheme')">
+        <Tooltips :css="'-mt-8'" :tip="t('darkTheme')" class="hidden lg:inline-block">
             <button @click="changeThemeMode('dark')">
                 <i class="fas fa-moon mx-1 my-0"></i>
             </button>
         </Tooltips>
-        <Tooltips :css="'-mt-8'" :tip="t('system')">
+        <Tooltips :css="'-mt-8'" :tip="t('system')" class="hidden lg:inline-block">
             <button @click="changeThemeMode('system')">
                 <i class="fas fa-desktop mx-1 my-0"></i>
             </button>
@@ -142,6 +145,5 @@ nav a {
     font-weight: bold;
     margin: 0.3rem;
     display: block;
-    padding: 0.5rem 2rem;
 }
 </style>

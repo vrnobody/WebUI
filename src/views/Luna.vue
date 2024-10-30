@@ -24,7 +24,7 @@ switchTo(0)
 <template>
     <!-- toolstrip -->
     <div
-        class="justify-left fixed left-8 top-0 z-20 flex h-12 grow items-end px-4 py-0 text-neutral-800 dark:text-neutral-300 md:left-56"
+        class="justify-left fixed left-12 top-0 z-20 flex h-12 grow items-end px-4 py-0 text-neutral-800 dark:text-neutral-300 lg:left-56"
     >
         <div class="m-0 text-lg">
             <div

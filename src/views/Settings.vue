@@ -96,7 +96,7 @@ onMounted(() => {
 <template>
     <!-- toolstrip -->
     <div
-        class="justify-left fixed left-8 top-0 z-20 flex h-12 grow items-center px-4 py-0 md:left-56"
+        class="justify-left fixed left-12 top-0 z-20 flex h-12 grow items-center px-4 py-0 lg:left-56"
     >
         <div class="m-0 text-2xl">
             <button @click="saveSettings" class="mx-1 my-0">
@@ -106,7 +106,7 @@ onMounted(() => {
     </div>
 
     <!-- header -->
-    <div class="fixed left-0 right-0 top-12 z-10 flex grow md:left-56">
+    <div class="fixed left-12 right-0 top-12 z-10 flex grow lg:left-56">
         <div
             class="table h-6 grow bg-slate-400 text-xs text-neutral-600 dark:bg-slate-500 dark:text-neutral-700"
         >

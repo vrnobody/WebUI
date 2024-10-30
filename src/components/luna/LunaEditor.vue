@@ -335,7 +335,7 @@ onUnmounted(() => {
         class="fixed bottom-0 right-0 flex flex-col bg-slate-300 p-2 dark:bg-slate-800"
         :class="{
             'left-0 right-0 top-0 z-50': isTopLevel,
-            'left-0 top-12 z-20 pt-0 md:left-56': !isTopLevel
+            'left-12 top-12 z-20 pt-0 lg:left-56': !isTopLevel
         }"
     >
         <!-- toolstrip -->

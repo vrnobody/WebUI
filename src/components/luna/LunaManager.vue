@@ -132,7 +132,7 @@ onUnmounted(() => {
 
 <template>
     <!-- header -->
-    <div class="fixed left-0 right-0 top-12 z-10 flex grow md:left-56">
+    <div class="fixed left-12 right-0 top-12 z-10 flex grow lg:left-56">
         <div
             class="table h-6 grow bg-slate-400 text-xs text-neutral-600 dark:bg-slate-500 dark:text-neutral-700"
         >
@@ -217,7 +217,7 @@ onUnmounted(() => {
     <!-- core settings -->
     <div
         v-if="isCoreSettingsEditorVisible"
-        class="fixed bottom-0 left-0 right-0 top-0 z-50 flex flex-col bg-slate-300 p-4 opacity-95 dark:bg-slate-700 md:left-56"
+        class="fixed bottom-0 left-0 right-0 top-0 z-50 flex flex-col bg-slate-300 p-4 opacity-95 dark:bg-slate-700 lg:left-56"
     >
         <div class="block h-4/5 w-full grow bg-neutral-200 p-4 dark:bg-slate-600">
             <div class="flex h-9 items-center">

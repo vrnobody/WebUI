@@ -420,7 +420,7 @@ function countTags(tags) {
 }
 
 function searchBoxPlaceholder() {
-    return `${t('search')} (${t('manual')})`
+    return `${t('search')} (${t('seeManual')})`
 }
 
 onMounted(() => {
@@ -434,7 +434,7 @@ onUnmounted(() => {})
 <template>
     <!-- toolstrip -->
     <div
-        class="justify-left fixed left-8 top-0 z-20 flex h-12 grow items-center px-0 py-0 md:left-56"
+        class="justify-left fixed left-12 top-0 z-40 flex h-12 grow items-center px-0 py-0 lg:left-56"
     >
         <!-- buttons -->
         <div class="m-1 h-3/4 w-0.5 bg-slate-200 dark:bg-slate-500"></div>
@@ -594,14 +594,14 @@ onUnmounted(() => {})
             </Tooltips>
         </div>
         <div class="m-1 h-3/4 w-0.5 bg-slate-200 dark:bg-slate-500"></div>
-        <div class="hidden sm:flex">
+        <div class="flex">
             <div class="relative">
                 <input
                     v-model="searchKeyword"
                     @click="$event.target.select()"
                     @keyup.enter="search"
                     type="text"
-                    class="mx-2 my-0 w-64 bg-neutral-50 px-1 dark:bg-slate-500 md:w-52 lg:w-[28rem] xl:w-[42rem]"
+                    class="mx-2 my-0 bg-neutral-50 px-1 dark:bg-slate-500 w-[12rem] sm:w-[20rem] md:w-[28rem] lg:w-[33rem]"
                     :placeholder="searchBoxPlaceholder()"
                 />
                 <div class="absolute right-4 top-0 m-0 text-neutral-300 dark:text-neutral-700">
@@ -612,7 +612,7 @@ onUnmounted(() => {})
     </div>
 
     <!-- header -->
-    <div class="fixed left-0 right-0 top-12 z-10 flex grow md:left-56">
+    <div class="fixed left-12 right-0 top-12 z-10 flex grow lg:left-56">
         <div
             class="table h-6 grow bg-slate-400 text-xs text-neutral-600 dark:bg-slate-500 dark:text-neutral-700"
         >
@@ -841,7 +841,7 @@ onUnmounted(() => {})
     <FadeTransition>
         <div
             v-if="isShowPopWindow()"
-            class="fixed bottom-0 left-0 right-0 top-0 z-50 flex flex-col bg-slate-300 p-4 opacity-95 transition-transform dark:bg-slate-700 md:left-56"
+            class="fixed bottom-0 left-0 right-0 top-0 z-50 flex flex-col bg-slate-300 p-4 opacity-95 transition-transform dark:bg-slate-700 lg:left-56"
         >
             <SettingsEditor
                 v-if="hWnds.settingsEditor.value"

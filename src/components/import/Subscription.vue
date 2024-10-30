@@ -107,7 +107,7 @@ onMounted(() => {
 <template>
     <!-- header -->
     <div
-        class="fixed left-0 right-0 top-12 z-10 flex grow flex-col bg-slate-400 dark:bg-slate-500 md:left-56"
+        class="fixed left-12 right-0 top-12 z-10 flex grow flex-col bg-slate-400 dark:bg-slate-500 lg:left-56"
     >
         <div class="table h-6 grow text-xs text-neutral-600 dark:text-neutral-700">
             <div class="table-cell w-12 px-1 py-0 text-center align-middle">{{ t('enable') }}</div>
@@ -188,7 +188,7 @@ onMounted(() => {
     <FadeTransition>
         <div
             v-if="isSubEditorVisible"
-            class="fixed bottom-0 left-0 right-0 top-0 z-50 flex flex-col bg-slate-300 p-4 opacity-95 transition-transform dark:bg-slate-700 md:left-56"
+            class="fixed bottom-0 left-0 right-0 top-0 z-50 flex flex-col bg-slate-300 p-4 opacity-95 transition-transform dark:bg-slate-700 lg:left-56"
         >
             <SubEditor
                 @onClose="closeSubEditorWindow"
