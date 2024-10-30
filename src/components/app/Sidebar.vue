@@ -86,32 +86,37 @@ onMounted(() => {
         <RouterLink
             to="/"
             exact-active-class="dark:bg-slate-600 bg-slate-400 px-2 py-2 lg:px-4"
-            class="hover:bg-slate-500 dark:hover:bg-slate-500 px-2 py-2 lg:px-4"
-            ><i class="fas fa-server p-0"></i><span  class="hidden lg:inline-block">&nbsp;{{ t('servers') }}</span></RouterLink
+            class="px-2 py-2 hover:bg-slate-500 dark:hover:bg-slate-500 lg:px-4"
+            ><i class="fas fa-server p-0"></i
+            ><span class="hidden lg:inline-block">&nbsp;{{ t('servers') }}</span></RouterLink
         >
         <RouterLink
             to="/import"
             exact-active-class="dark:bg-slate-600 bg-slate-400 px-2 py-2 lg:px-4"
-            class="hover:bg-slate-500 dark:hover:bg-slate-500 px-2 py-2 lg:px-4"
-            ><i class="fas fa-file-import p-0"></i><span  class="hidden lg:inline-block">&nbsp;{{ t('import') }}</span>
+            class="px-2 py-2 hover:bg-slate-500 dark:hover:bg-slate-500 lg:px-4"
+            ><i class="fas fa-file-import p-0"></i
+            ><span class="hidden lg:inline-block">&nbsp;{{ t('import') }}</span>
         </RouterLink>
         <RouterLink
             to="/luna"
             exact-active-class="dark:bg-slate-600 bg-slate-400 px-2 py-2 lg:px-4"
-            class="hover:bg-slate-500 dark:hover:bg-slate-500 px-2 py-2 lg:px-4"
-            ><i class="fas fa-code"></i><span  class="hidden lg:inline-block">&nbsp;NeoLuna</span></RouterLink
+            class="px-2 py-2 hover:bg-slate-500 dark:hover:bg-slate-500 lg:px-4"
+            ><i class="fas fa-code"></i
+            ><span class="hidden lg:inline-block">&nbsp;NeoLuna</span></RouterLink
         >
         <RouterLink
             to="/settings"
             exact-active-class="dark:bg-slate-600 bg-slate-400 px-2 py-2 lg:px-4"
-            class="hover:bg-slate-500 dark:hover:bg-slate-500 px-2 py-2 lg:px-4"
-            ><i class="fas fa-cog"></i><span  class="hidden lg:inline-block">&nbsp;{{ t('settings') }}</span>
+            class="px-2 py-2 hover:bg-slate-500 dark:hover:bg-slate-500 lg:px-4"
+            ><i class="fas fa-cog"></i
+            ><span class="hidden lg:inline-block">&nbsp;{{ t('settings') }}</span>
         </RouterLink>
         <RouterLink
             to="/about"
             exact-active-class="dark:bg-slate-600 bg-slate-400 px-2 py-2 lg:px-4"
-            class="hover:bg-slate-500 dark:hover:bg-slate-500 px-2 py-2 lg:px-4"
-            ><i class="fas fa-info-circle"></i><span  class="hidden lg:inline-block">&nbsp;{{ t('about') }}</span>
+            class="px-2 py-2 hover:bg-slate-500 dark:hover:bg-slate-500 lg:px-4"
+            ><i class="fas fa-info-circle"></i
+            ><span class="hidden lg:inline-block">&nbsp;{{ t('about') }}</span>
         </RouterLink>
     </nav>
     <div class="absolute bottom-4 flex h-6 w-full items-center justify-center text-xl">

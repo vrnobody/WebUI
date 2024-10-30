@@ -20,10 +20,9 @@ function switchLang(s) {
     curLang.value = lang
 }
 
-onMounted(()=>{
+onMounted(() => {
     curLang.value = locale.value
 })
-
 </script>
 
 <template>

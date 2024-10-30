@@ -601,7 +601,7 @@ onUnmounted(() => {})
                     @click="$event.target.select()"
                     @keyup.enter="search"
                     type="text"
-                    class="mx-2 my-0 bg-neutral-50 px-1 dark:bg-slate-500 w-[12rem] sm:w-[20rem] md:w-[28rem] lg:w-[33rem]"
+                    class="mx-2 my-0 w-[12rem] bg-neutral-50 px-1 dark:bg-slate-500 sm:w-[20rem] md:w-[28rem] lg:w-[33rem]"
                     :placeholder="searchBoxPlaceholder()"
                 />
                 <div class="absolute right-4 top-0 m-0 text-neutral-300 dark:text-neutral-700">

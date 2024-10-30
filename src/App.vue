@@ -29,12 +29,12 @@ onMounted(() => {
     </header>
 
     <aside
-        class="fixed bottom-0 left-0 top-0 z-40 m-0 w-12 lg:w-56 bg-slate-300 p-0 text-neutral-800 dark:bg-slate-800 dark:text-neutral-300"
+        class="fixed bottom-0 left-0 top-0 z-40 m-0 w-12 bg-slate-300 p-0 text-neutral-800 dark:bg-slate-800 dark:text-neutral-300 lg:w-56"
     >
         <CompSidebar />
     </aside>
 
-    <div class="z-0 ml-12 lg:ml-56 block min-h-[37rem] pt-12">
+    <div class="z-0 ml-12 block min-h-[37rem] pt-12 lg:ml-56">
         <div class="block flex-row dark:text-neutral-200">
             <RouterView />
         </div>
@@ -44,6 +44,4 @@ onMounted(() => {
     <div class="fixed bottom-0 left-0 right-0 top-0 -z-10 bg-neutral-100 dark:bg-slate-700"></div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
