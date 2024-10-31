@@ -6,55 +6,61 @@ on:
     tags:        
       - '**'  # Push events to every tag including hierarchical tags like v1.0/beta
 
-permissions:
-  contents: write
-
 jobs:
   build:
+    permissions:
+      id-token: write
+      contents: write
+      attestations: write
 
     runs-on: ubuntu-latest
 
     env:
-        projName: webui
-        verStr: '1.0.x'
+      projName: webui
 
     steps:
-        - name: Checkout main
-          uses: actions/checkout@v4
+      - name: Checkout main
+        uses: actions/checkout@v4
 
-        - name: Setup node.js
-          uses: actions/setup-node@v4
-          with:
-            node-version: '20'
+      - name: Setup node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-        - name: Install packages
-          run: npm install
+      - name: Install packages
+        run: npm install
 
-        - name: Build project
-          run: npm run build
+      - name: Build project
+        run: npm run build
 
-        - name: Create assets
-          uses: vimtor/action-zip@v1.2
-          with:
-            files: dist/
-            dest: ${{ env.projName }}.zip
+      - name: Create assets
+        uses: vimtor/action-zip@v1.2
+        with:
+          files: dist/
+          dest: ${{ env.projName }}.zip
 
-        - name: Calc md5sum
-          run: |
-            echo CHECKSUM="$(md5sum ${projName}.zip | awk '{ print $1 }')" >> "$GITHUB_ENV"
+      - name: Calc sha256sum
+        run: |
+          pkg="${projName}.zip"
+          hash="$(sha256sum ${pkg} | awk '{ print $1 }')"
+          echo CHECKSUM="${hash}" >> "$GITHUB_ENV"
+          echo "${pkg} sha256: ${hash}" >> "$GITHUB_STEP_SUMMARY"
 
-        - name: Publish Release
-          uses: ncipollo/release-action@v1.12.0
-          with:
-            token: ${{ secrets.GITHUB_TOKEN }}
-            name: 'v${{ env.verStr }}'
-            tag: ${{ env.verStr }}
-            body: |
-              #### 变化：
-               * 变化1
-              
-              #### MD5:
-              ${{ env.projName }}.zip (${{ env.CHECKSUM }})
-            draft: true
-            prerelease: false
-            artifacts: "${{ env.projName }}.zip"
+      - name: Attest
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: "${{ env.projName }}.zip"
+
+      - name: Publish Release
+        uses: ncipollo/release-action@v1.14.0
+        with:
+          name: "v${{ github.ref_name }}"
+          body: |
+            #### 变化：
+              * 变化1
+            
+            #### SHA256:
+            ${{ env.projName }}.zip (${{ env.CHECKSUM }})
+          draft: true
+          prerelease: false
+          artifacts: "${{ env.projName }}.zip"

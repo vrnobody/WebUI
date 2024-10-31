@@ -21,7 +21,7 @@ local args = {...}
 
 local Logger = require('3rd/neolua/mods/logger')
 
-local version = "1.0.1.2"
+local version = "1.0.2.0"
 
 -- code
 local httpServ = require('3rd/neolua/mods/httpServ').new()

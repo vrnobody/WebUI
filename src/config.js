@@ -92,9 +92,10 @@ function get(key) {
 init()
 
 export default {
-    webUiVersion: '1.0.1.2',
-    supportedServerVersions: ['1.0.1.2'],
-    supportedAppVersion: '2.0.5.4',
+
+    webUiVersion: '1.0.2', // only display in About.vue
+    supportedServerVersions: ['1.0.2.0'], // must match server.lua exactly
+    supportedAppVersion: '2.0.6.0', // lowest compactible VGC version. e.g. 1.2.3.0
 
     isDevMode,
     devHostUrl: 'http://localhost:4000',
