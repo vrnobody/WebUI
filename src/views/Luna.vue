@@ -7,8 +7,13 @@ import utils from '@/misc/utils.js'
 const t = utils.getTranslator()
 
 const curComponent = ref(null)
-
 const curCompIdx = ref(-1)
+const scriptName = ref('')
+
+function editScript(name) {
+    scriptName.value = name
+    switchTo(1)
+}
 
 function switchTo(idx) {
     const comps = [CompManager, CompEditor]
@@ -46,7 +51,11 @@ switchTo(0)
 
     <!-- body -->
     <div class="text-neutral-800 dark:text-neutral-300">
-        <component :is="curComponent"></component>
+        <component
+            :is="curComponent"
+            @onEditScript="editScript"
+            v-model:scriptName="scriptName"
+        ></component>
     </div>
 </template>
 

@@ -8,6 +8,8 @@ import '@/assets/v-dropdown-menu.css'
 import FileBrowser from '@/components/luna/FileBrowser.vue'
 import Attacher from '@/components/luna/Attacher.vue'
 
+const props = defineProps(['scriptName'])
+
 const LuaEditor = defineAsyncComponent(() => import('./LuaEditor.vue'))
 
 const t = utils.getTranslator()
@@ -154,11 +156,12 @@ function loadScriptFromCache() {
     }
 }
 
-function loadScriptsFromServer() {
+function loadScriptsFromServer(resolve) {
     const next = function (str) {
         try {
             const j = JSON.parse(str)
             scriptDb.value = j
+            typeof resolve === 'function' && resolve()
         } catch (err) {
             Swal.fire(err.toString())
         }
@@ -320,7 +323,16 @@ function onFullScreenHandler(fullScreen) {
 
 onMounted(() => {
     document.addEventListener('keydown', onKeyDown)
-    loadScriptsFromServer()
+
+    function resolve() {
+        const name = props.scriptName
+        if (name) {
+            scriptName.value = name
+            loadScriptFromCache()
+        }
+    }
+
+    loadScriptsFromServer(resolve)
 })
 
 onUnmounted(() => {

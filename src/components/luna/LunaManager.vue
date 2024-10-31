@@ -2,15 +2,24 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { VueDraggableNext } from 'vue-draggable-next'
 import Tooltips from '@/components/widgets/Tooltips.vue'
+import LoadingWidget from '@/components/widgets/Loading.vue'
 import utils from '@/misc/utils.js'
 
 const t = utils.getTranslator()
 
+const props = defineProps(['scriptName']) // compatible with LunaEditor.vue
+const emit = defineEmits(['onEditScript'])
+
+const isLoading = ref(true)
 const coreInfos = ref([])
 const isCoreSettingsEditorVisible = ref(false)
 let curCoreSettings = ref({})
 let curCoreName = ''
 let refreshTimer = 0
+
+function invokeScriptEditor(name) {
+    emit('onEditScript', name)
+}
 
 function coreInfoToTag(coreInfo) {
     let r = ''
@@ -59,6 +68,7 @@ function refresh() {
         } catch (err) {
             Swal.fire(err.toString())
         }
+        isLoading.value = false
     }
     utils.call(next, 'GetAllLuaCoreInfos')
 }
@@ -121,6 +131,7 @@ function editCoreSettings(name) {
 }
 
 onMounted(() => {
+    isLoading.value = true
     refresh()
     refreshTimer = setInterval(refresh, 1500)
 })
@@ -140,16 +151,20 @@ onUnmounted(() => {
             <div class="table-cell w-16 px-1 py-0 text-center align-middle">{{ t('index') }}</div>
             <div class="table-cell px-1 py-0 text-center align-middle">{{ t('name') }}</div>
             <div class="table-cell w-16 px-1 py-0 text-center align-middle">{{ t('tags') }}</div>
-            <div class="table-cell w-28 px-1 py-0 text-center align-middle">
+            <div class="table-cell w-36 px-1 py-0 text-center align-middle">
                 {{ t('controls') }}
             </div>
         </div>
     </div>
 
+    <!-- loading -->
+    <LoadingWidget v-if="isLoading" />
+
     <!-- empty list -->
-    <div v-if="coreInfos.length <= 0" class="flex justify-center">
+    <div v-if="!isLoading && coreInfos.length <= 0" class="flex justify-center">
         <div class="mt-8 text-lg">{{ t('listIsEmpty') }}</div>
     </div>
+
     <!-- body -->
     <div class="flex flex-col">
         <div class="block h-6 w-full"></div>
@@ -189,7 +204,7 @@ onUnmounted(() => {
                                 {{ coreInfoToTag(coreInfo) }}
                             </div>
                         </div>
-                        <div class="table-cell w-28 px-1 py-0 text-center align-middle text-lg">
+                        <div class="table-cell w-36 px-1 py-0 text-center align-middle text-lg">
                             <button class="mx-1 my-0" @click="startCore(coreInfo.name)">
                                 <i class="fas fa-chevron-right"></i>
                             </button>
@@ -203,6 +218,9 @@ onUnmounted(() => {
                                     <i class="fas fa-stop-circle"></i>
                                 </button>
                             </Tooltips>
+                            <button class="mx-1 my-0" @click="invokeScriptEditor(coreInfo.name)">
+                                <i class="fas fa-pen"></i>
+                            </button>
                             <button class="mx-1 my-0" @click="removeCore(coreInfo.name)">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
