@@ -1,9 +1,7 @@
 ## WebUI
 V2RayGCon的网页端。如有问题请到[V2RayGCon](https://github.com/vrnobody/V2RayGCon/issues)发issue。  
 
-#### 安装使用
-V2RayGCon v1.8+包含了WebUI无需另外下载安装。  
-
+#### 使用方法
 在NeoLuna插件中运行以下代码：  
 ```lua
 loadfile('3rd/neolua/webui/server.lua')()
@@ -28,7 +26,7 @@ local options = {
 
 loadfile(serv)(options)
 ```
-password存储在本地，下次打开浏览器不需要再次输入。可以点右上角的“登出”清除密码。  
+password存储在本地，下次打开浏览器不需要再次输入。可以点左下角的“登出”清除密码。  
 adminpassword在关闭浏览器后自动清除，修改设置、使用NeoLuna等危险操作时会检查这个密码。  
 上面两个选项留空就不会弹出输密码窗口。  
   
