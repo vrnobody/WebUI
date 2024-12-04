@@ -21,7 +21,7 @@ local args = {...}
 
 local Logger = require('3rd/neolua/mods/logger')
 
-local version = "1.0.2.0"
+local version = "1.0.2.1"
 
 -- code
 local httpServ = require('3rd/neolua/mods/httpServ').new()
@@ -259,7 +259,7 @@ function GetLuaStaticSnippets()
 end
 
 function ChangeLuaCoreIndex(name, index)
-    return std.Sys:LusServSetIndex(name, index)
+    return std.Sys:LuaServSetIndex(name, index)
 end    
 
 function StartLuaCore(name)
