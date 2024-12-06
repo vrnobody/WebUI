@@ -93,7 +93,7 @@ init()
 
 export default {
 
-    webUiVersion: '1.0.2', // only display in About.vue
+    webUiVersion: '1.0.2.1', // only display in About.vue
     supportedServerVersions: ['1.0.2.1'], // must match server.lua exactly
     supportedAppVersion: '2.0.7.2', // lowest compactible VGC version. e.g. 1.2.3.0
 
