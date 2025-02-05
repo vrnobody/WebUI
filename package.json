@@ -13,24 +13,24 @@
     "dependencies": {
         "@hennge/vue3-pagination": "^1.0.17",
         "@yangss/vue3-i18n": "^1.1.4",
-        "pinia": "^2.2.4",
+        "pinia": "^2.3.1",
         "v-dropdown-menu": "^2.0.4",
-        "vue": "^3.5.12",
+        "vue": "^3.5.13",
         "vue-draggable-next": "^2.2.1",
-        "vue-router": "^4.4.5"
+        "vue-router": "^4.5.0"
     },
     "devDependencies": {
-        "@vitejs/plugin-vue": "^5.1.4",
+        "@vitejs/plugin-vue": "^5.2.1",
         "@vue/test-utils": "^2.4.6",
         "autoprefixer": "^10.4.20",
         "jsdom": "^25.0.1",
-        "postcss": "^8.4.47",
-        "prettier": "^3.3.3",
-        "prettier-plugin-tailwindcss": "^0.6.8",
-        "start-server-and-test": "^2.0.8",
-        "tailwindcss": "^3.4.14",
-        "vite": "^5.3.1",
-        "vite-plugin-singlefile": "^2.0.2",
+        "postcss": "^8.5.1",
+        "prettier": "^3.4.2",
+        "prettier-plugin-tailwindcss": "^0.6.11",
+        "start-server-and-test": "^2.0.10",
+        "tailwindcss": "^3.4.17",
+        "vite": "^5.4.14",
+        "vite-plugin-singlefile": "^2.1.0",
         "vitest": "2.1.3"
     }
 }
